@@ -99,7 +99,7 @@ ssize_t sendFromBuffer(struct SocketInfo *socketInfo, int size)
         return sentBytesCount;
     }
 
-    sentBytesCount = send(socketInfo->socket, socketInfo->buffer->data, size, MSG_NOSIGNAL);
+    sentBytesCount = send(socketInfo->socket, socketInfo->buffer->data, size, 0);
     if (sentBytesCount > 0)
     {
         popCharsFromBuffer(socketInfo->buffer, size);
