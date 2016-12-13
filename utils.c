@@ -59,7 +59,7 @@ struct addrinfo *getAddrInfo(const char *name, const char *service)
     int code = getaddrinfo(name, service, &hints, &res);
     if (code != EXIT_SUCCESS)
     {
-        perror("Can't get addr info");
+        fprintf(stderr, "Can't get addr info. Error: %s\n", gai_strerror(code));
         return NULL;
     }
 

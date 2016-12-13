@@ -258,7 +258,7 @@ int processHeader(struct SocketsStorage *storage, struct SocketInfo *socketInfo,
     if (cacheRecord == NULL)
     {
 #ifdef ENABLE_LOG
-        printf("Create new cache record\n");
+        printf("Try create new cache record\n");
 #endif
         return createNewCache(storage, socketInfo, cacheManager);
     }
