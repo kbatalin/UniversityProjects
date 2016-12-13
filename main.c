@@ -104,25 +104,30 @@ int init(int *mainSocket, struct SocketsStorage **socketsStorage, struct CacheMa
     return EXIT_SUCCESS;
 }
 
-void pollHandler(struct SocketsStorage *socketsStorage, int mainSocket, struct CacheManager *cacheManager)
+void pollHandler(struct SocketsStorage *socketsStorage, int mainSocket, struct CacheManager *cacheManager, int event)
 {
-    for (int i = 0; i < socketsStorage->currentSize; ++i)
+    for (int i = 0; i < socketsStorage->currentSize;)
     {
         if (!(socketsStorage->fds[i].revents & POLLIN) && !(socketsStorage->fds[i].revents & POLLOUT))
         {
+            ++i;
             continue;
         }
+        int currentFd = socketsStorage->socketsInfo[i]->socket;
 
         if (socketsStorage->fds[i].fd != mainSocket)
         {
             struct SocketInfo *socketInfo = socketsStorage->socketsInfo[i];
             socketInfo->handler(socketsStorage, socketInfo, cacheManager);
+
+            i += (i >= socketsStorage->currentSize || currentFd == socketsStorage->socketsInfo[i]->socket) ? 1 : 0;
             continue;
         }
+        ++i;
 
         //Main socket
         struct sockaddr_storage storage;
-        socklen_t len = sizeof(storage);
+         socklen_t len = sizeof(storage);
         int fd = accept(mainSocket, (struct sockaddr *) &storage, &len);
         if (fd == ERROR)
         {
@@ -139,7 +144,9 @@ void pollHandler(struct SocketsStorage *socketsStorage, int mainSocket, struct C
 
         socketInfo->handler = clientHandler;
 
+#ifdef ENABLE_LOG
         printf("\nAdd client. fd %d\n", fd);
+#endif
     }
 }
 
@@ -158,7 +165,7 @@ int main()
     int event;
     while ((event = poll(socketsStorage->fds, socketsStorage->currentSize, POLL_TIMEOUT_MS)) != ERROR)
     {
-        pollHandler(socketsStorage, mainSocket, cacheManager);
+        pollHandler(socketsStorage, mainSocket, cacheManager, event);
     }
 
     if (event == ERROR)

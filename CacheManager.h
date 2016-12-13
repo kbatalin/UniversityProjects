@@ -6,8 +6,8 @@
 #define _INC_29_CACHEMANAGER_H_
 
 #define ARRAY_EXTEND_STEEP 10
-#define MAX_CACHE_RECORD_SIZE (26 * 1024 * 1024)
-#define MAX_CACHE_SIZE (200 * 1024 * 1024)
+#define MAX_CACHE_RECORD_SIZE (100 * 1024 * 1024)
+#define MAX_CACHE_SIZE (30 * 1024 * 1024)
 
 struct SocketInfo;
 

@@ -96,9 +96,9 @@ int addTreeNode(struct Tree *tree, const char *key, struct CacheRecord *value)
     {
         return EXIT_SUCCESS;
     }
-
+#ifdef ENABLE_LOG
     printf("Add node %s\n", key);
-
+#endif
     struct TreeNode *prev = NULL;
     struct TreeNode *current = tree->root;
 
@@ -110,7 +110,9 @@ int addTreeNode(struct Tree *tree, const char *key, struct CacheRecord *value)
 
     if (current != NULL)
     {
+#ifdef ENABLE_LOG
         printf("There is node with this key\n");
+#endif
         return EXIT_SUCCESS;
     }
 
@@ -136,7 +138,9 @@ int addTreeNode(struct Tree *tree, const char *key, struct CacheRecord *value)
 
     if (prev == NULL)
     {
+#ifdef ENABLE_LOG
         printf("It's new root node\n");
+#endif
         tree->root = newNode;
         return EXIT_SUCCESS;
     }
@@ -271,7 +275,9 @@ struct CacheRecord *getCacheRecord(struct CacheManager *cacheManager, const char
 
 int delCacheRecord(struct CacheManager *cacheManager, const char *key)
 {
+#ifdef ENABLE_LOG
     printf("Del cache record %s\n", key);
+#endif
     struct CacheRecord *cacheRecord = getTreeNode(cacheManager->cacheTree, key);
     if (cacheRecord == NULL)
     {

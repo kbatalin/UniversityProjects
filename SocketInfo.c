@@ -43,7 +43,9 @@ void destructSocketInfo(struct SocketInfo *socketInfo)
         return;
     }
 
+#ifdef ENABLE_LOG
     printf("Destruct socket %d\n", socketInfo->socket);
+#endif
 
     close(socketInfo->socket);
     free(socketInfo->url);
@@ -113,7 +115,9 @@ void pausePollSocket(struct SocketInfo *socketInfo)
     {
         return;
     }
+#ifdef ENABLE_LOG
     printf("Pause %d\n", socketInfo->socket);
+#endif
     socketInfo->pollfd->fd = -1;
     socketInfo->pollfd->revents = 0;
 }
@@ -124,7 +128,9 @@ void resumePollSocket(struct SocketInfo *socketInfo)
     {
         return;
     }
+#ifdef ENABLE_LOG
     printf("Resume %d\n", socketInfo->socket);
+#endif
     socketInfo->pollfd->fd = socketInfo->socket;
-    socketInfo->pollfd->revents = 0;
+//    socketInfo->pollfd->revents = 0;
 }

@@ -52,7 +52,7 @@ struct addrinfo *getAddrInfo(const char *name, const char *service)
 {
     struct addrinfo hints, *res;
     memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
+    hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
@@ -99,7 +99,7 @@ ssize_t sendFromBuffer(struct SocketInfo *socketInfo, int size)
         return sentBytesCount;
     }
 
-    sentBytesCount = send(socketInfo->socket, socketInfo->buffer->data, size, 0);
+    sentBytesCount = send(socketInfo->socket, socketInfo->buffer->data, size, MSG_NOSIGNAL);
     if (sentBytesCount > 0)
     {
         popCharsFromBuffer(socketInfo->buffer, size);
@@ -121,7 +121,9 @@ void delRelationWithDownloader(struct SocketsStorage *storage, struct SocketInfo
 
 void disconnectClient(struct SocketsStorage *storage, struct CacheManager *cacheManager, struct SocketInfo *socketInfo)
 {
+#ifdef ENABLE_LOG
     printf("Disconnect client %d (url: %s)\n", socketInfo->socket, socketInfo->url == NULL ? "" : socketInfo->url);
+#endif
     struct CacheRecord *cacheRecord = getCacheRecord(cacheManager, socketInfo->url);
 
     if (cacheRecord == NULL && socketInfo->countRelatedSockets > 0)
@@ -164,7 +166,9 @@ void delRelatedClients(struct SocketsStorage *storage, struct SocketInfo *socket
 void disconnectServer(struct SocketsStorage *storage, struct CacheManager *cacheManager, struct SocketInfo *socketInfo,
                       bool isError)
 {
+#ifdef ENABLE_LOG
     printf("Disconnect server %d (url: %s)\n", socketInfo->socket, socketInfo->url == NULL ? "" : socketInfo->url);
+#endif
     struct CacheRecord *cacheRecord = getCacheRecord(cacheManager, socketInfo->url);
 
     if (cacheRecord == NULL && socketInfo->countRelatedSockets > 0)
@@ -185,7 +189,9 @@ void disconnectServer(struct SocketsStorage *storage, struct CacheManager *cache
 
     if (isError)
     {
+#ifdef ENABLE_LOG
         printf("Delete cache record\n");
+#endif
         delCacheRecord(cacheManager, socketInfo->url);
     }
     else
