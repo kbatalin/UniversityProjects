@@ -121,7 +121,12 @@ int addThreadToStorage(struct SocketInfo **socketInfo, struct ThreadsStorage *st
 #ifdef ENABLE_LOG
     printf("socket %d: adding in storage. Size: %d, allocated: %d\n", initData->socket, storage->currentSize, storage->allocatedSize);
 #endif
-    pthread_mutex_lock(storage->mutex);
+    int code = pthread_mutex_lock(storage->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
 
     if (storage->currentSize >= storage->allocatedSize && extendThreadsStorage(storage) != EXIT_SUCCESS)
     {
@@ -159,7 +164,7 @@ int addThreadToStorage(struct SocketInfo **socketInfo, struct ThreadsStorage *st
     storage->threadsData[storage->currentSize]->threadsStorage = storage;
 
     pthread_attr_t attr;
-    int code = pthread_attr_init(&attr);
+    code = pthread_attr_init(&attr);
     if(code != EXIT_SUCCESS)
     {
         printError(code, "Can't init attr");
@@ -183,7 +188,6 @@ int addThreadToStorage(struct SocketInfo **socketInfo, struct ThreadsStorage *st
     code = pthread_create(&storage->threads[storage->currentSize], &attr, threadStart, storage->threadsData[storage->currentSize]);
     if(code != EXIT_SUCCESS)
     {
-        //todo: если не удалось создать тред, то????
         printError(code, "Can't create thread");
         pthread_attr_destroy(&attr);
         destructSocketInfo(storage->threadsData[storage->currentSize]->socketInfo);
@@ -192,7 +196,13 @@ int addThreadToStorage(struct SocketInfo **socketInfo, struct ThreadsStorage *st
         return EXIT_FAILURE;
     }
 
-    pthread_attr_destroy(&attr);
+    code = pthread_attr_destroy(&attr);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't destroy attr");
+        pthread_mutex_unlock(storage->mutex);
+        return EXIT_FAILURE;
+    }
 
     if(socketInfo != NULL)
     {
@@ -201,7 +211,12 @@ int addThreadToStorage(struct SocketInfo **socketInfo, struct ThreadsStorage *st
 
     ++storage->currentSize;
 
-    pthread_mutex_unlock(storage->mutex);
+    code = pthread_mutex_unlock(storage->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        return EXIT_FAILURE;
+    }
     return EXIT_SUCCESS;
 }
 
@@ -210,7 +225,13 @@ void delThreadFromStorage(struct ThreadsStorage *storage, int fd)
 #ifdef ENABLE_LOG
     printf("try del socket %d from storage\n", fd);
 #endif
-    pthread_mutex_lock(storage->mutex);
+    int code = pthread_mutex_lock(storage->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return;
+    }
+
 #ifdef ENABLE_LOG
     printf("del socket %d from storage\n", fd);
 #endif
@@ -234,6 +255,10 @@ void delThreadFromStorage(struct ThreadsStorage *storage, int fd)
         break;
     }
 
-    pthread_mutex_unlock(storage->mutex);
+    code = pthread_mutex_unlock(storage->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+    }
 }
 

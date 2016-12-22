@@ -191,29 +191,3 @@ int delRelatedSocket(struct SocketInfo *mainSocket, struct SocketInfo *relatedSo
 
     return EXIT_SUCCESS;
 }
-
-//void pausePollSocket(struct SocketInfo *socketInfo)
-//{
-//    if (socketInfo == NULL)
-//    {
-//        return;
-//    }
-//#ifdef ENABLE_LOG
-//    printf("Pause %d\n", socketInfo->socket);
-//#endif
-//    socketInfo->pollfd->fd = -1;
-//    socketInfo->pollfd->revents = 0;
-//}
-//
-//void resumePollSocket(struct SocketInfo *socketInfo)
-//{
-//    if (socketInfo == NULL)
-//    {
-//        return;
-//    }
-//#ifdef ENABLE_LOG
-//    printf("Resume %d\n", socketInfo->socket);
-//#endif
-//    socketInfo->pollfd->fd = socketInfo->socket;
-////    socketInfo->pollfd->revents = 0;
-//}

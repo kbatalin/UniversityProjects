@@ -55,8 +55,4 @@ int addRelatedSocket(struct SocketInfo *mainSocket, struct SocketInfo *relatedSo
 
 int delRelatedSocket(struct SocketInfo *mainSocket, struct SocketInfo *relatedSocket);
 
-//void pausePollSocket(struct SocketInfo *socketInfo);
-//
-//void resumePollSocket(struct SocketInfo *socketInfo);
-
 #endif //_INC_29_SOCKETINFO_H_

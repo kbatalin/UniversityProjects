@@ -555,6 +555,9 @@ void stopWriteCacheRecord(struct CacheManager *cacheManager, struct CacheRecord 
 
 void stopReadCacheRecord(struct CacheRecord * cacheRecord, struct SocketInfo * socketInfo)
 {
+#ifdef ENABLE_LOG
+    printf("client %d: stop read cache\n", socketInfo->socket);
+#endif
     for (int i = 0; i < cacheRecord->clientsCount; ++i)
     {
         if (socketInfo->socket == cacheRecord->clients[i]->socket)

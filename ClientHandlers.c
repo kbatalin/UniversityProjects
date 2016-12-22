@@ -244,16 +244,14 @@ int clientCacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socke
     printf("client %d: end sending (cache transfer)\n", socketInfo->socket);
 #endif
 
-    pthread_mutex_lock(cacheRecord->mutex);
-    stopReadCacheRecord(cacheRecord, socketInfo);
-    pthread_mutex_unlock(cacheRecord->mutex);
-    pthread_cond_signal(cacheRecord->downloaderCond);
-
     if (cacheStatus == FULL)
     {
 #ifdef ENABLE_LOG
         printf("client %d: all data sent (cache transfer)\n", socketInfo->socket);
 #endif
+        pthread_mutex_lock(cacheRecord->mutex);
+        stopReadCacheRecord(cacheRecord, socketInfo);
+        pthread_mutex_unlock(cacheRecord->mutex);
 //        close(socketInfo->socket);
         delThreadFromStorage(storage, socketInfo->socket);
         return EXIT_SUCCESS;
@@ -305,12 +303,9 @@ int moveHeadersToServer(struct ThreadsStorage *storage, struct SocketInfo *socke
     if (moveCharsToBuffer(downloader->buffer, socketInfo->buffer, socketInfo->buffer->currentSize) !=
         EXIT_SUCCESS)
     {
-        //todo: нужно правильное удаление
         pthread_mutex_unlock(socketInfo->buffer->mutex);
         pthread_mutex_unlock(downloader->buffer->mutex);
-//        close(socketInfo->socket);
         delThreadFromStorage(storage, socketInfo->socket);
-//        close(downloader->socket);
         delThreadFromStorage(storage, downloader->socket);
         return EXIT_FAILURE;
     }
@@ -334,13 +329,11 @@ int clientBufferTransfer(struct ThreadsStorage *storage, struct SocketInfo *sock
     {
         if (sendFromBuffer(socketInfo, socketInfo->buffer->currentSize) <= 0)
         {
-//            close(socketInfo->socket);
             delThreadFromStorage(storage, socketInfo->socket);
             return EXIT_FAILURE;
         }
     }
 
-//    close(socketInfo->socket);
     delThreadFromStorage(storage, socketInfo->socket);
     return EXIT_SUCCESS;
 }

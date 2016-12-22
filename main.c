@@ -97,52 +97,6 @@ int init(int *mainSocket, struct ThreadsStorage **socketsStorage, struct CacheMa
     return EXIT_SUCCESS;
 }
 
-//void pollHandler(struct ThreadsStorage *socketsStorage, int mainSocket, struct CacheManager *cacheManager, int event)
-//{
-//    for (int i = 0; i < socketsStorage->currentSize;)
-//    {
-//        if (!(socketsStorage->fds[i].revents & POLLIN) && !(socketsStorage->fds[i].revents & POLLOUT))
-//        {
-//            ++i;
-//            continue;
-//        }
-//        int currentFd = socketsStorage->socketsInfo[i]->socket;
-//
-//        if (socketsStorage->fds[i].fd != mainSocket)
-//        {
-//            struct SocketInfo *socketInfo = socketsStorage->socketsInfo[i];
-//            socketInfo->handler(socketsStorage, socketInfo, cacheManager);
-//
-//            i += (i >= socketsStorage->currentSize || currentFd == socketsStorage->socketsInfo[i]->socket) ? 1 : 0;
-//            continue;
-//        }
-//        ++i;
-//
-//        //Main socket
-//        struct sockaddr_storage storage;
-//         socklen_t len = sizeof(storage);
-//        int fd = accept(mainSocket, (struct sockaddr *) &storage, &len);
-//        if (fd == ERROR)
-//        {
-//            perror("Can't accept connection");
-//            continue;
-//        }
-//
-//        struct SocketInfo *socketInfo;
-//        if (addThreadToStorage(&socketInfo, socketsStorage, fd, POLLIN) != EXIT_SUCCESS)
-//        {
-//            close(fd);
-//            continue;
-//        }
-//
-//        socketInfo->handler = clientHandler;
-//
-//#ifdef ENABLE_LOG
-//        printf("\nAdd client. fd %d\n", fd);
-//#endif
-//    }
-//}
-
 int main()
 {
     printf("Started\n");

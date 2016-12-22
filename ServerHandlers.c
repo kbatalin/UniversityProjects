@@ -22,45 +22,13 @@
 #include "CacheManager.h"
 #include "SocketInfo.h"
 
-//int createDirectConnection(struct SocketInfo *socketInfo, struct CacheManager *cacheManager, struct CacheRecord *cache)
-//{
-//    for (int i = 0; i < cache->clientsCount; ++i)
-//    {
-//        addRelatedSocket(socketInfo, cache->clients[i]);
-//        addRelatedSocket(cache->clients[i], socketInfo);
-////        resumePollSocket(cache->clients[i]);
-//    }
-//
-//    delCacheRecord(cacheManager, socketInfo->url);
-//
-////    socketInfo->status = RECEIVE_TO_SOCKET;
-//    return EXIT_SUCCESS;
-//}
-//
-//void resumeRelatedSockets(struct SocketInfo * socketInfo)
-//{
-//    if(socketInfo == NULL)
-//    {
-//        return;
-//    }
-//
-//    for(int i = 0; i < socketInfo->countRelatedSockets; ++i)
-//    {
-////        resumePollSocket(socketInfo->relatedSockets[i]);
-//    }
-//}
-//
-
-
 int getMinTotalBytes(struct SocketInfo *socketInfo)
 {
     int minBytesCount = socketInfo->buffer->totalBytesCount;
 
     for (int i = 0; i < socketInfo->countRelatedSockets; ++i)
     {
-//        pthread_mutex_lock(socketInfo->relatedSockets[i]->buffer->mutex);
         minBytesCount = min(minBytesCount, socketInfo->relatedSockets[i]->buffer->totalBytesCount);
-//        pthread_mutex_unlock(socketInfo->relatedSockets[i]->buffer->mutex);
     }
 
     return minBytesCount;
@@ -281,6 +249,24 @@ int createDirectConnection(struct ThreadsStorage *storage, struct SocketInfo *so
     return directTransfer(storage, socketInfo);
 }
 
+int tryDelCacheRecord(struct CacheManager *cacheManager, struct CacheRecord * cacheRecord, struct SocketInfo * socketInfo)
+{
+    pthread_mutex_lock(cacheManager->mutex);
+    pthread_mutex_lock(cacheRecord->mutex);
+
+    if(cacheRecord->clientsCount == 0)
+    {
+        pthread_mutex_unlock(cacheRecord->mutex);
+        delCacheRecord(cacheManager, socketInfo->url);
+        pthread_mutex_unlock(cacheManager->mutex);
+        return EXIT_SUCCESS;
+    }
+    pthread_mutex_unlock(cacheRecord->mutex);
+    pthread_mutex_unlock(cacheManager->mutex);
+
+    return EXIT_FAILURE;
+}
+
 int cacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo, struct CacheManager *cacheManager)
 {
 #ifdef ENABLE_LOG
@@ -320,6 +306,23 @@ int cacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
         }
 
         pthread_mutex_lock(cache->mutex);
+
+#ifndef ENABLE_RESUMING
+        if(cache->clientsCount == 0)
+        {
+#ifdef ENABLE_LOG
+            printf("server %d: has not clients. try del cache (cache transfer)\n", socketInfo->socket);
+#endif
+
+            pthread_mutex_unlock(cache->mutex);
+            if(tryDelCacheRecord(cacheManager, cache, socketInfo) == EXIT_SUCCESS)
+            {
+                delThreadFromStorage(storage, socketInfo->socket);
+                return EXIT_SUCCESS;
+            }
+            pthread_mutex_lock(cache->mutex);
+        }
+#endif
 
         if (addCharsToCacheRecord(cache, cacheManager, socketInfo->buffer->data, socketInfo->buffer->currentSize) !=
             EXIT_SUCCESS)
