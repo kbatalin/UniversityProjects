@@ -34,29 +34,80 @@ int getMinTotalBytes(struct SocketInfo *socketInfo)
     return minBytesCount;
 }
 
+int waitRelatedClientsLeave(struct SocketInfo *socketInfo)
+{
+    while(socketInfo->countRelatedSockets > 0)
+    {
+#ifdef ENABLE_LOG
+        printf("server %d: sleep (wait del related)\n", socketInfo->socket);
+#endif
+        int code = pthread_cond_broadcast(socketInfo->buffer->clientsCond);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't broadcast");
+            return EXIT_FAILURE;
+        }
+
+        code = pthread_cond_wait(socketInfo->buffer->ownerCond, socketInfo->buffer->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't wait");
+            return EXIT_FAILURE;
+        }
+
+#ifdef ENABLE_LOG
+        printf("server %d: resume (wait del related)\n", socketInfo->socket);
+#endif
+    }
+}
+
 int waitDelRelated(struct ThreadsStorage *storage, struct SocketInfo *socketInfo)
 {
 #ifdef ENABLE_LOG
     printf("server %d: wait del related\n", socketInfo->socket);
 #endif
 
-    pthread_mutex_lock(socketInfo->buffer->mutex);
-
-    while(socketInfo->countRelatedSockets > 0)
+    int code = pthread_mutex_lock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
     {
-#ifdef ENABLE_LOG
-        printf("server %d: sleep (wait del related)\n", socketInfo->socket);
-#endif
-        pthread_cond_broadcast(socketInfo->buffer->clientsCond);
-        pthread_cond_wait(socketInfo->buffer->ownerCond, socketInfo->buffer->mutex);
-#ifdef ENABLE_LOG
-        printf("server %d: resume (wait del related)\n", socketInfo->socket);
-#endif
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
     }
 
-    pthread_mutex_unlock(socketInfo->buffer->mutex);
+    if(waitRelatedClientsLeave(socketInfo) != EXIT_SUCCESS)
+    {
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_mutex_unlock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
 
     delThreadFromStorage(storage, socketInfo->socket);
+    return EXIT_SUCCESS;
+}
+
+int setDirectTransferStatus(struct SocketInfo *socketInfo)
+{
+    int code = pthread_mutex_lock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
+
+    socketInfo->status = DIRECT_TRANSFER;
+
+    code = pthread_mutex_unlock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        return EXIT_FAILURE;
+    }
+
     return EXIT_SUCCESS;
 }
 
@@ -66,13 +117,20 @@ int directTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo
     printf("server %d: direct transfer\n", socketInfo->socket);
 #endif
 
-    pthread_mutex_lock(socketInfo->buffer->mutex);
-    socketInfo->status = DIRECT_TRANSFER;
-    pthread_mutex_unlock(socketInfo->buffer->mutex);
+    if(setDirectTransferStatus(socketInfo) != EXIT_SUCCESS)
+    {
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
 
     while(true)
     {
-        pthread_mutex_lock(socketInfo->buffer->mutex);
+        int code = pthread_mutex_lock(socketInfo->buffer->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
 
         int bytesBefore = socketInfo->buffer->totalBytesCount - socketInfo->buffer->currentSize;
         int freeSpace = socketInfo->buffer->allocatedSize - socketInfo->buffer->currentSize;
@@ -112,12 +170,9 @@ int directTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo
         if (buffer == NULL)
         {
             fprintf(stderr, "Can't allocate memory for buffer\n");
-
             socketInfo->status = ERROR_END;
             pthread_mutex_unlock(socketInfo->mutex);
-
             waitDelRelated(storage, socketInfo);
-
             return EXIT_FAILURE;
         }
 
@@ -143,7 +198,12 @@ int directTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo
         printf("server %d: recv %zd bytes (direct transfer)\n", socketInfo->socket, size);
 #endif
 
-        pthread_mutex_lock(socketInfo->buffer->mutex);
+        code = pthread_mutex_lock(socketInfo->buffer->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
 
         if (addCharsToBuffer(socketInfo->buffer, buffer, size) != EXIT_SUCCESS)
         {
@@ -155,9 +215,63 @@ int directTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo
         }
         free(buffer);
 
-        pthread_mutex_unlock(socketInfo->buffer->mutex);
-        pthread_cond_broadcast(socketInfo->buffer->clientsCond);
+        code = pthread_mutex_unlock(socketInfo->buffer->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
+
+        code = pthread_cond_broadcast(socketInfo->buffer->clientsCond);
+        if(code != EXIT_SUCCESS)
+        {
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
     }
+}
+
+int safeServerGetCacheRecord(struct CacheRecord **pCacheRecord, struct CacheManager *cacheManager, const char *key)
+{
+    int code = pthread_mutex_lock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
+
+    *pCacheRecord = getCacheRecord(cacheManager, key);
+
+    code = pthread_mutex_unlock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int waitClientsLeave(struct CacheRecord *cacheRecord)
+{
+    while (cacheRecord->clientsCount > 0)
+    {
+        int code = pthread_cond_broadcast(cacheRecord->clientsCond);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't broadcast");
+            return EXIT_FAILURE;
+        }
+
+        code = pthread_cond_wait(cacheRecord->downloaderCond, cacheRecord->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't wait");
+            return EXIT_FAILURE;
+        }
+    }
+
+    return EXIT_SUCCESS;
 }
 
 int waitDelCache(struct SocketInfo *socketInfo, struct CacheManager *cacheManager)
@@ -165,23 +279,37 @@ int waitDelCache(struct SocketInfo *socketInfo, struct CacheManager *cacheManage
 #ifdef ENABLE_LOG
     printf("server %d: wait del cache\n", socketInfo->socket);
 #endif
-    pthread_mutex_lock(cacheManager->mutex);
+    int code = pthread_mutex_lock(cacheManager->mutex);
     struct CacheRecord *cache = getCacheRecord(cacheManager, socketInfo->url);
-
-    pthread_mutex_lock(cache->mutex);
-    while(cache->clientsCount > 0)
+    if(code != EXIT_SUCCESS)
     {
-#ifdef ENABLE_LOG
-        printf("server %d: sleep (wait del cache)\n", socketInfo->socket);
-#endif
-        pthread_cond_broadcast(cache->clientsCond);
-        pthread_cond_wait(cache->downloaderCond, cache->mutex);
-
-#ifdef ENABLE_LOG
-        printf("server %d: resume (wait del cache)\n", socketInfo->socket);
-#endif
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
     }
-    pthread_mutex_unlock(cache->mutex);
+
+    code = pthread_mutex_lock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        pthread_mutex_unlock(cacheManager->mutex);
+        return EXIT_FAILURE;
+    }
+
+    if(waitClientsLeave(cache) != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        pthread_mutex_unlock(cache->mutex);
+        pthread_mutex_unlock(cacheManager->mutex);
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_mutex_unlock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unclock mutex");
+        pthread_mutex_unlock(cacheManager->mutex);
+        return EXIT_FAILURE;
+    }
 
 #ifdef ENABLE_LOG
     printf("server %d: del cache record\n", socketInfo->socket);
@@ -189,7 +317,12 @@ int waitDelCache(struct SocketInfo *socketInfo, struct CacheManager *cacheManage
 
     delCacheRecord(cacheManager, socketInfo->url);
 
-    pthread_mutex_unlock(cacheManager->mutex);
+    code = pthread_mutex_unlock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unclock mutex");
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
@@ -206,10 +339,24 @@ int safeDelCacheRecord(struct ThreadsStorage *storage, struct SocketInfo *socket
         printf("server %d: wait clients detached from cache\n", socketInfo->socket);
 #endif
 
-        pthread_mutex_lock(cacheManager->mutex);
+        int code = pthread_mutex_lock(cacheManager->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't lock mutex");
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
+
         struct CacheRecord *cacheRecord = getCacheRecord(cacheManager, socketInfo->url);
 
-        pthread_mutex_lock(cacheRecord->mutex);
+        code = pthread_mutex_lock(cacheRecord->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't lock mutex");
+            pthread_mutex_unlock(cacheManager->mutex);
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
 
         if (cacheRecord->clientsCount == 0)
         {
@@ -222,15 +369,27 @@ int safeDelCacheRecord(struct ThreadsStorage *storage, struct SocketInfo *socket
             return EXIT_SUCCESS;
         }
 
-        pthread_mutex_unlock(cacheManager->mutex);
-
-        while (cacheRecord->clientsCount > 0)
+        code = pthread_mutex_unlock(cacheManager->mutex);
+        if(code != EXIT_SUCCESS)
         {
-            pthread_cond_broadcast(cacheRecord->clientsCond);
-            pthread_cond_wait(cacheRecord->downloaderCond, cacheRecord->mutex);
+            printError(code, "Can't unlock mutex");
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
         }
 
-        pthread_mutex_unlock(cacheRecord->mutex);
+        if(waitClientsLeave(cacheRecord) != EXIT_SUCCESS)
+        {
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
+
+        code = pthread_mutex_unlock(cacheRecord->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't unlock mutex");
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
     }
 }
 
@@ -240,19 +399,48 @@ int createDirectConnection(struct ThreadsStorage *storage, struct SocketInfo *so
     printf("server %d: create direct connection\n", socketInfo->socket);
 #endif
 
-    pthread_mutex_lock(socketInfo->buffer->mutex);
-    socketInfo->status = DIRECT_TRANSFER;
-    pthread_mutex_unlock(socketInfo->buffer->mutex);
+    int code = pthread_mutex_lock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can' lock mutex");
+        return EXIT_FAILURE;
+    }
 
-    pthread_cond_broadcast(socketInfo->buffer->clientsCond);
+    socketInfo->status = DIRECT_TRANSFER;
+
+    code = pthread_mutex_unlock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can' unlock mutex");
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_cond_broadcast(socketInfo->buffer->clientsCond);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can' broadcast");
+        return EXIT_FAILURE;
+    }
 
     return directTransfer(storage, socketInfo);
 }
 
 int tryDelCacheRecord(struct CacheManager *cacheManager, struct CacheRecord * cacheRecord, struct SocketInfo * socketInfo)
 {
-    pthread_mutex_lock(cacheManager->mutex);
-    pthread_mutex_lock(cacheRecord->mutex);
+    int code = pthread_mutex_lock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can' lock mutex");
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_mutex_lock(cacheRecord->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can' lock mutex");
+        pthread_mutex_unlock(cacheManager->mutex);
+        return EXIT_FAILURE;
+    }
 
     if(cacheRecord->clientsCount == 0)
     {
@@ -261,10 +449,86 @@ int tryDelCacheRecord(struct CacheManager *cacheManager, struct CacheRecord * ca
         pthread_mutex_unlock(cacheManager->mutex);
         return EXIT_SUCCESS;
     }
-    pthread_mutex_unlock(cacheRecord->mutex);
-    pthread_mutex_unlock(cacheManager->mutex);
+
+    code = pthread_mutex_unlock(cacheRecord->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can' unlock mutex");
+        pthread_mutex_unlock(cacheManager->mutex);
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_mutex_unlock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can' unlock mutex");
+        return EXIT_FAILURE;
+    }
 
     return EXIT_FAILURE;
+}
+
+int safeExitFromCacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
+                              struct CacheManager *cacheManager, struct CacheRecord *cache)
+{
+    int code = pthread_mutex_lock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    cache->status = ERROR_CACHE;
+
+    code = pthread_mutex_unlock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    waitDelCache(socketInfo, cacheManager);
+    delThreadFromStorage(storage, socketInfo->socket);
+
+    return EXIT_SUCCESS;
+}
+
+int afterCacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
+                       struct CacheManager *cacheManager, struct CacheRecord *cache)
+{
+#ifdef ENABLE_LOG
+    printf("server %d: go away (cache transfer)\n", socketInfo->socket);
+#endif
+    int code = pthread_mutex_lock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    stopWriteCacheRecord(cacheManager, cache);
+
+    code = pthread_mutex_unlock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_cond_broadcast(cache->clientsCond);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't broadcast");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    delThreadFromStorage(storage, socketInfo->socket);
+    return EXIT_SUCCESS;
 }
 
 int cacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo, struct CacheManager *cacheManager)
@@ -273,9 +537,12 @@ int cacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
     printf("server %d: cache transfer\n", socketInfo->socket);
 #endif
 
-    pthread_mutex_lock(cacheManager->mutex);
-    struct CacheRecord *cache = getCacheRecord(cacheManager, socketInfo->url);
-    pthread_mutex_unlock(cacheManager->mutex);
+    struct CacheRecord *cache;
+    if(safeServerGetCacheRecord(&cache, cacheManager, socketInfo->url) != EXIT_SUCCESS)
+    {
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
 
 #ifdef ENABLE_LOG
     printf("server %d: find cache record\n", socketInfo->socket);
@@ -295,17 +562,18 @@ int cacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
 
             if (addCharsToBuffer(socketInfo->buffer, buffer, size) != EXIT_SUCCESS)
             {
-                pthread_mutex_lock(cache->mutex);
-                cache->status = ERROR_CACHE;
-                pthread_mutex_unlock(cache->mutex);
-                waitDelCache(socketInfo, cacheManager);
-//            close(socketInfo->socket);
-                delThreadFromStorage(storage, socketInfo->socket);
+                safeExitFromCacheTransfer(storage, socketInfo, cacheManager, cache);
                 return EXIT_FAILURE;
             }
         }
 
-        pthread_mutex_lock(cache->mutex);
+        int code = pthread_mutex_lock(cache->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't lock mutex");
+            safeExitFromCacheTransfer(storage, socketInfo, cacheManager, cache);
+            return EXIT_FAILURE;
+        }
 
 #ifndef ENABLE_RESUMING
         if(cache->clientsCount == 0)
@@ -336,24 +604,98 @@ int cacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
             return createDirectConnection(storage, socketInfo);
         }
 
-        pthread_mutex_unlock(cache->mutex);
-        pthread_cond_broadcast(cache->clientsCond);
+        code = pthread_mutex_unlock(cache->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't unlock mutex");
+            safeExitFromCacheTransfer(storage, socketInfo, cacheManager, cache);
+            return EXIT_FAILURE;
+        }
+
+        code = pthread_cond_broadcast(cache->clientsCond);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't broadcast");
+            safeExitFromCacheTransfer(storage, socketInfo, cacheManager, cache);
+            return EXIT_FAILURE;
+        }
 
         popCharsFromBuffer(socketInfo->buffer, socketInfo->buffer->currentSize);
-
     }
     while(size > 0);
 
-#ifdef ENABLE_LOG
-    printf("server %d: go away (cache transfer)\n", socketInfo->socket);
-#endif
-    pthread_mutex_lock(cache->mutex);
-    stopWriteCacheRecord(cacheManager, cache);
-    pthread_mutex_unlock(cache->mutex);
-    pthread_cond_broadcast(cache->clientsCond);
+    return afterCacheTransfer(storage, socketInfo, cacheManager, cache);
+}
 
+int safeExitFromWaitHeader(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
+                           struct CacheManager *cacheManager, struct CacheRecord *cache)
+{
+    int code = pthread_mutex_lock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    cache->status = ERROR_CACHE;
+
+    code = pthread_mutex_unlock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    waitDelCache(socketInfo, cacheManager);
     delThreadFromStorage(storage, socketInfo->socket);
     return EXIT_SUCCESS;
+}
+
+int serverWaitHeaderFirstLineProcess(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
+                                     struct CacheManager *cacheManager, struct CacheRecord *cache)
+{
+    int code = pthread_mutex_lock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    int endFirstLinePos = strpos(socketInfo->buffer->data, "\r\n");
+    int goodStatusPos = strpos(socketInfo->buffer->data, "200 OK");
+    if (goodStatusPos != NPOS && goodStatusPos <= endFirstLinePos)
+    {
+        socketInfo->status = CACHE_TRANSFER;
+        pthread_mutex_unlock(cache->mutex);
+
+        return cacheTransfer(storage, socketInfo, cacheManager);
+    }
+
+    socketInfo->status = DIRECT_TRANSFER;
+    cache->status = BAD_ANSWER;
+
+    code = pthread_mutex_unlock(cache->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_cond_broadcast(cache->clientsCond);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't broadcast");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    safeDelCacheRecord(storage, socketInfo, cacheManager);
+
+    return directTransfer(storage, socketInfo);
 }
 
 int serverWaitHeader(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
@@ -363,60 +705,117 @@ int serverWaitHeader(struct ThreadsStorage *storage, struct SocketInfo *socketIn
     printf("server %d: wait header\n", socketInfo->socket);
 #endif
 
-    pthread_mutex_lock(cacheManager->mutex);
-    struct CacheRecord *cache = getCacheRecord(cacheManager, socketInfo->url);
-    pthread_mutex_unlock(cacheManager->mutex);
+    struct CacheRecord *cache;
+    if(safeServerGetCacheRecord(&cache, cacheManager, socketInfo->url) != EXIT_SUCCESS)
+    {
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
 
 #ifdef ENABLE_LOG
     printf("server %d: find cache record\n", socketInfo->socket);
 #endif
 
-    int endFirstLinePos;
     do
     {
         char buffer[BUFFER_SIZE];
         ssize_t size = recv(socketInfo->socket, buffer, BUFFER_SIZE, 0);
         if (size <= 0)
         {
-            pthread_mutex_lock(cache->mutex);
-            cache->status = ERROR_CACHE;
-            pthread_mutex_unlock(cache->mutex);
-            waitDelCache(socketInfo, cacheManager);
-            delThreadFromStorage(storage, socketInfo->socket);
+            safeExitFromWaitHeader(storage, socketInfo, cacheManager, cache);
             return EXIT_FAILURE;
         }
 
         if (addCharsToBuffer(socketInfo->buffer, buffer, size) != EXIT_SUCCESS)
         {
-            pthread_mutex_lock(cache->mutex);
-            cache->status = ERROR_CACHE;
-            pthread_mutex_unlock(cache->mutex);
-            waitDelCache(socketInfo, cacheManager);
-            delThreadFromStorage(storage, socketInfo->socket);
+            safeExitFromWaitHeader(storage, socketInfo, cacheManager, cache);
             return EXIT_FAILURE;
         }
     }
-    while((endFirstLinePos = strpos(socketInfo->buffer->data, "\r\n")) == NPOS);
+    while(strpos(socketInfo->buffer->data, "\r\n") == NPOS);
 
-    pthread_mutex_lock(cache->mutex);
+    return serverWaitHeaderFirstLineProcess(storage, socketInfo, cacheManager, cache);
+}
 
-    int goodStatusPos = strpos(socketInfo->buffer->data, "200 OK");
-    if (goodStatusPos == NPOS || goodStatusPos > endFirstLinePos)
+int waitBufferFromSendHeader(struct SocketInfo *socketInfo)
+{
+    while(socketInfo->buffer->currentSize == 0)
     {
-        socketInfo->status = DIRECT_TRANSFER;
-        cache->status = BAD_ANSWER;
-        pthread_mutex_unlock(cache->mutex);
-        pthread_cond_broadcast(cache->clientsCond);
+#ifdef ENABLE_LOG
+        printf("server %d: wait headers from client\n", socketInfo->socket);
+#endif
 
-        safeDelCacheRecord(storage, socketInfo, cacheManager);
-
-        return directTransfer(storage, socketInfo);
+        int code = pthread_cond_wait(socketInfo->buffer->ownerCond, socketInfo->buffer->mutex);
+        if (code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't wait");
+            return EXIT_FAILURE;
+        }
     }
 
-    socketInfo->status = CACHE_TRANSFER;
-    pthread_mutex_unlock(cache->mutex);
+    return EXIT_SUCCESS;
+}
 
-    return cacheTransfer(storage, socketInfo, cacheManager);
+int safeDelCacheFromSendHeader(struct SocketInfo *socketInfo, struct CacheManager *cacheManager)
+{
+    int code = pthread_mutex_lock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
+
+    struct CacheRecord * cacheRecord = getCacheRecord(cacheManager, socketInfo->url);
+
+    code = pthread_mutex_unlock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        return EXIT_FAILURE;
+    }
+
+    if(cacheRecord == NULL)
+    {
+        return EXIT_SUCCESS;
+    }
+
+    code = pthread_mutex_lock(cacheRecord->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
+
+    cacheRecord->status = ERROR_CACHE;
+
+    code = pthread_mutex_unlock(cacheRecord->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        return EXIT_FAILURE;
+    }
+
+    waitDelCache(socketInfo, cacheManager);
+    return EXIT_SUCCESS;
+}
+
+int safeExitFromSendHeader(struct ThreadsStorage *storage, struct SocketInfo *socketInfo, struct CacheManager *cacheManager)
+{
+    if(safeDelCacheFromSendHeader(socketInfo, cacheManager) != EXIT_SUCCESS)
+    {
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    socketInfo->status = ERROR_END;
+    int code = pthread_cond_broadcast(socketInfo->buffer->clientsCond);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't broadcast");
+    }
+
+    delThreadFromStorage(storage, socketInfo->socket);
+    return EXIT_SUCCESS;
 }
 
 int handlerServerSendFromSocket(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
@@ -427,13 +826,10 @@ int handlerServerSendFromSocket(struct ThreadsStorage *storage, struct SocketInf
 #endif
 
     pthread_mutex_lock(socketInfo->buffer->mutex);
-    while(socketInfo->buffer->currentSize == 0)
+    if(waitBufferFromSendHeader(socketInfo) != EXIT_SUCCESS)
     {
-#ifdef ENABLE_LOG
-        printf("server %d: wait headers from client\n", socketInfo->socket);
-#endif
-
-        pthread_cond_wait(socketInfo->buffer->ownerCond, socketInfo->buffer->mutex);
+        safeExitFromSendHeader(storage, socketInfo, cacheManager);
+        return EXIT_FAILURE;
     }
 
 #ifdef ENABLE_LOG
@@ -442,34 +838,18 @@ int handlerServerSendFromSocket(struct ThreadsStorage *storage, struct SocketInf
 
     while(socketInfo->buffer->currentSize > 0)
     {
-        if (sendFromBuffer(socketInfo, socketInfo->buffer->currentSize) <= 0)
+        if (sendFromBuffer(socketInfo, socketInfo->buffer->currentSize) > 0)
         {
-#ifdef ENABLE_LOG
-            printf("server %d: go away. status: %d (send from socket)\n", socketInfo->socket, socketInfo->status);
-#endif
-            pthread_mutex_unlock(socketInfo->buffer->mutex);
-
-            if(socketInfo->status == PREV_CACHE_TRANSFER)
-            {
-                pthread_mutex_lock(cacheManager->mutex);
-                struct CacheRecord * cacheRecord = getCacheRecord(cacheManager, socketInfo->url);
-                pthread_mutex_unlock(cacheManager->mutex);
-
-                if(cacheRecord != NULL)
-                {
-                    pthread_mutex_lock(cacheRecord->mutex);
-                    cacheRecord->status = ERROR_CACHE;
-                    pthread_mutex_unlock(cacheRecord->mutex);
-                    waitDelCache(socketInfo, cacheManager);
-                }
-            }
-
-            socketInfo->status = ERROR_END;
-            pthread_cond_broadcast(socketInfo->buffer->clientsCond);
-//            close(socketInfo->socket);
-            delThreadFromStorage(storage, socketInfo->socket);
-            return EXIT_FAILURE;
+            continue;
         }
+
+#ifdef ENABLE_LOG
+        printf("server %d: go away. status: %d (send from socket)\n", socketInfo->socket, socketInfo->status);
+#endif
+        pthread_mutex_unlock(socketInfo->buffer->mutex);
+
+        safeExitFromSendHeader(storage, socketInfo, cacheManager);
+        return EXIT_FAILURE;
     }
     eraseBuffer(socketInfo->buffer);
     pthread_mutex_unlock(socketInfo->buffer->mutex);
