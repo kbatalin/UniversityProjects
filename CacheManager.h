@@ -8,8 +8,8 @@
 #include <zconf.h>
 
 #define ARRAY_EXTEND_STEEP 10
-#define MAX_CACHE_RECORD_SIZE (50 * 1024 * 1024LL)
-#define MAX_CACHE_SIZE (300 * 1024 * 1024LL)
+#define MAX_CACHE_RECORD_SIZE (20 * 1024 * 1024LL)
+#define MAX_CACHE_SIZE (400 * 1024 * 1024LL)
 
 struct SocketInfo;
 

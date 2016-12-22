@@ -48,6 +48,149 @@ int setNonBlock(int socket)
     return EXIT_SUCCESS;
 }
 
+int safeAddCacheRecordReader(struct CacheRecord *cacheRecord, struct SocketInfo *socketInfo)
+{
+    int code = pthread_mutex_lock(cacheRecord->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
+
+    if(addCacheRecordReader(cacheRecord, socketInfo) != EXIT_SUCCESS)
+    {
+        pthread_mutex_unlock(cacheRecord->mutex);
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_mutex_unlock(cacheRecord->mutex);
+    if (code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int waitBufferClientDirection(struct SocketInfo *downloader, struct SocketInfo *socketInfo)
+{
+#ifdef ENABLE_LOG
+    printf("client %d: sleep (direct transfer)\n", socketInfo->socket);
+#endif
+
+    int code = pthread_cond_signal(downloader->buffer->ownerCond);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't signal");
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_cond_wait(downloader->buffer->clientsCond, downloader->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't wait");
+        return EXIT_FAILURE;
+    }
+
+#ifdef ENABLE_LOG
+    printf("client %d: resume (direct transfer)\n", socketInfo->socket);
+#endif
+
+    return EXIT_SUCCESS;
+}
+
+int clientDirectTransferSend(struct ThreadsStorage *storage, struct SocketInfo *downloader, struct SocketInfo *socketInfo)
+{
+    ssize_t size = 0;
+    if(socketInfo->buffer->currentSize <= 0)
+    {
+        return EXIT_SUCCESS;
+    }
+
+    size = sendFromBuffer(socketInfo, socketInfo->buffer->currentSize);
+    if(size > 0)
+    {
+#ifdef ENABLE_LOG
+        printf("client %d: send %zd bytes. current size: %d (direct transfer)\n", socketInfo->socket, size, socketInfo->buffer->currentSize);
+#endif
+
+        return EXIT_SUCCESS;
+    }
+
+#ifdef ENABLE_LOG
+    printf("client %d: go away (direct transfer)\n", socketInfo->socket);
+#endif
+
+    int code = pthread_mutex_lock(downloader->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    delRelatedSocket(downloader, socketInfo);
+
+    code = pthread_mutex_unlock(downloader->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        pthread_cond_signal(downloader->buffer->ownerCond);
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_cond_signal(downloader->buffer->ownerCond);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't signal");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    delThreadFromStorage(storage, socketInfo->socket);
+    return EXIT_FAILURE;
+}
+
+int endClientDirectTransfer(struct ThreadsStorage *storage, struct SocketInfo *downloader, struct SocketInfo *socketInfo)
+{
+#ifdef ENABLE_LOG
+    printf("client %d: end sending (direct transfer)\n", socketInfo->socket);
+#endif
+
+    int code = pthread_mutex_lock(downloader->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    delRelatedSocket(downloader, socketInfo);
+
+    code = pthread_mutex_unlock(downloader->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        pthread_cond_signal(downloader->buffer->ownerCond);
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_cond_signal(downloader->buffer->ownerCond);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't signal");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    delThreadFromStorage(storage, socketInfo->socket);
+
+    return EXIT_SUCCESS;
+}
+
 int clientDirectTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo, struct CacheManager *cacheManager)
 {
 #ifdef ENABLE_LOG
@@ -59,20 +202,20 @@ int clientDirectTransfer(struct ThreadsStorage *storage, struct SocketInfo *sock
     int downloaderBufferSize;
     do
     {
-        pthread_mutex_lock(downloader->buffer->mutex);
+        int code = pthread_mutex_lock(downloader->buffer->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't lock mutex");
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
+
         while(downloader->status == PREV_DIRECT_TRANSFER
               || (downloader->status == DIRECT_TRANSFER
                  && downloader->buffer->totalBytesCount - socketInfo->buffer->totalBytesCount <= 0
                  && isBufferEmpty(socketInfo->buffer)))
         {
-#ifdef ENABLE_LOG
-            printf("client %d: sleep (direct transfer)\n", socketInfo->socket);
-#endif
-            pthread_cond_signal(downloader->buffer->ownerCond);
-            pthread_cond_wait(downloader->buffer->clientsCond, downloader->buffer->mutex);
-#ifdef ENABLE_LOG
-            printf("client %d: resume (direct transfer)\n", socketInfo->socket);
-#endif
+            waitBufferClientDirection(downloader, socketInfo);
         }
 
         if(downloader->status == ERROR_END)
@@ -105,43 +248,162 @@ int clientDirectTransfer(struct ThreadsStorage *storage, struct SocketInfo *sock
             return EXIT_FAILURE;
         }
 
-        pthread_mutex_unlock(downloader->buffer->mutex);
-
-        ssize_t size = 0;
-        if (socketInfo->buffer->currentSize > 0 && (size = sendFromBuffer(socketInfo, socketInfo->buffer->currentSize)) <= 0)
+        code = pthread_mutex_unlock(downloader->buffer->mutex);
+        if(code != EXIT_SUCCESS)
         {
-#ifdef ENABLE_LOG
-            printf("client %d: go away (direct transfer)\n", socketInfo->socket);
-#endif
-            pthread_mutex_lock(downloader->buffer->mutex);
+            printError(code, "Can't unlock");
             delRelatedSocket(downloader, socketInfo);
-            pthread_mutex_unlock(downloader->buffer->mutex);
-
             pthread_cond_signal(downloader->buffer->ownerCond);
             delThreadFromStorage(storage, socketInfo->socket);
-            return EXIT_SUCCESS;
+            return EXIT_FAILURE;
         }
 
-#ifdef ENABLE_LOG
-        printf("client %d: send %zd bytes. current size: %d (direct transfer)\n", socketInfo->socket, size, socketInfo->buffer->currentSize);
-#endif
+        if(clientDirectTransferSend(storage, downloader, socketInfo) != EXIT_SUCCESS)
+        {
+            return EXIT_FAILURE;
+        }
 
         pthread_cond_signal(downloader->buffer->ownerCond);
     }
     while(socketStatus == DIRECT_TRANSFER || downloaderBufferSize - socketInfo->buffer->totalBytesCount != 0
     || !isBufferEmpty(socketInfo->buffer));
 
-#ifdef ENABLE_LOG
-    printf("client %d: end sending (direct transfer)\n", socketInfo->socket);
-#endif
+    return endClientDirectTransfer(storage, downloader, socketInfo);
+}
 
-    pthread_mutex_lock(downloader->buffer->mutex);
-    delRelatedSocket(downloader, socketInfo);
-    pthread_mutex_unlock(downloader->buffer->mutex);
-    pthread_cond_signal(downloader->buffer->ownerCond);
-    delThreadFromStorage(storage, socketInfo->socket);
+int safeGetCacheRecord(struct CacheRecord **pCacheRecord, struct CacheManager *cacheManager, const char *key)
+{
+    int code = pthread_mutex_lock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
+
+    *pCacheRecord = getCacheRecord(cacheManager, key);
+
+    code = pthread_mutex_unlock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
+}
+
+int waitCacheReady(struct CacheRecord *cacheRecord, struct SocketInfo *socketInfo)
+{
+#ifdef ENABLE_LOG
+    printf("client %d: sleep (cache transfer)\n", socketInfo->socket);
+#endif
+
+    int code = pthread_cond_signal(cacheRecord->downloaderCond);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't signal");
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_cond_wait(cacheRecord->clientsCond, cacheRecord->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't wait");
+        return EXIT_FAILURE;
+    }
+
+#ifdef ENABLE_LOG
+    printf("client %d: resume (cache transfer)\n", socketInfo->socket);
+#endif
+
+    return EXIT_SUCCESS;
+}
+
+int createBigFileClientConnection(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
+                                  struct CacheManager *cacheManager, struct CacheRecord *cacheRecord)
+{
+#ifdef ENABLE_LOG
+    printf("client %d: big file (cache transfer)\n", socketInfo->socket);
+#endif
+
+    int code = pthread_mutex_lock(cacheRecord->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    stopReadCacheRecord(cacheRecord, socketInfo);
+
+    code = pthread_mutex_lock(cacheRecord->downloader->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        pthread_mutex_unlock(cacheRecord->mutex);
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    if(addRelatedSocket(cacheRecord->downloader, socketInfo) != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        pthread_mutex_unlock(cacheRecord->downloader->buffer->mutex);
+        pthread_mutex_unlock(cacheRecord->mutex);
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    if(addRelatedSocket(socketInfo, cacheRecord->downloader) != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        pthread_mutex_unlock(cacheRecord->downloader->buffer->mutex);
+        pthread_mutex_unlock(cacheRecord->mutex);
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    struct SocketInfo *downloader = socketInfo->relatedSockets[DOWNLOADER_SOCKET];
+
+    code = pthread_mutex_unlock(cacheRecord->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        pthread_mutex_unlock(downloader->buffer->mutex);
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    while(downloader->status == CACHE_TRANSFER)
+    {
+        code = pthread_cond_signal(cacheRecord->downloaderCond);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't signal");
+            pthread_mutex_unlock(downloader->buffer->mutex);
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
+
+        code = pthread_cond_wait(downloader->buffer->clientsCond, downloader->buffer->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't signal");
+            pthread_mutex_unlock(downloader->buffer->mutex);
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
+    }
+
+    code = pthread_mutex_unlock(downloader->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    return clientDirectTransfer(storage, socketInfo, cacheManager);
 }
 
 int clientCacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo, struct CacheManager *cacheManager)
@@ -150,26 +412,30 @@ int clientCacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socke
     printf("client %d: cache transfer\n", socketInfo->socket);
 #endif
 
-    pthread_mutex_lock(cacheManager->mutex);
-    struct CacheRecord *cacheRecord = getCacheRecord(cacheManager, socketInfo->url);
-
-    pthread_mutex_unlock(cacheManager->mutex);
+    struct CacheRecord *cacheRecord;
+    if(safeGetCacheRecord(&cacheRecord, cacheManager, socketInfo->url) != EXIT_SUCCESS)
+    {
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
 
     enum CacheStatus cacheStatus;
     int cacheSize;
     do
     {
-        pthread_mutex_lock(cacheRecord->mutex);
+        int code = pthread_mutex_lock(cacheRecord->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't lock mutex");
+            stopReadCacheRecord(cacheRecord, socketInfo);
+            pthread_cond_signal(cacheRecord->downloaderCond);
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
+
         while(cacheRecord->status == PARTIAL && cacheRecord->currentDataSize - socketInfo->buffer->totalBytesCount <= 0)
         {
-#ifdef ENABLE_LOG
-            printf("client %d: sleep (cache transfer)\n", socketInfo->socket);
-#endif
-            pthread_cond_signal(cacheRecord->downloaderCond);
-            pthread_cond_wait(cacheRecord->clientsCond, cacheRecord->mutex);
-#ifdef ENABLE_LOG
-            printf("client %d: resume (cache transfer)\n", socketInfo->socket);
-#endif
+            waitCacheReady(cacheRecord, socketInfo);
         }
 
         if(cacheRecord->status == ERROR_CACHE)
@@ -180,7 +446,6 @@ int clientCacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socke
             stopReadCacheRecord(cacheRecord, socketInfo);
             pthread_mutex_unlock(cacheRecord->mutex);
             pthread_cond_signal(cacheRecord->downloaderCond);
-//            close(socketInfo->socket);
             delThreadFromStorage(storage, socketInfo->socket);
             return EXIT_FAILURE;
         }
@@ -211,12 +476,19 @@ int clientCacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socke
             stopReadCacheRecord(cacheRecord, socketInfo);
             pthread_mutex_unlock(cacheRecord->mutex);
             pthread_cond_signal(cacheRecord->downloaderCond);
-//            close(socketInfo->socket);
             delThreadFromStorage(storage, socketInfo->socket);
             return EXIT_FAILURE;
         }
 
-        pthread_mutex_unlock(cacheRecord->mutex);
+        code = pthread_mutex_unlock(cacheRecord->mutex);
+        if(code != EXIT_SUCCESS)
+        {
+            printError(code, "Can't unlock mutex");
+            stopReadCacheRecord(cacheRecord, socketInfo);
+            pthread_cond_signal(cacheRecord->downloaderCond);
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
 
         ssize_t size = 0;
         if (socketInfo->buffer->currentSize > 0 && (size = sendFromBuffer(socketInfo, socketInfo->buffer->currentSize)) <= 0)
@@ -229,7 +501,6 @@ int clientCacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socke
             pthread_mutex_unlock(cacheRecord->mutex);
 
             pthread_cond_signal(cacheRecord->downloaderCond);
-//            close(socketInfo->socket);
             delThreadFromStorage(storage, socketInfo->socket);
             return EXIT_SUCCESS;
         }
@@ -252,35 +523,14 @@ int clientCacheTransfer(struct ThreadsStorage *storage, struct SocketInfo *socke
         pthread_mutex_lock(cacheRecord->mutex);
         stopReadCacheRecord(cacheRecord, socketInfo);
         pthread_mutex_unlock(cacheRecord->mutex);
-//        close(socketInfo->socket);
         delThreadFromStorage(storage, socketInfo->socket);
         return EXIT_SUCCESS;
     }
 
-#ifdef ENABLE_LOG
-    printf("client %d: big file (cache transfer)\n", socketInfo->socket);
-#endif
-
-    pthread_mutex_lock(cacheRecord->mutex);
-    stopReadCacheRecord(cacheRecord, socketInfo);
-    pthread_mutex_lock(cacheRecord->downloader->buffer->mutex);
-    addRelatedSocket(cacheRecord->downloader, socketInfo);
-    addRelatedSocket(socketInfo, cacheRecord->downloader);
-
-    struct SocketInfo *downloader = socketInfo->relatedSockets[DOWNLOADER_SOCKET];
-    pthread_mutex_unlock(cacheRecord->mutex);
-
-    while(downloader->status == CACHE_TRANSFER)
-    {
-        pthread_cond_signal(cacheRecord->downloaderCond);
-        pthread_cond_wait(downloader->buffer->clientsCond, downloader->buffer->mutex);
-    }
-
-    pthread_mutex_unlock(downloader->buffer->mutex);
-    return clientDirectTransfer(storage, socketInfo, cacheManager);
+    return createBigFileClientConnection(storage, socketInfo, cacheManager, cacheRecord);
 }
 
-int moveHeadersToServer(struct ThreadsStorage *storage, struct SocketInfo *socketInfo, struct SocketInfo *downloader)
+int moveHeadersToServer(struct SocketInfo *socketInfo, struct SocketInfo *downloader)
 {
 #ifdef ENABLE_LOG
     printf("client %d: move headers to server. Raw: \"%.*s\"\n", socketInfo->socket, socketInfo->buffer->currentSize, socketInfo->buffer->data);
@@ -297,24 +547,50 @@ int moveHeadersToServer(struct ThreadsStorage *storage, struct SocketInfo *socke
     printf("client %d: move header: \"%.*s\"\n", socketInfo->socket, socketInfo->buffer->currentSize, socketInfo->buffer->data);
 #endif
 
-    pthread_mutex_lock(downloader->buffer->mutex);
-    pthread_mutex_lock(socketInfo->buffer->mutex);
+    int code = pthread_mutex_lock(downloader->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
 
-    if (moveCharsToBuffer(downloader->buffer, socketInfo->buffer, socketInfo->buffer->currentSize) !=
-        EXIT_SUCCESS)
+    code = pthread_mutex_lock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        pthread_mutex_unlock(downloader->buffer->mutex);
+        return EXIT_FAILURE;
+    }
+
+    if (moveCharsToBuffer(downloader->buffer, socketInfo->buffer, socketInfo->buffer->currentSize) != EXIT_SUCCESS)
     {
         pthread_mutex_unlock(socketInfo->buffer->mutex);
         pthread_mutex_unlock(downloader->buffer->mutex);
-        delThreadFromStorage(storage, socketInfo->socket);
-        delThreadFromStorage(storage, downloader->socket);
         return EXIT_FAILURE;
     }
     eraseBuffer(socketInfo->buffer);
 
-    pthread_mutex_unlock(socketInfo->buffer->mutex);
-    pthread_mutex_unlock(downloader->buffer->mutex);
+    code = pthread_mutex_unlock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        pthread_mutex_unlock(downloader->buffer->mutex);
+        return EXIT_FAILURE;
+    }
 
-    pthread_cond_signal(downloader->buffer->ownerCond);
+    code = pthread_mutex_unlock(downloader->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_cond_signal(downloader->buffer->ownerCond);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't signal");
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
@@ -345,8 +621,7 @@ void sendError(struct ThreadsStorage *storage, struct SocketInfo *socketInfo, co
     clientBufferTransfer(storage, socketInfo);
 }
 
-int createDownloaderSocket(int *downloader, struct SocketInfo *socketInfo, struct ThreadsStorage *storage,
-                           struct CacheManager *cacheManager)
+int createDownloaderSocket(int *downloader, struct SocketInfo *socketInfo, struct ThreadsStorage *storage)
 {
 #ifdef ENABLE_LOG
     printf("client %d: creating downloader socket\n", socketInfo->socket);
@@ -363,7 +638,6 @@ int createDownloaderSocket(int *downloader, struct SocketInfo *socketInfo, struc
     if (domain == NULL)
     {
         fprintf(stderr, "Can't allocate memory for domain\n");
-//        close(socketInfo->socket);
         delThreadFromStorage(storage, socketInfo->socket);
         return EXIT_FAILURE;
     }
@@ -391,7 +665,6 @@ int createDownloaderSocket(int *downloader, struct SocketInfo *socketInfo, struc
     {
         perror("Can't create downloader socket");
         freeaddrinfo(connectionAddr);
-//        close(socketInfo->socket);
         delThreadFromStorage(storage, socketInfo->socket);
         return EXIT_FAILURE;
     }
@@ -406,8 +679,86 @@ int createDownloaderSocket(int *downloader, struct SocketInfo *socketInfo, struc
     {
         perror("Can't connect to server");
         close(*downloader);
-//        close(socketInfo->socket);
         delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int safeEraseBuffer(struct SocketInfo *socketInfo)
+{
+    int code = pthread_mutex_lock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
+
+    eraseBuffer(socketInfo->buffer);
+
+    code = pthread_mutex_unlock(socketInfo->buffer->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        return EXIT_FAILURE;
+    }
+
+    return EXIT_SUCCESS;
+}
+
+int createDirectConnectionWithHeader(struct SocketInfo *downloader, struct SocketInfo *socketInfo)
+{
+    int code = pthread_mutex_lock(downloader->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_mutex_lock(socketInfo->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        pthread_mutex_unlock(downloader->mutex);
+        return EXIT_FAILURE;
+    }
+
+    downloader->status = PREV_DIRECT_TRANSFER;
+
+    if(addRelatedSocket(downloader, socketInfo) != EXIT_SUCCESS)
+    {
+        pthread_mutex_unlock(socketInfo->mutex);
+        pthread_mutex_unlock(downloader->mutex);
+        return EXIT_FAILURE;
+    }
+
+    if(addRelatedSocket(socketInfo, downloader) != EXIT_SUCCESS)
+    {
+        pthread_mutex_unlock(socketInfo->mutex);
+        pthread_mutex_unlock(downloader->mutex);
+        return EXIT_FAILURE;
+    }
+
+    if(moveHeadersToServer(socketInfo, downloader) != EXIT_SUCCESS)
+    {
+        pthread_mutex_unlock(socketInfo->mutex);
+        pthread_mutex_unlock(downloader->mutex);
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_mutex_unlock(socketInfo->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        pthread_mutex_unlock(downloader->mutex);
+        return EXIT_FAILURE;
+    }
+
+    code = pthread_mutex_unlock(downloader->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
         return EXIT_FAILURE;
     }
 
@@ -420,10 +771,8 @@ int connectToServer(struct ThreadsStorage *storage, struct SocketInfo *socketInf
     printf("client %d: create downloader and cache\n", socketInfo->socket);
 #endif
     int downloaderSocket;
-    if(createDownloaderSocket(&downloaderSocket, socketInfo, storage, cacheManager) != EXIT_SUCCESS)
+    if(createDownloaderSocket(&downloaderSocket, socketInfo, storage) != EXIT_SUCCESS)
     {
-//        close(socketInfo->socket);
-        delThreadFromStorage(storage, socketInfo->socket);
         return EXIT_FAILURE;
     }
 
@@ -431,7 +780,14 @@ int connectToServer(struct ThreadsStorage *storage, struct SocketInfo *socketInf
     printf("client %d: search cache for %s\n", socketInfo->socket, socketInfo->url);
 #endif
 
-    pthread_mutex_lock(cacheManager->mutex);
+    int code = pthread_mutex_lock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't lock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
+
     struct CacheRecord *cacheRecord = getCacheRecord(cacheManager, socketInfo->url);
     if(cacheRecord != NULL)
     {
@@ -440,17 +796,19 @@ int connectToServer(struct ThreadsStorage *storage, struct SocketInfo *socketInf
 #endif
         close(downloaderSocket);
 
-        //todo: заменть копипасту
-        pthread_mutex_lock(cacheRecord->mutex);
-        addCacheRecordReader(cacheRecord, socketInfo);
-        pthread_mutex_unlock(cacheRecord->mutex);
+        if(safeAddCacheRecordReader(cacheRecord, socketInfo) != EXIT_SUCCESS)
+        {
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
 
         pthread_mutex_unlock(cacheManager->mutex);
 
-
-        pthread_mutex_lock(socketInfo->buffer->mutex);
-        eraseBuffer(socketInfo->buffer);
-        pthread_mutex_unlock(socketInfo->buffer->mutex);
+        if(safeEraseBuffer(socketInfo) != EXIT_SUCCESS)
+        {
+            delThreadFromStorage(storage, socketInfo->socket);
+            return EXIT_FAILURE;
+        }
 
         return clientCacheTransfer(storage, socketInfo, cacheManager);
     }
@@ -483,32 +841,32 @@ int connectToServer(struct ThreadsStorage *storage, struct SocketInfo *socketInf
 
         pthread_mutex_unlock(cacheManager->mutex);
 
-        pthread_mutex_lock(downloader->mutex);
-        pthread_mutex_lock(socketInfo->mutex);
-
-        downloader->status = PREV_DIRECT_TRANSFER;
-
-        addRelatedSocket(downloader, socketInfo);
-        addRelatedSocket(socketInfo, downloader);
-
-        if(moveHeadersToServer(storage, socketInfo, downloader) != EXIT_SUCCESS)
+        if(createDirectConnectionWithHeader(downloader, socketInfo) != EXIT_SUCCESS)
         {
+            delThreadFromStorage(storage, downloader->socket);
+            delThreadFromStorage(storage, socketInfo->socket);
             return EXIT_FAILURE;
         }
-
-        pthread_mutex_unlock(socketInfo->mutex);
-        pthread_mutex_unlock(downloader->mutex);
 
         return clientDirectTransfer(storage, socketInfo, cacheManager);
     }
 
     downloader->status = PREV_CACHE_TRANSFER;
-    if(moveHeadersToServer(storage, socketInfo, downloader) != EXIT_SUCCESS)
+    if(moveHeadersToServer(socketInfo, downloader) != EXIT_SUCCESS)
     {
+        delThreadFromStorage(storage, downloader->socket);
+        delThreadFromStorage(storage, socketInfo->socket);
         return EXIT_FAILURE;
     }
 
-    pthread_mutex_unlock(cacheManager->mutex);
+    code = pthread_mutex_unlock(cacheManager->mutex);
+    if(code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        delThreadFromStorage(storage, downloader->socket);
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
 
 #ifdef ENABLE_LOG
     printf("client %d: new cache created\n", socketInfo->socket);
@@ -542,7 +900,6 @@ int checkHeader(struct ThreadsStorage *storage, struct SocketInfo *socketInfo, s
     char *url = (char *) calloc(urlLength + 1, sizeof(char));
     if (url == NULL)
     {
-//        close(socketInfo->socket);
         delThreadFromStorage(storage, socketInfo->socket);
         return EXIT_FAILURE;
     }
@@ -552,7 +909,6 @@ int checkHeader(struct ThreadsStorage *storage, struct SocketInfo *socketInfo, s
     if (addUrlSocketInfo(socketInfo, url) != EXIT_SUCCESS)
     {
         free(url);
-//        close(socketInfo->socket);
         delThreadFromStorage(storage, socketInfo->socket);
         return EXIT_FAILURE;
     }
@@ -601,7 +957,6 @@ int processHeader(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
     if(code != EXIT_SUCCESS)
     {
         printError(code, "Can't lock mutex");
-//        close(socketInfo->socket);
         delThreadFromStorage(storage, socketInfo->socket);
         return EXIT_FAILURE;
     }
@@ -621,15 +976,21 @@ int processHeader(struct ThreadsStorage *storage, struct SocketInfo *socketInfo,
     printf("client %d: there is cache for: %s\n", socketInfo->socket, socketInfo->url);
 #endif
 
-    //todo: заменть копипасту
-    pthread_mutex_lock(cacheRecord->mutex);
-    addCacheRecordReader(cacheRecord, socketInfo);
-    pthread_mutex_unlock(cacheRecord->mutex);
+    if(safeAddCacheRecordReader(cacheRecord, socketInfo) != EXIT_SUCCESS)
+    {
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
 
     eraseBuffer(socketInfo->buffer);
 
-    pthread_mutex_unlock(cacheManager->mutex);
-
+    code = pthread_mutex_unlock(cacheManager->mutex);
+    if (code != EXIT_SUCCESS)
+    {
+        printError(code, "Can't unlock mutex");
+        delThreadFromStorage(storage, socketInfo->socket);
+        return EXIT_FAILURE;
+    }
 
     return clientCacheTransfer(storage, socketInfo, cacheManager);
 }
@@ -649,7 +1010,6 @@ int clientWaitHeader(struct ThreadsStorage *storage, struct SocketInfo *socketIn
 #ifdef ENABLE_LOG
             printf("client %d: go away (wait header)\n", socketInfo->socket);
 #endif
-//            close(socketInfo->socket);
             delThreadFromStorage(storage, socketInfo->socket);
             return EXIT_SUCCESS;
         }
@@ -660,7 +1020,6 @@ int clientWaitHeader(struct ThreadsStorage *storage, struct SocketInfo *socketIn
 
         if (addCharsToBuffer(socketInfo->buffer, buffer, size) != EXIT_SUCCESS)
         {
-//            close(socketInfo->socket);
             delThreadFromStorage(storage, socketInfo->socket);
             return EXIT_FAILURE;
         }
