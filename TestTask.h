@@ -15,11 +15,6 @@ public:
         return 0;
     };
 
-    int Noop() override {
-        std::cout << "Noop" << std::endl;
-        return 0;
-    };
-
     int Update() override {
         std::cout << "Update" << std::endl;
         return 0;

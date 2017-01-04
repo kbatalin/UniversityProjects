@@ -14,22 +14,18 @@ class Poller {
 public:
     void Run();
 
-    void ScheduleTask(std::shared_ptr<ITask> task, long updateTimeout, long noopTimeout = -1);
+    void ScheduleTask(std::shared_ptr<ITask> task, long updateTimeout);
 
 private:
     struct TaskData {
         long timeToUpdate;
         long updateTimeout;
 
-        long timeToNoop;
-        long noopTimeout;
-
         std::shared_ptr<ITask> task;
     };
 
     std::vector<TaskData> m_tasks;
 
-    void StartSessions();
     void PerformTasks(long dtMs);
 
     static long GetCurrentMs();

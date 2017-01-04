@@ -9,8 +9,6 @@ class ITask {
 public:
     virtual int StartSession() = 0;
 
-    virtual int Noop() = 0;
-
     virtual int Update() = 0;
 
     virtual int EndSession() = 0;

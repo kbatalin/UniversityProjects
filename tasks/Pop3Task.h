@@ -17,8 +17,6 @@ public:
 
     int StartSession() override;
 
-    int Noop() override;
-
     int Update() override;
 
     int EndSession() override;

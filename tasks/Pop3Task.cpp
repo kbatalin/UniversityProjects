@@ -103,22 +103,6 @@ int Pop3Task::StartSession() {
     return 0;
 }
 
-int Pop3Task::Noop() {
-    Log("Noop");
-    int code = Send("NOOP\r\n");
-    if(code < 0) {
-        return -1;
-    }
-
-    std::string answer;
-    code = Recv(answer, "\r\n");
-    if(code < 0 || answer[0] != '+') {
-        return -1;
-    }
-
-    return 0;
-}
-
 int Pop3Task::Update() {
     Log("Update");
     int code = Send("LIST\r\n");
