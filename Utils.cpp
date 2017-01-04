@@ -29,13 +29,13 @@ namespace Utils {
             char buffer[BUFFER_SIZE] = {};
             int code = recv(socket, buffer, BUFFER_SIZE, MSG_NOSIGNAL);
             if (code <= 0) {
-                return -1;
+                return endSymbols.empty() ? 0 : -1;
             }
 
             std::string newData(buffer, code);
             res.append(newData);
 
-            if (newData.rfind(endSymbols) != std::string::npos) {
+            if (!endSymbols.empty() && newData.rfind(endSymbols) != std::string::npos) {
                 return 0;
             }
         }

@@ -12,7 +12,7 @@ namespace Utils {
 
     int Send(int socket, const std::string &msg);
 
-    int Recv(int socket, std::string &res, const std::string &endSymbols);
+    int Recv(int socket, std::string &res, const std::string &endSymbols = "");
 }
 
 #endif //LAB8_UTILS_H
