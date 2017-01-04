@@ -8,6 +8,7 @@
 #include <iostream>
 #include "Pop3Task.h"
 #include "../Converter.h"
+#include "../Utils.h"
 
 Pop3Task::Pop3Task() : m_socket(-1), m_lastUpdateTime(0), m_serverAddrInfo(NULL) {
 }
@@ -235,37 +236,11 @@ int Pop3Task::EndSession() {
 }
 
 int Pop3Task::Send(const std::string &msg) {
-    const char *ptr = msg.c_str();
-    int length = msg.size();
-
-    while(length > 0) {
-        int code = send(m_socket, ptr, length, MSG_NOSIGNAL);
-        if(code <= 0) {
-            return -1;
-        }
-
-        length -= code;
-        ptr += code;
-    }
-
-    return 0;
+    return Utils::Send(m_socket, msg);
 }
 
 int Pop3Task::Recv(std::string &res, const std::string &endSymbols) {
-    while(true) {
-        char buffer[BUFFER_SIZE] = {};
-        int code = recv(m_socket, buffer, BUFFER_SIZE, MSG_NOSIGNAL);
-        if(code <= 0) {
-            return -1;
-        }
-
-        std::string newData(buffer, code);
-        res.append(newData);
-
-        if(newData.rfind(endSymbols) != std::string::npos) {
-            return 0;
-        }
-    }
+    return Utils::Recv(m_socket, res, endSymbols);
 }
 
 time_t Pop3Task::GetReceivedTime(const std::string &data) {

@@ -22,8 +22,6 @@ public:
     int EndSession() override;
 
 private:
-    const static int BUFFER_SIZE = 1024;
-
     std::string     m_server;
     std::string     m_login;
     std::string     m_pass;
