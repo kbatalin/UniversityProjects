@@ -29,6 +29,7 @@ private:
     std::string     m_pass;
     int             m_socket;
     time_t          m_lastUpdateTime;
+    addrinfo *      m_serverAddrInfo;
 
     int ProcessList(const std::string &data);
     time_t ProcessMessage(int index);

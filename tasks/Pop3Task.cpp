@@ -9,13 +9,15 @@
 #include "Pop3Task.h"
 #include "../Converter.h"
 
-Pop3Task::Pop3Task() : m_socket(-1), m_lastUpdateTime(0) {
+Pop3Task::Pop3Task() : m_socket(-1), m_lastUpdateTime(0), m_serverAddrInfo(NULL) {
 }
 
 Pop3Task::~Pop3Task() {
     if (m_socket >= 0) {
         close(m_socket);
     }
+
+    freeaddrinfo(m_serverAddrInfo);
 }
 
 int Pop3Task::Init(const std::string &server, const std::string &login, const std::string &pass) {
@@ -24,33 +26,30 @@ int Pop3Task::Init(const std::string &server, const std::string &login, const st
     m_login = login;
     m_pass = pass;
 
-    return 0;
-}
-
-int Pop3Task::CreateSocket() {
-    addrinfo hints, *res;
+    addrinfo hints;
     memset(&hints, 0, sizeof hints);
     hints.ai_family = AF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
-    int code = getaddrinfo(m_server.c_str(), "pop3", &hints, &res);
+    int code = getaddrinfo(m_server.c_str(), "pop3", &hints, &m_serverAddrInfo);
     if (code == -1) {
         perror("Can't get addr info");
         return -1;
     }
 
-    m_socket = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
+    return 0;
+}
+
+int Pop3Task::CreateSocket() {
+    m_socket = socket(m_serverAddrInfo->ai_family, m_serverAddrInfo->ai_socktype, m_serverAddrInfo->ai_protocol);
 
     if (m_socket == -1) {
-        freeaddrinfo(res);
         perror("Can't open socket");
         return -1;
     }
 
-    code = connect(m_socket, res->ai_addr, res->ai_addrlen);
-    freeaddrinfo(res);
-
+    int code = connect(m_socket, m_serverAddrInfo->ai_addr, m_serverAddrInfo->ai_addrlen);
     if (code == -1) {
         perror("Can't connect");
         return -1;
@@ -228,6 +227,9 @@ int Pop3Task::EndSession() {
     if(code < 0 || answer[0] != '+') {
         return -1;
     }
+
+    close(m_socket);
+    m_socket = -1;
 
     return 0;
 }
