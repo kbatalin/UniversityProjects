@@ -10,14 +10,10 @@
 #include "../Converter.h"
 #include "../Utils.h"
 
-Pop3Task::Pop3Task() : m_socket(-1), m_lastUpdateTime(0), m_serverAddrInfo(NULL) {
+Pop3Task::Pop3Task() : m_socket(0), m_lastUpdateTime(0), m_serverAddrInfo(NULL) {
 }
 
 Pop3Task::~Pop3Task() {
-    if (m_socket >= 0) {
-        close(m_socket);
-    }
-
     freeaddrinfo(m_serverAddrInfo);
 }
 
@@ -59,16 +55,11 @@ int Pop3Task::CreateSocket() {
     return 0;
 }
 
-int Pop3Task::StartSession() {
-    Log("Start session");
-    int code = CreateSocket();
-    if (code < 0) {
-        Log("Can't create socket");
-        return -1;
-    }
+int Pop3Task::Auth() {
+    Log("Auth");
 
     std::string answer;
-    code = Recv(answer, "\r\n");
+    int code = Recv(answer, "\r\n");
     if(code < 0 || answer[0] != '+') {
         Log("Bad answer from server");
         return -1;
@@ -105,9 +96,23 @@ int Pop3Task::StartSession() {
 
 int Pop3Task::Update() {
     Log("Update");
-    int code = Send("LIST\r\n");
+    int code = CreateSocket();
+    if (code < 0) {
+        Log("Can't create socket");
+        return -1;
+    }
+
+    code = Auth();
+    if(code < 0) {
+        Log("Can't auth");
+        close(m_socket);
+        return -1;
+    }
+
+    code = Send("LIST\r\n");
     if(code < 0) {
         Log("Can't send LIST");
+        close(m_socket);
         return -1;
     }
 
@@ -115,15 +120,25 @@ int Pop3Task::Update() {
     code = Recv(answer, "\r\n.\r\n");
     if(code < 0 || answer[0] != '+') {
         Log("Can't recv LIST");
+        close(m_socket);
         return -1;
     }
 
     code = ProcessList(answer);
     if(code < 0) {
         Log("Can't process LIST");
+        close(m_socket);
         return -1;
     }
 
+    code = Logout();
+    if(code < 0) {
+        Log("Can't logout");
+        close(m_socket);
+        return -1;
+    }
+
+    close(m_socket);
     return 0;
 }
 
@@ -216,8 +231,8 @@ int Pop3Task::DownloadMessage(int index) {
     return 0;
 }
 
-int Pop3Task::EndSession() {
-    Log("End session");
+int Pop3Task::Logout() {
+    Log("Logout");
     int code = Send("QUIT\r\n");
     if(code < 0) {
         return -1;
@@ -269,6 +284,18 @@ time_t Pop3Task::GetReceivedTime(const std::string &data) {
 
 void Pop3Task::Log(const std::string &msg) {
     printf("Pop3 (%s): %s\n", m_login.c_str(), msg.c_str());
+}
+
+int Pop3Task::StartSession() {
+    return 0;
+}
+
+int Pop3Task::EndSession() {
+    return 0;
+}
+
+int Pop3Task::Noop() {
+    return 0;
 }
 
 

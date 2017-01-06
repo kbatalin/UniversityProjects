@@ -19,6 +19,8 @@ public:
 
     int Update() override;
 
+    int Noop() override;
+
     int EndSession() override;
 
 private:
@@ -29,6 +31,8 @@ private:
     time_t          m_lastUpdateTime;
     addrinfo *      m_serverAddrInfo;
 
+    int Auth();
+    int Logout();
     int ProcessList(const std::string &data);
     time_t ProcessMessage(int index);
     int DownloadMessage(int index);

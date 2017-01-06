@@ -70,7 +70,6 @@ int HttpTask::CreateSocket() {
 }
 
 int HttpTask::StartSession() {
-    Log("Start session");
     return 0;
 }
 
@@ -174,9 +173,6 @@ int HttpTask::DownloadData() {
 }
 
 int HttpTask::EndSession() {
-    Log("End session");
-    close(m_socket);
-    m_socket = -1;
     return 0;
 }
 
@@ -246,5 +242,9 @@ time_t HttpTask::GetLastModifiedTime(const std::string &head) {
     time_t date = Converter::convertDate(dateStr);
 
     return date;
+}
+
+int HttpTask::Noop() {
+    return 0;
 }
 
