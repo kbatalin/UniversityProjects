@@ -24,10 +24,14 @@ namespace Utils {
         return 0;
     }
 
-    int Recv(int socket, std::string &res, const std::string &endSymbols) {
+    int Recv(int socket, std::string &res, const std::string &endSymbols, int bufferSize) {
+        if (bufferSize <= 0) {
+            return -1;
+        }
+
         while (true) {
-            char buffer[BUFFER_SIZE] = {};
-            int code = recv(socket, buffer, BUFFER_SIZE, MSG_NOSIGNAL);
+            char buffer[bufferSize] = {};
+            int code = recv(socket, buffer, bufferSize, MSG_NOSIGNAL);
             if (code <= 0) {
                 return endSymbols.empty() ? 0 : -1;
             }
@@ -35,7 +39,7 @@ namespace Utils {
             std::string newData(buffer, code);
             res.append(newData);
 
-            if (!endSymbols.empty() && newData.rfind(endSymbols) != std::string::npos) {
+            if (!endSymbols.empty() && res.rfind(endSymbols) != std::string::npos) {
                 return 0;
             }
         }
