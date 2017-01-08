@@ -6,6 +6,7 @@
 #include "tasks/Pop3Task.h"
 #include "tasks/HttpTask.h"
 #include "tasks/FtpTask.h"
+#include "tasks/ImapTask.h"
 
 int main() {
     Poller poller;
@@ -22,9 +23,13 @@ int main() {
 //    httpTask->Init("http://fit-fija.ru/", "/home/kir55rus/C++/network/lab8/httpTask");
 //    poller.ScheduleTask(httpTask, 5000);
 
-    auto ftpTask = std::make_shared<FtpTask>();
-    ftpTask->Init("fit-fija.ru", "/www/fit-fija.ru/index.html", "ftp1", "stupidpass123", "/home/kir55rus/C++/network/lab8/ftpTask");
-    poller.ScheduleTask(ftpTask, 5000, 1000);
+//    auto ftpTask = std::make_shared<FtpTask>();
+//    ftpTask->Init("fit-fija.ru", "/www/fit-fija.ru/index.html", "ftp1", "stupidpass123", "/home/kir55rus/C++/network/lab8/ftpTask");
+//    poller.ScheduleTask(ftpTask, 5000, 1000);
+
+    auto imapTask = std::make_shared<ImapTask>();
+    imapTask->Init("fit-fija.ru", "mail1@fit-fija.ru", "stupidpass123", "INBOX");
+    poller.ScheduleTask(imapTask, 5000, 1000);
 
     poller.Run();
 
