@@ -154,6 +154,8 @@ public class PortForwarder {
             try {
                 if (!server.finishConnect()) {
                     log(server, "Not connected");
+                    client.close();
+                    --socketsCount;
                     return;
                 }
                 ++socketsCount;
