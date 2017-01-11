@@ -14,7 +14,7 @@ import java.util.Iterator;
  * Created by kir55rus on 11.01.17.
  */
 public class PortForwarder {
-    private int socketsCount = 1;
+    private int socketsCount = 0;
 
     private static int BUFFER_SIZE = 1024;
 
@@ -46,6 +46,7 @@ public class PortForwarder {
 
             selector = Selector.open();
             mainSocket.register(selector, SelectionKey.OP_ACCEPT, new AcceptHandler());
+            socketsCount = 1;
 
         } catch (IllegalArgumentException e) {
             System.err.println("Bad args: ".concat(e.getMessage()));
