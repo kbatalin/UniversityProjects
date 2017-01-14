@@ -259,25 +259,40 @@ int Pop3Task::Recv(std::string &res, const std::string &endSymbols) {
 }
 
 time_t Pop3Task::GetReceivedTime(const std::string &data) {
-    size_t index = data.find("Received: by ");
-    if (index == std::string::npos) {
-        return -1;
+    size_t index = 0;
+    time_t date = -1;
+
+    while(true) {
+        index = data.find("Received:", index);
+        if (index == std::string::npos) {
+            break;
+        }
+
+        if(index != 0 && data[index - 1] != '\n') {
+            break;
+        }
+
+        index = data.find(";", index);
+        if (index == std::string::npos) {
+            break;
+        }
+        index += strlen(";");
+
+        index = data.find(", ", index);
+        if (index == std::string::npos) {
+            break;
+        }
+        index += strlen(", ");
+
+        size_t newLinePos = data.find("\r\n", index);
+        if (newLinePos == std::string::npos) {
+            break;
+        }
+
+        std::string dateStr = data.substr(index, newLinePos - index);
+
+        date = std::max(date, Converter::convertDate(dateStr));
     }
-
-    index = data.find(", ", index);
-    if (index == std::string::npos) {
-        return -1;
-    }
-    index += strlen(", ");
-
-    size_t newLinePos = data.find("\r\n", index);
-    if (newLinePos == std::string::npos) {
-        return -1;
-    }
-
-    std::string dateStr = data.substr(index, newLinePos - index);
-
-    time_t date = Converter::convertDate(dateStr);
 
     return date;
 }
