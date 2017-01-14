@@ -154,16 +154,13 @@ public class PortForwarder {
             try {
                 if (!server.finishConnect()) {
                     log(server, "Not connected");
-                    client.close();
-                    --socketsCount;
+                    closeClient();
                     return;
                 }
                 ++socketsCount;
 
                 ByteBuffer clientBuffer = ByteBuffer.allocate(BUFFER_SIZE);
                 ByteBuffer serverBuffer = ByteBuffer.allocate(BUFFER_SIZE);
-
-
 
                 SelectionKey serverKey = server.register(selector, SelectionKey.OP_CONNECT);
                 SelectionKey clientKey = client.register(selector, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
@@ -180,6 +177,16 @@ public class PortForwarder {
 
             } catch (IOException e) {
                 log(server, "Can't connect: ".concat(e.getMessage()));
+                closeClient();
+            }
+        }
+
+        private void closeClient() {
+            try {
+                client.close();
+                --socketsCount;
+            } catch (IOException e) {
+                log("Can't close client");
             }
         }
     }
