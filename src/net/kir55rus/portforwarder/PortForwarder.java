@@ -16,7 +16,7 @@ import java.util.Iterator;
 public class PortForwarder {
     private int socketsCount = 0;
 
-    private static int BUFFER_SIZE = 1024;
+    private static int BUFFER_SIZE = 1;
 
     private SocketAddress destAddress;
     private ServerSocketChannel mainSocket;
@@ -257,6 +257,12 @@ public class PortForwarder {
                 }
 
                 resume(otherConnection, SelectionKey.OP_WRITE);
+
+                if(!myConnection.buffer.hasRemaining()) {
+                    myLog("Buffer is full");
+                    pause(myConnection, SelectionKey.OP_READ);
+                    return;
+                }
 
                 int n = myConnection.channel.read(myConnection.buffer);
                 myLog("Read: " + n + " bytes");
