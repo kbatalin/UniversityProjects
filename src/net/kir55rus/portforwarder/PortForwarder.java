@@ -16,7 +16,7 @@ import java.util.Iterator;
 public class PortForwarder {
     private int socketsCount = 0;
 
-    private static int BUFFER_SIZE = 1;
+    private static int BUFFER_SIZE = 1024;
 
     private SocketAddress destAddress;
     private ServerSocketChannel mainSocket;
