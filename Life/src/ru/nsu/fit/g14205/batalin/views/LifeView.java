@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.net.URL;
 
 /**
  * Created by kir55rus on 10.02.17.
@@ -21,6 +22,9 @@ public class LifeView extends JFrame {
 
         initMenu();
 
+        setLayout(new BorderLayout());
+
+        initToolbar();
     }
 
     private void initMenu() {
@@ -137,5 +141,140 @@ public class LifeView extends JFrame {
         JMenuItem helpMenuAbout = new JMenuItem("About");
         helpMenuAbout.setMnemonic(KeyEvent.VK_A);
         helpMenu.add(helpMenuAbout);
+    }
+
+    private void initToolbar() {
+        JToolBar toolBar = new JToolBar("Toolbar");
+        add(toolBar, BorderLayout.PAGE_START);
+
+        JButton newButton = new JButton();
+        newButton.setToolTipText("Create new field");
+        Icon newButtonIcon = getButtonIcon("images/document_a4_new.png");
+        if (newButtonIcon != null) {
+            newButton.setIcon(newButtonIcon);
+        }
+        toolBar.add(newButton);
+
+        JButton openButton = new JButton();
+        openButton.setToolTipText("Open saved field");
+        Icon openButtonIcon = getButtonIcon("images/folder_classic_up.png");
+        if (openButtonIcon != null) {
+            openButton.setIcon(openButtonIcon);
+        }
+        toolBar.add(openButton);
+
+        JButton saveButton = new JButton();
+        saveButton.setToolTipText("Save field");
+        Icon saveButtonIcon = getButtonIcon("images/folder_classic_down.png");
+        if (saveButtonIcon != null) {
+            saveButton.setIcon(saveButtonIcon);
+        }
+        toolBar.add(saveButton);
+
+        JButton saveAsButton = new JButton();
+        saveAsButton.setToolTipText("Save field as...");
+        Icon saveAsButtonIcon = getButtonIcon("images/folder_modernist_down.png");
+        if (saveAsButtonIcon != null) {
+            saveAsButton.setIcon(saveAsButtonIcon);
+        }
+        toolBar.add(saveAsButton);
+
+        JButton closeButton = new JButton();
+        closeButton.setToolTipText("Exit");
+        Icon closeButtonIcon = getButtonIcon("images/application_windows_remove.png");
+        if (closeButtonIcon != null) {
+            closeButton.setIcon(closeButtonIcon);
+        }
+        toolBar.add(closeButton);
+
+        toolBar.addSeparator();
+
+        JButton clearButton = new JButton();
+        clearButton.setToolTipText("Clear field");
+        Icon clearButtonIcon = getButtonIcon("images/document_a4_blank.png");
+        if (clearButtonIcon != null) {
+            clearButton.setIcon(clearButtonIcon);
+        }
+        toolBar.add(clearButton);
+
+        JButton replaceButton = new JButton();
+        replaceButton.setToolTipText("Replace cell");
+        Icon replaceButtonIcon = getButtonIcon("images/add.png");
+        if (replaceButtonIcon != null) {
+            replaceButton.setIcon(replaceButtonIcon);
+        }
+        toolBar.add(replaceButton);
+
+        JButton xorButton = new JButton();
+        xorButton.setToolTipText("Xor cell");
+        Icon xorButtonIcon = getButtonIcon("images/add_outline.png");
+        if (xorButtonIcon != null) {
+            xorButton.setIcon(xorButtonIcon);
+        }
+        toolBar.add(xorButton);
+
+
+        JButton propertiesButton = new JButton();
+        propertiesButton.setToolTipText("Properties");
+        Icon propertiesButtonIcon = getButtonIcon("images/sprocket_dark.png");
+        if (propertiesButtonIcon != null) {
+            propertiesButton.setIcon(propertiesButtonIcon);
+        }
+        toolBar.add(propertiesButton);
+
+        toolBar.addSeparator();
+
+        JButton runButton = new JButton();
+        runButton.setToolTipText("Run");
+        Icon runButtonIcon = getButtonIcon("images/media_controls_dark_play.png");
+        if (runButtonIcon != null) {
+            runButton.setIcon(runButtonIcon);
+        }
+        toolBar.add(runButton);
+
+        JButton nextButton = new JButton();
+        nextButton.setToolTipText("Next step");
+        Icon nextButtonIcon = getButtonIcon("images/pagination_1_last.png");
+        if (nextButtonIcon != null) {
+            nextButton.setIcon(nextButtonIcon);
+        }
+        toolBar.add(nextButton);
+
+        toolBar.addSeparator();
+
+        JButton colorButton = new JButton();
+        colorButton.setToolTipText("Color");
+        Icon colorButtonIcon = getButtonIcon("images/rich_text_color.png");
+        if (colorButtonIcon != null) {
+            colorButton.setIcon(colorButtonIcon);
+        }
+        toolBar.add(colorButton);
+
+        JButton impactButton = new JButton();
+        impactButton.setToolTipText("Impact");
+        Icon impactButtonIcon = getButtonIcon("images/rich_text_italics.png");
+        if (impactButtonIcon != null) {
+            impactButton.setIcon(impactButtonIcon);
+        }
+        toolBar.add(impactButton);
+
+        toolBar.addSeparator();
+
+        JButton aboutButton = new JButton();
+        aboutButton.setToolTipText("About");
+        Icon aboutButtonIcon = getButtonIcon("images/information.png");
+        if (aboutButtonIcon != null) {
+            aboutButton.setIcon(aboutButtonIcon);
+        }
+        toolBar.add(aboutButton);
+    }
+
+    private Icon getButtonIcon(String imgPath) {
+        URL imgUrl = this.getClass().getClassLoader().getResource(imgPath);
+        if (imgUrl == null) {
+            return null;
+        }
+
+        return new ImageIcon(imgUrl);
     }
 }
