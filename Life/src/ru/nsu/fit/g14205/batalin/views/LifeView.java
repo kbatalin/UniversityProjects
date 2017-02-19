@@ -14,7 +14,7 @@ import java.net.URL;
 public class LifeView extends JFrame {
     private LifeController lifeController;
 
-    public LifeView(LifeController lifeController) {
+    public LifeView(LifeController lifeController, Dimension fieldSize, int hexSize) {
         this.lifeController = lifeController;
 
         setSize(800, 600);
@@ -25,6 +25,8 @@ public class LifeView extends JFrame {
         setLayout(new BorderLayout());
 
         initToolbar();
+
+        initField(fieldSize, hexSize);
     }
 
     private void initMenu() {
@@ -267,6 +269,12 @@ public class LifeView extends JFrame {
             aboutButton.setIcon(aboutButtonIcon);
         }
         toolBar.add(aboutButton);
+    }
+
+    private void initField(Dimension fieldSize, int hexSize) {
+        FieldView fieldView = new FieldView(fieldSize, hexSize);
+        JScrollPane scrollPane = new JScrollPane(fieldView);
+        add(scrollPane, BorderLayout.CENTER);
     }
 
     private Icon getButtonIcon(String imgPath) {
