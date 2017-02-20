@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.views;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Stack;
 
 /**
  * Created by kir55rus on 14.02.17.
@@ -44,6 +45,7 @@ public class FieldView extends JLabel {
 
         int offsetX = Math.max(0, clipBounds.x - (clipBounds.x % (2 * hexIncircle)) - (2 * hexIncircle));
         int offsetY = Math.max(0, clipBounds.y - (clipBounds.y % (3 * hexSize / 2)) - (3 * hexSize / 2));
+
         graphics.drawImage(background, offsetX, offsetY, null);
     }
 
@@ -59,6 +61,64 @@ public class FieldView extends JLabel {
         int preferredWidth = fieldSize.width * 2 * hexIncircle + 1;
         int preferredHeight = (fieldSize.height * 3  + 1) * hexSize / 2 + 1;
         this.preferredSize = new Dimension(preferredWidth, preferredHeight);
+    }
+
+    private void spanFill(BufferedImage image, Point seed, Color color) {
+        Color oldColor = new Color(image.getRGB(seed.x, seed.y));
+        if (color == null || color.equals(oldColor)) {
+            return;
+        }
+
+        Stack<Rectangle> spans = new Stack<>();
+        spans.push(getSpan(image, seed));
+        while (!spans.empty()) {
+            Rectangle span = spans.pop();
+
+            for(int i = 0; i < span.width; ++i) {
+                image.setRGB(span.x + i, span.y, color.getRGB());
+            }
+
+            findNearSpans(spans, image, span, oldColor);
+        }
+    }
+
+    private void findNearSpans(Stack<Rectangle> spans, BufferedImage image, Rectangle span, Color oldColor) {
+        for (int offset : new int[]{-1, 1}) {
+            int y = span.y + offset;
+            if (y < 0 || y >= image.getHeight()) {
+                continue;
+            }
+
+            for (int i = 0; i < span.width;) {
+                int x = i + span.x;
+                if (image.getRGB(x, y) != oldColor.getRGB()) {
+                    ++i;
+                    continue;
+                }
+                Rectangle newSpan = getSpan(image, new Point(x, y));
+                spans.push(newSpan);
+                i += newSpan.width;
+            }
+        }
+    }
+
+    private Rectangle getSpan(BufferedImage image, Point crds) {
+        int color = image.getRGB(crds.x, crds.y);
+
+        int x0 = crds.x;
+        int y = crds.y;
+
+        while(x0 > 0 && color == image.getRGB(x0 - 1, y)) {
+            --x0;
+        }
+
+        int x1 = crds.x;
+        int width = image.getWidth() - 1;
+        while (x1 < width && color == image.getRGB(x1 + 1, y)) {
+            ++x1;
+        }
+
+        return new Rectangle(x0, y, x1 - x0 + 1, 1);
     }
 
     private void drawField(BufferedImage background, int x0, int y0, int countX, int countY) {
@@ -78,9 +138,9 @@ public class FieldView extends JLabel {
                 int offsetX = (y % 2) == 0 ? 0 : hexIncircle;
                 drawHexagon(background, xCrd + offsetX, yCrd);
 
-                backgroundGraphics.setPaint(Color.BLACK);
-                backgroundGraphics.setFont(new Font("Dialog", Font.PLAIN, 12));
-                backgroundGraphics.drawString(x + ", " + y, xCrd + offsetX - hexIncircle / 2, yCrd);
+//                backgroundGraphics.setPaint(Color.BLACK);
+//                backgroundGraphics.setFont(new Font("Dialog", Font.PLAIN, 12));
+//                backgroundGraphics.drawString(x + ", " + y, xCrd + offsetX - hexIncircle / 2, yCrd);
             }
         }
     }
