@@ -1,30 +1,49 @@
 package ru.nsu.fit.g14205.batalin.views;
 
+import ru.nsu.fit.g14205.batalin.controllers.LifeController;
+import ru.nsu.fit.g14205.batalin.models.FieldModel;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.Stack;
 
 /**
  * Created by kir55rus on 14.02.17.
  */
-public class FieldView extends JLabel {
-    private Dimension fieldSize;
+public class FieldView extends JLabel implements Observer {
+    private LifeController lifeController;
+    private FieldModel fieldModel;
+
     private Dimension preferredSize;
     private int hexSize;
     private int hexIncircle;
     private int backgroundOffset;
+    private Color aliveColor = Color.GREEN;
 
 
-    public FieldView(Dimension fieldSize, int hexSize) {
-        this.fieldSize = fieldSize;
+    public FieldView(LifeController lifeController, FieldModel fieldModel, int hexSize) {
+        this.lifeController = lifeController;
+        this.fieldModel = fieldModel;
+        fieldModel.addObserver(this);
+
         setHexSize(hexSize);
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        if (observable instanceof FieldModel) {
+            repaint();
+        }
     }
 
     @Override
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
+        Dimension fieldSize = fieldModel.getField().getSize();
         Rectangle clipBounds = graphics.getClipBounds();
 
         BufferedImage background = new BufferedImage(clipBounds.width + backgroundOffset+10, clipBounds.height + backgroundOffset+10, BufferedImage.TYPE_INT_RGB);
@@ -35,13 +54,13 @@ public class FieldView extends JLabel {
 //        System.out.println(clipBounds);
 
         int x0 = Math.max(0, clipBounds.x / (2 * hexIncircle) - 1);
-        int countX = Math.min(fieldSize.width, (clipBounds.x + clipBounds.width) / (2 * hexIncircle) + 1);
+        int x1 = Math.min(fieldSize.width, (clipBounds.x + clipBounds.width) / (2 * hexIncircle) + 1);
         int y0 = Math.max(0, clipBounds.y / (3 * hexSize / 2) - 1);
-        int countY = Math.min(fieldSize.height, (clipBounds.y + clipBounds.height) / (3 * hexSize / 2) + 1);
+        int y1 = Math.min(fieldSize.height, (clipBounds.y + clipBounds.height) / (3 * hexSize / 2) + 1);
 
 //        System.out.println("x0: " + x0 + ", x1: " + x1 + ", y0: " + y0 + ", y1: " + y1);
 
-        drawField(background, x0, y0, countX, countY);
+        drawField(background, x0, y0, x1, y1);
 
         int offsetX = Math.max(0, clipBounds.x - (clipBounds.x % (2 * hexIncircle)) - (2 * hexIncircle));
         int offsetY = Math.max(0, clipBounds.y - (clipBounds.y % (3 * hexSize / 2)) - (3 * hexSize / 2));
@@ -53,6 +72,8 @@ public class FieldView extends JLabel {
         if (hexSize <= 0) {
             return;
         }
+
+        Dimension fieldSize = fieldModel.getField().getSize();
 
         this.hexSize = hexSize;
         this.hexIncircle = (int)(hexSize * Math.sqrt(3) / 2);
@@ -121,12 +142,14 @@ public class FieldView extends JLabel {
         return new Rectangle(x0, y, x1 - x0 + 1, 1);
     }
 
-    private void drawField(BufferedImage background, int x0, int y0, int countX, int countY) {
+    private void drawField(BufferedImage background, int x0, int y0, int x1, int y1) {
+        FieldModel.Field field = fieldModel.getField();
+        Dimension fieldSize = field.getSize();
         Graphics2D backgroundGraphics = background.createGraphics();
 
-        for(int y = y0; y < countY; ++y) {
+        for(int y = y0; y < y1; ++y) {
 
-            int currentLineCount = Math.min(fieldSize.width + (y % 2 == 0 ? 0 : -1), countX);
+            int currentLineCount = Math.min(fieldSize.width + (y % 2 == 0 ? 0 : -1), x1);
 
             for(int x = x0; x < currentLineCount; ++x) {
 
@@ -138,6 +161,10 @@ public class FieldView extends JLabel {
                 int offsetX = (y % 2) == 0 ? 0 : hexIncircle;
                 drawHexagon(background, xCrd + offsetX, yCrd);
 
+                if(field.get(x, y) == FieldModel.CellType.ALIVE) {
+//                    System.out.println("Alive: " + new Point(x, y));
+                    spanFill(background, new Point(xCrd + offsetX, yCrd), aliveColor);
+                }
 //                backgroundGraphics.setPaint(Color.BLACK);
 //                backgroundGraphics.setFont(new Font("Dialog", Font.PLAIN, 12));
 //                backgroundGraphics.drawString(x + ", " + y, xCrd + offsetX - hexIncircle / 2, yCrd);

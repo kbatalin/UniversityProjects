@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
+import ru.nsu.fit.g14205.batalin.models.FieldModel;
 import ru.nsu.fit.g14205.batalin.views.LifeView;
 
 import java.awt.*;
@@ -9,9 +10,13 @@ import java.awt.*;
  */
 public class LifeController {
     private LifeView lifeView;
+    private FieldModel fieldModel;
 
     public void run() {
-        lifeView = new LifeView(this, new Dimension(20, 100), 30);
+        Dimension fieldSize = new Dimension(20, 100);
+
+        fieldModel = new FieldModel(fieldSize);
+        lifeView = new LifeView(this, fieldModel, 30);
 
         lifeView.setVisible(true);
     }

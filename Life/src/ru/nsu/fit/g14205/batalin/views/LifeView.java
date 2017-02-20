@@ -1,20 +1,23 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.LifeController;
+import ru.nsu.fit.g14205.batalin.models.FieldModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.net.URL;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by kir55rus on 10.02.17.
  */
-public class LifeView extends JFrame {
+public class LifeView extends JFrame implements Observer {
     private LifeController lifeController;
 
-    public LifeView(LifeController lifeController, Dimension fieldSize, int hexSize) {
+    public LifeView(LifeController lifeController, FieldModel fieldModel, int hexSize) {
         this.lifeController = lifeController;
 
         setSize(800, 600);
@@ -26,7 +29,12 @@ public class LifeView extends JFrame {
 
         initToolbar();
 
-        initField(fieldSize, hexSize);
+        initField(lifeController, fieldModel, hexSize);
+    }
+
+    @Override
+    public void update(Observable observable, Object o) {
+        //todo
     }
 
     private void initMenu() {
@@ -271,8 +279,8 @@ public class LifeView extends JFrame {
         toolBar.add(aboutButton);
     }
 
-    private void initField(Dimension fieldSize, int hexSize) {
-        FieldView fieldView = new FieldView(fieldSize, hexSize);
+    private void initField(LifeController lifeController, FieldModel fieldModel, int hexSize) {
+        FieldView fieldView = new FieldView(lifeController, fieldModel, hexSize);
         JScrollPane scrollPane = new JScrollPane(fieldView);
         add(scrollPane, BorderLayout.CENTER);
     }
