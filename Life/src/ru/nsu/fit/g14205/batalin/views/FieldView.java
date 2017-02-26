@@ -5,6 +5,8 @@ import ru.nsu.fit.g14205.batalin.models.FieldModel;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.util.Observable;
 import java.util.Observer;
@@ -30,6 +32,12 @@ public class FieldView extends JLabel implements Observer {
         fieldModel.addObserver(this);
 
         setHexSize(hexSize);
+
+        addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                lifeController.onFieldClick(e.getPoint());
+            }
+        });
     }
 
     @Override
@@ -64,6 +72,14 @@ public class FieldView extends JLabel implements Observer {
 
         int offsetX = Math.max(0, clipBounds.x - (clipBounds.x % (2 * hexIncircle)) - (2 * hexIncircle));
         int offsetY = Math.max(0, clipBounds.y - (clipBounds.y % (3 * hexSize / 2)) - (3 * hexSize / 2));
+
+//        backgroundGraphics.setPaint(Color.BLACK);
+//        backgroundGraphics.drawLine(75 , 120, 50, 75);
+//        backgroundGraphics.drawLine(75 , 120, 100, 75);
+//        backgroundGraphics.drawLine(50 , 75, 100, 75);
+//        backgroundGraphics.fillOval(65,110,10,10);
+//        backgroundGraphics.fillOval(40,65,10,10);
+//        backgroundGraphics.fillOval(90,65,10,10);
 
         graphics.drawImage(background, offsetX, offsetY, null);
     }

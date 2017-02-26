@@ -37,12 +37,20 @@ public class FieldModel extends ModelBase {
             return x >= 0 && x < fieldSize.width && y >= 0 && y < fieldSize.height;
         }
 
+        public boolean checkCrds(Point pos) {
+            return checkCrds(pos.x, pos.y);
+        }
+
         public CellType get(int x, int y) {
             if(!checkCrds(x, y)) {
                 throw new IndexOutOfBoundsException("Bad crds: (" + x + ", " + y + ")");
             }
 
             return field.get(x).get(y);
+        }
+
+        public CellType get(Point pos) {
+            return get(pos.x, pos.y);
         }
 
         public void set(int x, int y, CellType cellType) {
@@ -53,6 +61,10 @@ public class FieldModel extends ModelBase {
             ArrayList<CellType> line = field.get(x);
             line.set(y, cellType);
             field.set(x, line);
+        }
+
+        public void set(Point pos, CellType cellType) {
+            set(pos.x, pos.y, cellType);
         }
     }
 
