@@ -7,10 +7,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Stack;
+import java.util.function.Supplier;
 
 /**
  * Created by kir55rus on 14.02.17.
@@ -41,7 +44,19 @@ public class FieldView extends JLabel implements Observer {
             }
         });
 
+        addMouseWheelListener(new MouseWheelListener() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
+                lifeController.onMouseWheelMoved(mouseWheelEvent);
+            }
+        });
+
 //        propertiesModel.addObserver(this);
+        propertiesModel.addObserver(PropertiesModelEvent.SIZE_CHANGED, () -> {
+            setSize(propertiesModel);
+            repaint();
+            return null;
+        });
     }
 
     @Override

@@ -4,6 +4,7 @@ import ru.nsu.fit.g14205.batalin.models.*;
 import ru.nsu.fit.g14205.batalin.views.LifeView;
 
 import java.awt.*;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * Created by kir55rus on 10.02.17.
@@ -19,6 +20,12 @@ public class LifeController {
         lifeView = new LifeView(this, fieldModel, propertiesModel);
 
         lifeView.setVisible(true);
+    }
+
+    public void onMouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
+        int hexSize = Math.max(3, Math.min(50, mouseWheelEvent.getWheelRotation() + propertiesModel.getHexSize()));
+        System.out.println("New hex size: " + hexSize);
+        propertiesModel.setHexSize(hexSize);
     }
 
     public void onFieldClick(Point pos) {
@@ -42,8 +49,8 @@ public class LifeController {
     private Point getHex(Point pos) {
         System.out.println(pos);
 
-        int hexSize = 30;
-        int hexIncircle = (int)(hexSize * Math.sqrt(3) / 2);
+        int hexSize = propertiesModel.getHexSize();
+        int hexIncircle = propertiesModel.getHexIncircle();
 
         int y = pos.y * 2 / 3 / hexSize;
         int offset = (y % 2 != 0) ? hexIncircle : 0;
