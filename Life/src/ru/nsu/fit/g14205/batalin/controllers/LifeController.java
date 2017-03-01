@@ -15,11 +15,15 @@ public class LifeController {
     private IPropertiesModel propertiesModel;
 
     public void run() {
-        propertiesModel = new PropertiesModel();
+        propertiesModel = PropertiesModel.createDefault();
         fieldModel = new FieldModel(propertiesModel);
         lifeView = new LifeView(this, fieldModel, propertiesModel);
 
         lifeView.setVisible(true);
+    }
+
+    public void onNextButtonClicked() {
+        fieldModel.step();
     }
 
     public void onMouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
@@ -49,7 +53,7 @@ public class LifeController {
     }
 
     private Point getHex(Point pos) {
-        System.out.println(pos);
+//        System.out.println(pos);
 
         int hexSize = propertiesModel.getHexSize();
         int hexIncircle = propertiesModel.getHexIncircle();
@@ -67,11 +71,11 @@ public class LifeController {
         double dist2 = pos.distanceSq(center2);
         double dist3 = pos.distanceSq(center3);
 
-        System.out.println(new Point(x, y));
+//        System.out.println(new Point(x, y));
 
-        System.out.println(center1 + ": " + dist1);
-        System.out.println(center2 + ": " + dist2);
-        System.out.println(center3 + ": " + dist3);
+//        System.out.println(center1 + ": " + dist1);
+//        System.out.println(center2 + ": " + dist2);
+//        System.out.println(center3 + ": " + dist3);
 
         if (dist1 < dist2) {
             if(dist1 < dist3) {

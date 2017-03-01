@@ -15,4 +15,17 @@ public interface IPropertiesModel extends IObservable {
     void setHexSize(int hexSize);
     Dimension getFieldSize();
     void setFieldSize(Dimension fieldSize);
+
+    double getFirstImpact();
+    double getSecondImpact();
+    double getLiveBegin();
+    double getLiveEnd();
+    double getBirthBegin();
+    double getBirthEnd();
+    void setFirstImpact(double val);
+    void setSecondImpact(double val);
+    void setLiveBegin(double val);
+    void setLiveEnd(double val);
+    void setBirthBegin(double val);
+    void setBirthEnd(double val);
 }

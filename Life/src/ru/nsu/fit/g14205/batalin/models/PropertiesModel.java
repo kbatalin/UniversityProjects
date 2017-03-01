@@ -12,18 +12,38 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     private static Dimension DEFAULT_FIELD_SIZE = new Dimension(20, 100);
     private static int DEFAULT_MIN_HEX_SIZE = 5;
     private static int DEFAULT_MAX_HEX_SIZE = 50;
+    private static double DEFAULT_FIRST_IMPACT = 1.0;
+    private static double DEFAULT_SECOND_IMPACT = 0.3;
+    private static double DEFAULT_LIVE_BEGIN = 2.0;
+    private static double DEFAULT_LIVE_END = 3.3;
+    private static double DEFAULT_BIRTH_BEGIN = 2.3;
+    private static double DEFAULT_BIRTH_END = 2.9;
 
     private int hexSize;
     private int hexIncircle;
     private Dimension fieldSize;
+    private double firstImpact;
+    private double secondImpact;
+    private double liveBegin;
+    private double liveEnd;
+    private double birthBegin;
+    private double birthEnd;
 
-    public PropertiesModel() {
-        this(DEFAULT_FIELD_SIZE, DEFAULT_HEX_SIZE);
+    public static PropertiesModel createDefault() {
+        PropertiesModel propertiesModel = new PropertiesModel();
+        propertiesModel.setFieldSize(DEFAULT_FIELD_SIZE);
+        propertiesModel.setHexSize(DEFAULT_HEX_SIZE);
+        propertiesModel.setFirstImpact(DEFAULT_FIRST_IMPACT);
+        propertiesModel.setSecondImpact(DEFAULT_SECOND_IMPACT);
+        propertiesModel.setLiveEnd(DEFAULT_LIVE_END);
+        propertiesModel.setBirthEnd(DEFAULT_BIRTH_END);
+        propertiesModel.setBirthBegin(DEFAULT_BIRTH_BEGIN);
+        propertiesModel.setLiveBegin(DEFAULT_LIVE_BEGIN);
+
+        return propertiesModel;
     }
 
-    public PropertiesModel(Dimension fieldSize, int hexSize) {
-        setFieldSize(fieldSize);
-        setHexSize(hexSize);
+    private PropertiesModel() {
     }
 
     @Override
@@ -70,5 +90,83 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public int getMaxHexSize() {
         return DEFAULT_MAX_HEX_SIZE;
+    }
+
+    @Override
+    public double getFirstImpact() {
+        return firstImpact;
+    }
+
+    @Override
+    public double getSecondImpact() {
+        return secondImpact;
+    }
+
+    @Override
+    public double getLiveBegin() {
+        return liveBegin;
+    }
+
+    @Override
+    public double getLiveEnd() {
+        return liveEnd;
+    }
+
+    @Override
+    public double getBirthBegin() {
+        return birthBegin;
+    }
+
+    @Override
+    public double getBirthEnd() {
+        return birthEnd;
+    }
+
+    @Override
+    public void setFirstImpact(double firstImpact) {
+        if(firstImpact < 0.) {
+            throw new IllegalArgumentException("First impact must be >= 0");
+        }
+        this.firstImpact = firstImpact;
+    }
+
+    @Override
+    public void setSecondImpact(double secondImpact) {
+        if(secondImpact < 0.) {
+            throw new IllegalArgumentException("Second impact must be >= 0");
+        }
+        this.secondImpact = secondImpact;
+    }
+
+    @Override
+    public void setLiveBegin(double liveBegin) {
+        if (liveBegin > birthBegin) {
+            throw new IllegalArgumentException("liveBegin > birthBegin");
+        }
+        this.liveBegin = liveBegin;
+    }
+
+    @Override
+    public void setLiveEnd(double liveEnd) {
+        if (liveEnd < birthEnd) {
+            throw new IllegalArgumentException("liveEnd < birthEnd");
+        }
+        this.liveEnd = liveEnd;
+    }
+
+    @Override
+    public void setBirthBegin(double birthBegin) {
+        if (birthBegin < liveBegin || birthBegin > birthEnd) {
+            throw new IllegalArgumentException("birthBegin < liveBegin || birthBegin > birthEnd");
+        }
+        this.birthBegin = birthBegin;
+    }
+
+    @Override
+    public void setBirthEnd(double birthEnd) {
+        if (birthEnd > liveEnd || birthEnd < birthBegin) {
+            throw new IllegalArgumentException("birthEnd > liveEnd || birthEnd < birthBegin");
+        }
+        this.birthEnd = birthEnd;
     }
 }

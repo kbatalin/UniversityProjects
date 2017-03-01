@@ -8,6 +8,7 @@ import ru.nsu.fit.g14205.batalin.models.IPropertiesModel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.Observable;
@@ -250,6 +251,7 @@ public class LifeView extends JFrame implements Observer {
         if (nextButtonIcon != null) {
             nextButton.setIcon(nextButtonIcon);
         }
+        nextButton.addActionListener(actionEvent -> lifeController.onNextButtonClicked());
         toolBar.add(nextButton);
 
         toolBar.addSeparator();

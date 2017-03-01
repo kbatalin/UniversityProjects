@@ -8,7 +8,7 @@ import java.util.function.Supplier;
  * Created by kir55rus on 01.03.17.
  */
 public class Observable {
-    private Map<EventBase, Map<Integer, Supplier<Void>>> observers;
+    private Map<IEvent, Map<Integer, Supplier<Void>>> observers;
 
     public Observable() {
         clear();
@@ -18,7 +18,7 @@ public class Observable {
         observers = new HashMap<>();
     }
 
-    public int addObserver(EventBase event, Supplier<Void> handler) {
+    public int addObserver(IEvent event, Supplier<Void> handler) {
         Map<Integer, Supplier<Void>> list = observers.computeIfAbsent(event, k -> {
             Map<Integer, Supplier<Void>> handlers = new HashMap<>();
             handlers.put(handler.hashCode(), handler);
@@ -28,7 +28,7 @@ public class Observable {
         return handler.hashCode();
     }
 
-    public void deleteObserver(EventBase event, int id) {
+    public void deleteObserver(IEvent event, int id) {
         Map<Integer, Supplier<Void>> handlers = observers.get(event);
         if (handlers == null) {
             return;
@@ -37,7 +37,7 @@ public class Observable {
         handlers.remove(id);
     }
 
-    public void notifyObservers(EventBase event) {
+    public void notifyObservers(IEvent event) {
         Map<Integer, Supplier<Void>> handlers = observers.get(event);
         if (handlers == null) {
             return;

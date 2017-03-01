@@ -7,4 +7,5 @@ import ru.nsu.fit.g14205.batalin.utils.observe.IObservable;
  */
 public interface IFieldModel extends IObservable {
     IField getActiveField();
+    void step();
 }
