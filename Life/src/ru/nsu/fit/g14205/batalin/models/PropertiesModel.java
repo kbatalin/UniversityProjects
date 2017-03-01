@@ -1,7 +1,8 @@
 package ru.nsu.fit.g14205.batalin.models;
 
+import ru.nsu.fit.g14205.batalin.utils.observe.Observable;
+
 import java.awt.*;
-import java.util.Observable;
 
 /**
  * Created by kir55rus on 27.02.17.

@@ -37,7 +37,7 @@ public class Observable {
         handlers.remove(id);
     }
 
-    void notifyObservers(EventBase event) {
+    public void notifyObservers(EventBase event) {
         Map<Integer, Supplier<Void>> handlers = observers.get(event);
         if (handlers == null) {
             return;
@@ -48,7 +48,7 @@ public class Observable {
         }
     }
 
-    void deleteObservers() {
+    public void deleteObservers() {
         clear();
     }
 }

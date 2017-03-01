@@ -31,7 +31,7 @@ public class FieldView extends JLabel implements Observer {
         this.lifeController = lifeController;
         this.fieldModel = fieldModel;
         this.propertiesModel = propertiesModel;
-        fieldModel.addObserver(this);
+//        fieldModel.addObserver(this);
 
         setSize(propertiesModel);
 
@@ -41,7 +41,7 @@ public class FieldView extends JLabel implements Observer {
             }
         });
 
-        propertiesModel.addObserver(this);
+//        propertiesModel.addObserver(this);
     }
 
     @Override
