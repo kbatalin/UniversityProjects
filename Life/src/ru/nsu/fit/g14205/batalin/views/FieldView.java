@@ -1,7 +1,7 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.LifeController;
-import ru.nsu.fit.g14205.batalin.models.FieldModel;
+import ru.nsu.fit.g14205.batalin.models.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +17,8 @@ import java.util.Stack;
  */
 public class FieldView extends JLabel implements Observer {
     private LifeController lifeController;
-    private FieldModel fieldModel;
+    private IFieldModel fieldModel;
+    private IPropertiesModel propertiesModel;
 
     private Dimension preferredSize;
     private int hexSize;
@@ -26,24 +27,37 @@ public class FieldView extends JLabel implements Observer {
     private Color aliveColor = Color.GREEN;
 
 
-    public FieldView(LifeController lifeController, FieldModel fieldModel, int hexSize) {
+    public FieldView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
         this.fieldModel = fieldModel;
+        this.propertiesModel = propertiesModel;
         fieldModel.addObserver(this);
 
-        setHexSize(hexSize);
+        setSize(propertiesModel);
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 lifeController.onFieldClick(e.getPoint());
             }
         });
+
+        propertiesModel.addObserver(this);
     }
 
     @Override
     public void update(Observable observable, Object o) {
-        if (observable instanceof FieldModel) {
+        if (observable instanceof IFieldModel) {
             repaint();
+            return;
+        }
+
+        if ((observable instanceof IPropertiesModel) && (o instanceof PropertiesModelEvent)) {
+            IPropertiesModel propertiesModel = ((IPropertiesModel) observable);
+            PropertiesModelEvent event = ((PropertiesModelEvent) o);
+
+            if (event == PropertiesModelEvent.SIZE_CHANGED) {
+                setSize(propertiesModel);
+            }
         }
     }
 
@@ -51,7 +65,7 @@ public class FieldView extends JLabel implements Observer {
     public void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
-        Dimension fieldSize = fieldModel.getField().getSize();
+        Dimension fieldSize = fieldModel.getActiveField().getSize();
         Rectangle clipBounds = graphics.getClipBounds();
 
         BufferedImage background = new BufferedImage(clipBounds.width + backgroundOffset+10, clipBounds.height + backgroundOffset+10, BufferedImage.TYPE_INT_RGB);
@@ -73,30 +87,18 @@ public class FieldView extends JLabel implements Observer {
         int offsetX = Math.max(0, clipBounds.x - (clipBounds.x % (2 * hexIncircle)) - (2 * hexIncircle));
         int offsetY = Math.max(0, clipBounds.y - (clipBounds.y % (3 * hexSize / 2)) - (3 * hexSize / 2));
 
-//        backgroundGraphics.setPaint(Color.BLACK);
-//        backgroundGraphics.drawLine(75 , 120, 50, 75);
-//        backgroundGraphics.drawLine(75 , 120, 100, 75);
-//        backgroundGraphics.drawLine(50 , 75, 100, 75);
-//        backgroundGraphics.fillOval(65,110,10,10);
-//        backgroundGraphics.fillOval(40,65,10,10);
-//        backgroundGraphics.fillOval(90,65,10,10);
-
         graphics.drawImage(background, offsetX, offsetY, null);
     }
 
-    public void setHexSize(int hexSize) {
-        if (hexSize <= 0) {
-            return;
-        }
+    public void setSize(IPropertiesModel propertiesModel) {
+        Dimension fieldSize = fieldModel.getActiveField().getSize();
 
-        Dimension fieldSize = fieldModel.getField().getSize();
+        this.hexSize = propertiesModel.getHexSize();
+        this.hexIncircle = propertiesModel.getHexIncircle();
+        this.backgroundOffset = 8 * this.hexSize;
 
-        this.hexSize = hexSize;
-        this.hexIncircle = (int)(hexSize * Math.sqrt(3) / 2);
-        this.backgroundOffset = 8 * hexSize;
-
-        int preferredWidth = fieldSize.width * 2 * hexIncircle + 1;
-        int preferredHeight = (fieldSize.height * 3  + 1) * hexSize / 2 + 1;
+        int preferredWidth = fieldSize.width * 2 * this.hexIncircle + 1;
+        int preferredHeight = (fieldSize.height * 3  + 1) * this.hexSize / 2 + 1;
         this.preferredSize = new Dimension(preferredWidth, preferredHeight);
     }
 
@@ -159,7 +161,7 @@ public class FieldView extends JLabel implements Observer {
     }
 
     private void drawField(BufferedImage background, int x0, int y0, int x1, int y1) {
-        FieldModel.Field field = fieldModel.getField();
+        IField field = fieldModel.getActiveField();
         Dimension fieldSize = field.getSize();
         Graphics2D backgroundGraphics = background.createGraphics();
 
@@ -177,7 +179,7 @@ public class FieldView extends JLabel implements Observer {
                 int offsetX = (y % 2) == 0 ? 0 : hexIncircle;
                 drawHexagon(background, xCrd + offsetX, yCrd);
 
-                if(field.get(x, y) == FieldModel.CellType.ALIVE) {
+                if(field.get(x, y) == CellState.ALIVE) {
 //                    System.out.println("Alive: " + new Point(x, y));
                     spanFill(background, new Point(xCrd + offsetX, yCrd), aliveColor);
                 }
@@ -203,12 +205,7 @@ public class FieldView extends JLabel implements Observer {
     private void drawPolygon(BufferedImage image, Point[] points) {
         for(int i = 0; i < points.length; ++i) {
             int next = (i + 1) % points.length;
-
-            try {
-                drawLine(image, points[i].x, points[i].y, points[next].x, points[next].y);
-            } catch (Exception e) {
-                System.err.println(points[i] + ", " + points[next] + ". images: " + image.getWidth() + ", " + image.getHeight());
-            }
+            drawLine(image, points[i].x, points[i].y, points[next].x, points[next].y);
         }
     }
 

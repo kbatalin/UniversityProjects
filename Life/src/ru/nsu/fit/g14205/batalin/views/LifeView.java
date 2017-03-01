@@ -2,6 +2,8 @@ package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.LifeController;
 import ru.nsu.fit.g14205.batalin.models.FieldModel;
+import ru.nsu.fit.g14205.batalin.models.IFieldModel;
+import ru.nsu.fit.g14205.batalin.models.IPropertiesModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,7 +19,7 @@ import java.util.Observer;
 public class LifeView extends JFrame implements Observer {
     private LifeController lifeController;
 
-    public LifeView(LifeController lifeController, FieldModel fieldModel, int hexSize) {
+    public LifeView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
 
         setSize(800, 600);
@@ -29,7 +31,7 @@ public class LifeView extends JFrame implements Observer {
 
         initToolbar();
 
-        initField(lifeController, fieldModel, hexSize);
+        initField(lifeController, fieldModel, propertiesModel);
     }
 
     @Override
@@ -279,8 +281,8 @@ public class LifeView extends JFrame implements Observer {
         toolBar.add(aboutButton);
     }
 
-    private void initField(LifeController lifeController, FieldModel fieldModel, int hexSize) {
-        FieldView fieldView = new FieldView(lifeController, fieldModel, hexSize);
+    private void initField(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
+        FieldView fieldView = new FieldView(lifeController, fieldModel, propertiesModel);
         JScrollPane scrollPane = new JScrollPane(fieldView);
         add(scrollPane, BorderLayout.CENTER);
     }
