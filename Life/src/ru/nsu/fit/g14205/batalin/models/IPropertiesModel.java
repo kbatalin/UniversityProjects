@@ -10,6 +10,8 @@ import java.awt.*;
 public interface IPropertiesModel extends IObservable {
     int getHexIncircle();
     int getHexSize();
+    int getMinHexSize();
+    int getMaxHexSize();
     void setHexSize(int hexSize);
     Dimension getFieldSize();
     void setFieldSize(Dimension fieldSize);

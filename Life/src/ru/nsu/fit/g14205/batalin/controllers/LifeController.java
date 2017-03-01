@@ -23,9 +23,11 @@ public class LifeController {
     }
 
     public void onMouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
-        int hexSize = Math.max(3, Math.min(50, mouseWheelEvent.getWheelRotation() + propertiesModel.getHexSize()));
-        System.out.println("New hex size: " + hexSize);
-        propertiesModel.setHexSize(hexSize);
+        int newHexSize = propertiesModel.getHexSize() - mouseWheelEvent.getWheelRotation();
+        newHexSize = Math.min(propertiesModel.getMaxHexSize(), newHexSize);
+        newHexSize = Math.max(propertiesModel.getMinHexSize(), newHexSize);
+        System.out.println("New hex size: " + newHexSize);
+        propertiesModel.setHexSize(newHexSize);
     }
 
     public void onFieldClick(Point pos) {

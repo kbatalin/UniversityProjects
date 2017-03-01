@@ -10,6 +10,8 @@ import java.awt.*;
 public class PropertiesModel extends Observable implements IPropertiesModel {
     private static int DEFAULT_HEX_SIZE = 30;
     private static Dimension DEFAULT_FIELD_SIZE = new Dimension(20, 100);
+    private static int DEFAULT_MIN_HEX_SIZE = 5;
+    private static int DEFAULT_MAX_HEX_SIZE = 50;
 
     private int hexSize;
     private int hexIncircle;
@@ -58,5 +60,15 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
         this.fieldSize = fieldSize;
 
         notifyObservers(PropertiesModelEvent.SIZE_CHANGED);
+    }
+
+    @Override
+    public int getMinHexSize() {
+        return DEFAULT_MIN_HEX_SIZE;
+    }
+
+    @Override
+    public int getMaxHexSize() {
+        return DEFAULT_MAX_HEX_SIZE;
     }
 }
