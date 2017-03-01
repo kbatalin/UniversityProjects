@@ -28,6 +28,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     private double liveEnd;
     private double birthBegin;
     private double birthEnd;
+    private boolean isImpactVisible;
 
     public static PropertiesModel createDefault() {
         PropertiesModel propertiesModel = new PropertiesModel();
@@ -168,5 +169,15 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
             throw new IllegalArgumentException("birthEnd > liveEnd || birthEnd < birthBegin");
         }
         this.birthEnd = birthEnd;
+    }
+
+    @Override
+    public boolean isImpactVisible() {
+        return isImpactVisible;
+    }
+
+    @Override
+    public void setImpactVisible(boolean impactVisible) {
+        isImpactVisible = impactVisible;
     }
 }

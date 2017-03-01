@@ -34,7 +34,6 @@ public class FieldView extends JLabel implements Observer {
         this.lifeController = lifeController;
         this.fieldModel = fieldModel;
         this.propertiesModel = propertiesModel;
-//        fieldModel.addObserver(this);
 
         setSize(propertiesModel);
 
@@ -51,34 +50,18 @@ public class FieldView extends JLabel implements Observer {
             }
         });
 
-//        propertiesModel.addObserver(this);
         propertiesModel.addObserver(PropertiesModelEvent.SIZE_CHANGED, () -> {
             setSize(propertiesModel);
             repaint();
-            return null;
         });
 
         fieldModel.addObserver(FieldModelEvent.FIELD_UPDATED, () -> {
             repaint();
-            return null;
         });
     }
 
     @Override
     public void update(Observable observable, Object o) {
-        if (observable instanceof IFieldModel) {
-            repaint();
-            return;
-        }
-
-        if ((observable instanceof IPropertiesModel) && (o instanceof PropertiesModelEvent)) {
-            IPropertiesModel propertiesModel = ((IPropertiesModel) observable);
-            PropertiesModelEvent event = ((PropertiesModelEvent) o);
-
-            if (event == PropertiesModelEvent.SIZE_CHANGED) {
-                setSize(propertiesModel);
-            }
-        }
     }
 
     @Override

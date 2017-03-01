@@ -2,13 +2,12 @@ package ru.nsu.fit.g14205.batalin.utils.observe;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Supplier;
 
 /**
  * Created by kir55rus on 01.03.17.
  */
-public class Observable {
-    private Map<IEvent, Map<Integer, Supplier<Void>>> observers;
+public class Observable implements IObservable {
+    private Map<IEvent, Map<Integer, IObserverHandler>> observers;
 
     public Observable() {
         clear();
@@ -18,9 +17,10 @@ public class Observable {
         observers = new HashMap<>();
     }
 
-    public int addObserver(IEvent event, Supplier<Void> handler) {
-        Map<Integer, Supplier<Void>> list = observers.computeIfAbsent(event, k -> {
-            Map<Integer, Supplier<Void>> handlers = new HashMap<>();
+    @Override
+    public int addObserver(IEvent event, IObserverHandler handler) {
+        Map<Integer, IObserverHandler> list = observers.computeIfAbsent(event, k -> {
+            Map<Integer, IObserverHandler> handlers = new HashMap<>();
             handlers.put(handler.hashCode(), handler);
             return handlers;
         });
@@ -28,8 +28,9 @@ public class Observable {
         return handler.hashCode();
     }
 
+    @Override
     public void deleteObserver(IEvent event, int id) {
-        Map<Integer, Supplier<Void>> handlers = observers.get(event);
+        Map<Integer, IObserverHandler> handlers = observers.get(event);
         if (handlers == null) {
             return;
         }
@@ -37,17 +38,19 @@ public class Observable {
         handlers.remove(id);
     }
 
+    @Override
     public void notifyObservers(IEvent event) {
-        Map<Integer, Supplier<Void>> handlers = observers.get(event);
+        Map<Integer, IObserverHandler> handlers = observers.get(event);
         if (handlers == null) {
             return;
         }
 
-        for (Supplier<Void> handler : handlers.values()) {
-            handler.get();
+        for (IObserverHandler handler : handlers.values()) {
+            handler.perform();
         }
     }
 
+    @Override
     public void deleteObservers() {
         clear();
     }

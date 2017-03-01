@@ -28,4 +28,7 @@ public interface IPropertiesModel extends IObservable {
     void setLiveEnd(double val);
     void setBirthBegin(double val);
     void setBirthEnd(double val);
+
+    boolean isImpactVisible();
+    void setImpactVisible(boolean impactVisible);
 }
