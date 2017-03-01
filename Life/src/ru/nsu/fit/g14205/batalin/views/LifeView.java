@@ -129,6 +129,7 @@ public class LifeView extends JFrame implements Observer {
 
         JMenuItem actionMenuNext = new JMenuItem("Next");
         actionMenuNext.setMnemonic(KeyEvent.VK_N);
+        actionMenuNext.addActionListener(actionEvent -> lifeController.onNextButtonClicked());
         actionMenu.add(actionMenuNext);
     }
 
