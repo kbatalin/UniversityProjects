@@ -85,40 +85,13 @@ public class FieldModel extends Observable implements IFieldModel {
         notifyObservers(FieldModelEvent.FIELD_UPDATED);
     }
 
-    private double getImpact(Point pos) {
-//        Point[] firstOffsets = new Point[6];
-//        Point[] secondOffsets = new Point[6];
-//
-//        if (pos.y % 2 == 0) {
-//            firstOffsets[0] = new Point(-1, -1);
-//            firstOffsets[1] = new Point(0, -1);
-//            firstOffsets[2] = new Point(1, 0);
-//            firstOffsets[3] = new Point(0, 1);
-//            firstOffsets[4] = new Point(-1, 1);
-//            firstOffsets[5] = new Point(-1, 0);
-//
-//            secondOffsets[0] = new Point(0, -2);
-//            secondOffsets[1] = new Point(1, -1);
-//            secondOffsets[2] = new Point(1, 1);
-//            secondOffsets[3] = new Point(0, 2);
-//            secondOffsets[4] = new Point(-2,1);
-//            secondOffsets[5] = new Point(-2, -1);
-//        } else {
-//            firstOffsets[0] = new Point(0, -1);
-//            firstOffsets[1] = new Point(1, -1);
-//            firstOffsets[2] = new Point(1, 0);
-//            firstOffsets[3] = new Point(1, 1);
-//            firstOffsets[4] = new Point(0, 1);
-//            firstOffsets[5] = new Point(-1, 0);
-//
-//            secondOffsets[0] = new Point(0, -2);
-//            secondOffsets[1] = new Point(2, -1);
-//            secondOffsets[2] = new Point(2, 1);
-//            secondOffsets[3] = new Point(0, 2);
-//            secondOffsets[4] = new Point(-1, 1);
-//            secondOffsets[5] = new Point(-1, -1);
-//        }
+    @Override
+    public double getImpact(int x, int y) {
+        return getImpact(new Point(x, y));
+    }
 
+    @Override
+    public double getImpact(Point pos) {
         int even = pos.y % 2;
         int firstCount = getAliveCellsCount(pos, firstOffsets[even]);
         int secondCount = getAliveCellsCount(pos, secondOffsets[even]);

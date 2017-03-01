@@ -7,4 +7,5 @@ import ru.nsu.fit.g14205.batalin.utils.observe.IEvent;
  */
 public enum PropertiesModelEvent implements IEvent {
     SIZE_CHANGED,
+    IMPACT_VISIBLE_CHANGED,
 }

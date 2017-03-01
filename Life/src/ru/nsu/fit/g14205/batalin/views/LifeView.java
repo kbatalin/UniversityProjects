@@ -20,6 +20,9 @@ import java.util.Observer;
 public class LifeView extends JFrame implements Observer {
     private LifeController lifeController;
 
+    private JCheckBoxMenuItem viewMenuImpact;
+    private JToggleButton impactButton;
+
     public LifeView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
 
@@ -142,8 +145,12 @@ public class LifeView extends JFrame implements Observer {
         viewMenuColors.setMnemonic(KeyEvent.VK_C);
         viewMenu.add(viewMenuColors);
 
-        JCheckBoxMenuItem viewMenuImpact = new JCheckBoxMenuItem("Impact");
+        viewMenuImpact = new JCheckBoxMenuItem("Impact");
         viewMenuImpact.setMnemonic(KeyEvent.VK_I);
+        viewMenuImpact.addActionListener(actionEvent -> {
+            impactButton.setSelected(viewMenuImpact.getState());
+            lifeController.onImpactButtonClicked(viewMenuImpact.getState());
+        });
         viewMenu.add(viewMenuImpact);
     }
 
@@ -265,12 +272,16 @@ public class LifeView extends JFrame implements Observer {
         }
         toolBar.add(colorButton);
 
-        JButton impactButton = new JButton();
+        impactButton = new JToggleButton();
         impactButton.setToolTipText("Impact");
         Icon impactButtonIcon = getButtonIcon("images/rich_text_italics.png");
         if (impactButtonIcon != null) {
             impactButton.setIcon(impactButtonIcon);
         }
+        impactButton.addActionListener(actionEvent -> {
+            viewMenuImpact.setState(impactButton.isSelected());
+            lifeController.onImpactButtonClicked(impactButton.isSelected());
+        });
         toolBar.add(impactButton);
 
         toolBar.addSeparator();

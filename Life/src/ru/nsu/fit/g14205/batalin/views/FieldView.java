@@ -56,6 +56,7 @@ public class FieldView extends JLabel implements Observer {
         });
 
         fieldModel.addObserver(FieldModelEvent.FIELD_UPDATED, this::repaint);
+        propertiesModel.addObserver(PropertiesModelEvent.IMPACT_VISIBLE_CHANGED, this::repaint);
     }
 
     @Override
@@ -164,7 +165,12 @@ public class FieldView extends JLabel implements Observer {
     private void drawField(BufferedImage background, int x0, int y0, int x1, int y1) {
         IField field = fieldModel.getActiveField();
         Dimension fieldSize = field.getSize();
+
+        boolean isImpactVisible = propertiesModel.isImpactVisible();
+        int impactFontSize = propertiesModel.getImpactFontSize();
         Graphics2D backgroundGraphics = background.createGraphics();
+        backgroundGraphics.setPaint(Color.BLACK);
+        backgroundGraphics.setFont(new Font("Dialog", Font.PLAIN, impactFontSize));
 
         for(int y = y0; y < y1; ++y) {
 
@@ -175,18 +181,20 @@ public class FieldView extends JLabel implements Observer {
                 int shownX = x - x0;
                 int shownY = y - y0;
 
-                int xCrd = hexIncircle + shownX * 2 * hexIncircle;
-                int yCrd = hexSize + shownY * 3 * hexSize / 2;
                 int offsetX = (y % 2) == 0 ? 0 : hexIncircle;
-                drawHexagon(background, xCrd + offsetX, yCrd);
+                int xCrd = hexIncircle + shownX * 2 * hexIncircle + offsetX;
+                int yCrd = hexSize + shownY * 3 * hexSize / 2;
+                drawHexagon(background, xCrd, yCrd);
 
                 if(field.get(x, y) == CellState.ALIVE) {
 //                    System.out.println("Alive: " + new Point(x, y));
-                    spanFill(background, new Point(xCrd + offsetX, yCrd), aliveColor);
+                    spanFill(background, new Point(xCrd, yCrd), aliveColor);
                 }
-//                backgroundGraphics.setPaint(Color.BLACK);
-//                backgroundGraphics.setFont(new Font("Dialog", Font.PLAIN, 12));
-//                backgroundGraphics.drawString(x + ", " + y, xCrd + offsetX - hexIncircle / 2, yCrd);
+
+                if (isImpactVisible) {
+                    double impact = fieldModel.getImpact(x, y);
+                    backgroundGraphics.drawString(String.format("%.1f", impact), xCrd, yCrd + impactFontSize / 2);
+                }
             }
         }
     }

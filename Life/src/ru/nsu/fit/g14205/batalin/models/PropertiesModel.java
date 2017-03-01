@@ -18,6 +18,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     private static double DEFAULT_LIVE_END = 3.3;
     private static double DEFAULT_BIRTH_BEGIN = 2.3;
     private static double DEFAULT_BIRTH_END = 2.9;
+    private static int DEFAULT_IMPACT_FONT_SIZE = 12;
 
     private int hexSize;
     private int hexIncircle;
@@ -179,5 +180,11 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public void setImpactVisible(boolean impactVisible) {
         isImpactVisible = impactVisible;
+        notifyObservers(PropertiesModelEvent.IMPACT_VISIBLE_CHANGED);
+    }
+
+    @Override
+    public int getImpactFontSize() {
+        return DEFAULT_IMPACT_FONT_SIZE;
     }
 }

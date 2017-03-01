@@ -31,4 +31,6 @@ public interface IPropertiesModel extends IObservable {
 
     boolean isImpactVisible();
     void setImpactVisible(boolean impactVisible);
+
+    int getImpactFontSize();
 }

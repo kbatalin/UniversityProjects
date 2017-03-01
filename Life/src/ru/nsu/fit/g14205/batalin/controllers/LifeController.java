@@ -3,7 +3,9 @@ package ru.nsu.fit.g14205.batalin.controllers;
 import ru.nsu.fit.g14205.batalin.models.*;
 import ru.nsu.fit.g14205.batalin.views.LifeView;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseWheelEvent;
 
 /**
@@ -24,6 +26,10 @@ public class LifeController {
 
     public void onNextButtonClicked() {
         fieldModel.step();
+    }
+
+    public void onImpactButtonClicked(boolean isSelected) {
+        propertiesModel.setImpactVisible(isSelected);
     }
 
     public void onMouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
