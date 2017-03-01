@@ -55,9 +55,7 @@ public class FieldView extends JLabel implements Observer {
             repaint();
         });
 
-        fieldModel.addObserver(FieldModelEvent.FIELD_UPDATED, () -> {
-            repaint();
-        });
+        fieldModel.addObserver(FieldModelEvent.FIELD_UPDATED, this::repaint);
     }
 
     @Override
@@ -93,7 +91,7 @@ public class FieldView extends JLabel implements Observer {
         graphics.drawImage(background, offsetX, offsetY, null);
     }
 
-    public void setSize(IPropertiesModel propertiesModel) {
+    private void setSize(IPropertiesModel propertiesModel) {
         Dimension fieldSize = fieldModel.getActiveField().getSize();
 
         this.hexSize = propertiesModel.getHexSize();
