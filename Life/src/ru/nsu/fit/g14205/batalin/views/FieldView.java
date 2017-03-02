@@ -81,7 +81,7 @@ public class FieldView extends JLabel implements Observer {
         Dimension fieldSize = fieldModel.getActiveField().getSize();
         Rectangle clipBounds = graphics.getClipBounds();
 
-        BufferedImage background = new BufferedImage(clipBounds.width + backgroundOffset+10, clipBounds.height + backgroundOffset+10, BufferedImage.TYPE_INT_RGB);
+        BufferedImage background = new BufferedImage(clipBounds.width + backgroundOffset, clipBounds.height + backgroundOffset, BufferedImage.TYPE_INT_RGB);
         Graphics2D backgroundGraphics = background.createGraphics();
         backgroundGraphics.setPaint(Color.WHITE);
         backgroundGraphics.fillRect(0, 0, background.getWidth(), background.getHeight());
@@ -109,7 +109,7 @@ public class FieldView extends JLabel implements Observer {
         this.hexSize = propertiesModel.getHexSize();
         this.hexIncircle = propertiesModel.getHexIncircle();
         this.halfHexSize = this.hexSize / 2;
-        this.backgroundOffset = 8 * this.halfHexSize;
+        this.backgroundOffset = 12 * this.halfHexSize;
 
         firstHex = new Point[6];
         firstHex[0] = new Point(hexIncircle, 0);
@@ -201,20 +201,37 @@ public class FieldView extends JLabel implements Observer {
                 int shownX = x - x0;
                 int shownY = y - y0;
 
-                int offsetX = (y % 2) == 0 ? 0 : hexIncircle;
-                drawHexagon(background, shownX, shownY, offsetX);
+//                System.out.println("ShownX: " + shownX + ", shownY: " + shownY);
 
-//                if(field.get(x, y) == CellState.ALIVE) {
-////                    System.out.println("Alive: " + new Point(x, y));
-//                    spanFill(background, new Point(xCrd, yCrd), aliveColor);
-//                }
-//
-//                if (isImpactVisible) {
-//                    double impact = fieldModel.getImpact(x, y);
-//                    backgroundGraphics.drawString(String.format("%.1f", impact), xCrd, yCrd + impactFontSize / 2);
-//                }
+                int offsetX = (y % 2) == 0 ? 0 : hexIncircle;
+                Point[] points = shiftPoints(shownX, shownY, offsetX);
+                drawPolygon(background, points);
+
+//                drawHexagon(background, shownX, shownY, offsetX);
+
+                Point center = new Point(points[5].x + hexIncircle, points[0].y + halfHexSize * 2);
+                if(field.get(x, y) == CellState.ALIVE) {
+//                    System.out.println("Alive: " + new Point(x, y));
+                    spanFill(background, center, aliveColor);
+                }
+
+                if (isImpactVisible) {
+                    double impact = fieldModel.getImpact(x, y);
+                    backgroundGraphics.drawString(String.format("%.1f", impact), center.x, center.y + impactFontSize / 2);
+                }
             }
         }
+    }
+
+    private Point[] shiftPoints(int x, int y, int extraOffsetX) {
+        int offsetX = 2 * hexIncircle;
+        int offsetY = halfHexSize * 3;
+        Point[] points = new Point[firstHex.length];
+        for(int i = 0; i < firstHex.length; ++i) {
+            points[i] = new Point(firstHex[i].x + x * offsetX + extraOffsetX, firstHex[i].y + y * offsetY);
+        }
+
+        return points;
     }
 
     private void drawHexagon(BufferedImage image, int x, int y, int extraOffsetX) {
@@ -231,7 +248,13 @@ public class FieldView extends JLabel implements Observer {
     private void drawPolygon(BufferedImage image, Point[] points) {
         for(int i = 0; i < points.length; ++i) {
             int next = (i + 1) % points.length;
-            drawLine(image, points[i].x, points[i].y, points[next].x, points[next].y);
+
+            try {
+                drawLine(image, points[i].x, points[i].y, points[next].x, points[next].y);
+            } catch (Exception e) {
+                System.out.println(points[i] + ", " + points[next]);
+                System.out.println("Size: " + image.getWidth() + ", " + image.getHeight());
+            }
         }
     }
 
