@@ -20,7 +20,6 @@ public class LifeController {
     private IFieldModel fieldModel;
     private IPropertiesModel propertiesModel;
     private Point prevCell;
-    private CellState replaceModeNewState;
     private Timer timer;
 
     public void run() {
@@ -78,13 +77,6 @@ public class LifeController {
         IField field = fieldModel.getActiveField();
         prevCell = getHex(mouseEvent.getPoint());
 
-        if (!field.checkCrds(prevCell)) {
-            replaceModeNewState = CellState.ALIVE;
-            return;
-        }
-
-        replaceModeNewState = CellState.opposite(field.get(prevCell));
-
         changeCellState(prevCell);
     }
 
@@ -117,7 +109,7 @@ public class LifeController {
 
         //Replace
         if (propertiesModel.getPaintMode() == PaintMode.REPLACE) {
-            field.set(pos, replaceModeNewState);
+            field.set(pos, CellState.ALIVE);
             lifeView.repaint();
             return;
         }
