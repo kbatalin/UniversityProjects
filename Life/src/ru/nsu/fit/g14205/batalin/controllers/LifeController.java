@@ -25,6 +25,10 @@ public class LifeController {
         lifeView.setVisible(true);
     }
 
+    public void onClearButtonClicked() {
+        fieldModel.clear();
+    }
+
     public void onReplaceModeClicked() {
         propertiesModel.setPaintMode(PaintMode.REPLACE);
     }

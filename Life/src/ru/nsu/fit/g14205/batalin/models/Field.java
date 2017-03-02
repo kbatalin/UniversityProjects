@@ -15,6 +15,10 @@ public class Field implements IField {
     public Field(Dimension fieldSize) {
         this.fieldSize = fieldSize;
 
+        resetField();
+    }
+
+    private void resetField() {
         field = new ArrayList<>();
 
         for(int i = 0; i < fieldSize.width; ++i) {
@@ -70,5 +74,10 @@ public class Field implements IField {
     @Override
     public void set(Point pos, CellState cellState) {
         set(pos.x, pos.y, cellState);
+    }
+
+    @Override
+    public void clear() {
+        resetField();
     }
 }

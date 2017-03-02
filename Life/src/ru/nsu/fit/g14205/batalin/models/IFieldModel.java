@@ -12,4 +12,5 @@ public interface IFieldModel extends IObservable {
     void step();
     double getImpact(Point pos);
     double getImpact(int x, int y);
+    void clear();
 }

@@ -115,4 +115,13 @@ public class FieldModel extends Observable implements IFieldModel {
 
         return count;
     }
+
+    @Override
+    public void clear() {
+        for (IField field : fields) {
+            field.clear();
+        }
+
+        notifyObservers(FieldModelEvent.FILED_CLEARED);
+    }
 }

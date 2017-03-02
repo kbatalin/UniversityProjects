@@ -100,6 +100,7 @@ public class LifeView extends JFrame implements Observer {
 
         JMenuItem editMenuClear = new JMenuItem("Clear");
         editMenuClear.setMnemonic(KeyEvent.VK_C);
+        editMenuClear.addActionListener(actionEvent -> lifeController.onClearButtonClicked());
         editMenu.add(editMenuClear);
 
         JMenu editMenuMode = new JMenu("Mode");
@@ -229,6 +230,7 @@ public class LifeView extends JFrame implements Observer {
         if (clearButtonIcon != null) {
             clearButton.setIcon(clearButtonIcon);
         }
+        clearButton.addActionListener(actionEvent -> lifeController.onClearButtonClicked());
         toolBar.add(clearButton);
 
         ButtonGroup modeGroup = new ButtonGroup();

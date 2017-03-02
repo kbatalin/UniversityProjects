@@ -15,4 +15,5 @@ public interface IField {
     CellState get(Point pos);
     void set(int x, int y, CellState cellState);
     void set(Point pos, CellState cellState);
+    void clear();
 }
