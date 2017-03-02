@@ -33,4 +33,7 @@ public interface IPropertiesModel extends IObservable {
     void setImpactVisible(boolean impactVisible);
 
     int getImpactFontSize();
+
+    PaintMode getPaintMode();
+    void setPaintMode(PaintMode mode);
 }

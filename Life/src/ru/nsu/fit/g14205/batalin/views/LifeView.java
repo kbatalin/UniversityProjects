@@ -23,6 +23,11 @@ public class LifeView extends JFrame implements Observer {
     private JCheckBoxMenuItem viewMenuImpact;
     private JToggleButton impactButton;
 
+    private JRadioButtonMenuItem modeReplace;
+    private JRadioButtonMenuItem modeXor;
+    private JToggleButton replaceButton;
+    private JToggleButton xorButton;
+
     public LifeView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
 
@@ -103,14 +108,22 @@ public class LifeView extends JFrame implements Observer {
 
         ButtonGroup modeGroup = new ButtonGroup();
 
-        JRadioButtonMenuItem modeReplace = new JRadioButtonMenuItem("Replace");
+        modeReplace = new JRadioButtonMenuItem("Replace");
         modeReplace.setSelected(true);
         modeReplace.setMnemonic(KeyEvent.VK_R);
+        modeReplace.addActionListener(actionEvent -> {
+            replaceButton.setSelected(true);
+            lifeController.onReplaceModeClicked();
+        });
         modeGroup.add(modeReplace);
         editMenuMode.add(modeReplace);
 
-        JRadioButtonMenuItem modeXor = new JRadioButtonMenuItem("XOR");
+        modeXor = new JRadioButtonMenuItem("XOR");
         modeXor.setMnemonic(KeyEvent.VK_X);
+        modeXor.addActionListener(actionEvent -> {
+            xorButton.setSelected(true);
+            lifeController.onXorModeClicked();
+        });
         modeGroup.add(modeXor);
         editMenuMode.add(modeXor);
 
@@ -218,20 +231,32 @@ public class LifeView extends JFrame implements Observer {
         }
         toolBar.add(clearButton);
 
-        JButton replaceButton = new JButton();
+        ButtonGroup modeGroup = new ButtonGroup();
+        replaceButton = new JToggleButton();
         replaceButton.setToolTipText("Replace cell");
         Icon replaceButtonIcon = getButtonIcon("images/add.png");
         if (replaceButtonIcon != null) {
             replaceButton.setIcon(replaceButtonIcon);
         }
+        replaceButton.addActionListener(actionEvent -> {
+            modeReplace.setSelected(true);
+            lifeController.onReplaceModeClicked();
+        });
+        replaceButton.setSelected(true);
+        modeGroup.add(replaceButton);
         toolBar.add(replaceButton);
 
-        JButton xorButton = new JButton();
+        xorButton = new JToggleButton();
         xorButton.setToolTipText("Xor cell");
         Icon xorButtonIcon = getButtonIcon("images/add_outline.png");
         if (xorButtonIcon != null) {
             xorButton.setIcon(xorButtonIcon);
         }
+        xorButton.addActionListener(actionEvent -> {
+            modeXor.setSelected(true);
+            lifeController.onXorModeClicked();
+        });
+        modeGroup.add(xorButton);
         toolBar.add(xorButton);
 
 

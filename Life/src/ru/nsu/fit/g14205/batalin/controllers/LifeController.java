@@ -3,9 +3,8 @@ package ru.nsu.fit.g14205.batalin.controllers;
 import ru.nsu.fit.g14205.batalin.models.*;
 import ru.nsu.fit.g14205.batalin.views.LifeView;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
 /**
@@ -15,6 +14,8 @@ public class LifeController {
     private LifeView lifeView;
     private IFieldModel fieldModel;
     private IPropertiesModel propertiesModel;
+    private Point prevCell;
+    private CellState replaceModeNewState;
 
     public void run() {
         propertiesModel = PropertiesModel.createDefault();
@@ -22,6 +23,72 @@ public class LifeController {
         lifeView = new LifeView(this, fieldModel, propertiesModel);
 
         lifeView.setVisible(true);
+    }
+
+    public void onReplaceModeClicked() {
+        propertiesModel.setPaintMode(PaintMode.REPLACE);
+    }
+
+    public void onXorModeClicked() {
+        propertiesModel.setPaintMode(PaintMode.XOR);
+    }
+
+    public void onMousePressed(MouseEvent mouseEvent) {
+        IField field = fieldModel.getActiveField();
+        prevCell = getHex(mouseEvent.getPoint());
+
+        if (!field.checkCrds(prevCell)) {
+            replaceModeNewState = CellState.ALIVE;
+            return;
+        }
+
+        replaceModeNewState = CellState.opposite(field.get(prevCell));
+
+        changeCellState(prevCell);
+    }
+
+    public void onMouseDragged(MouseEvent mouseEvent) {
+        IField field = fieldModel.getActiveField();
+        Point nextCell = getHex(mouseEvent.getPoint());
+
+        if (prevCell.equals(nextCell)) {
+            return;
+        }
+
+        prevCell = nextCell;
+
+        if (!field.checkCrds(nextCell)) {
+            return;
+        }
+
+        changeCellState(nextCell);
+    }
+
+    public void onMouseReleased(MouseEvent mouseEvent) {
+        prevCell = new Point(-1, -1);
+    }
+
+    private void changeCellState(Point pos) {
+        IField field = fieldModel.getActiveField();
+        if (!field.checkCrds(pos)) {
+            return;
+        }
+
+        //Replace
+        if (propertiesModel.getPaintMode() == PaintMode.REPLACE) {
+            field.set(pos, replaceModeNewState);
+            lifeView.repaint();
+            return;
+        }
+
+        //XOR
+        if (field.get(pos) == CellState.ALIVE) {
+            field.set(pos, CellState.DEAD);
+        } else {
+            field.set(pos, CellState.ALIVE);
+        }
+
+        lifeView.repaint();
     }
 
     public void onNextButtonClicked() {
@@ -41,21 +108,21 @@ public class LifeController {
     }
 
     public void onFieldClick(Point pos) {
-        IField field = fieldModel.getActiveField();
-
-        Point hex = getHex(pos);
-        if (!field.checkCrds(hex)) {
-            System.out.println("Bad pos");
-            return;
-        }
-
-        if (field.get(hex) == CellState.ALIVE) {
-            field.set(hex, CellState.DEAD);
-        } else {
-            field.set(hex, CellState.ALIVE);
-        }
-
-        lifeView.repaint();
+//        IField field = fieldModel.getActiveField();
+//
+//        Point hex = getHex(pos);
+//        if (!field.checkCrds(hex)) {
+//            System.out.println("Bad pos");
+//            return;
+//        }
+//
+//        if (field.get(hex) == CellState.ALIVE) {
+//            field.set(hex, CellState.DEAD);
+//        } else {
+//            field.set(hex, CellState.ALIVE);
+//        }
+//
+//        lifeView.repaint();
     }
 
     private Point getHex(Point pos) {

@@ -41,6 +41,28 @@ public class FieldView extends JLabel implements Observer {
             public void mouseClicked(MouseEvent e) {
                 lifeController.onFieldClick(e.getPoint());
             }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                lifeController.onMousePressed(mouseEvent);
+
+//                System.out.println("pressed:" + mouseEvent.getPoint());
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                lifeController.onMouseReleased(mouseEvent);
+//                System.out.println("released:" + mouseEvent.getPoint());
+            }
+        });
+
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent mouseEvent) {
+                lifeController.onMouseDragged(mouseEvent);
+
+//                System.out.println("dragged:" + mouseEvent.getPoint());
+            }
         });
 
         addMouseWheelListener(new MouseWheelListener() {

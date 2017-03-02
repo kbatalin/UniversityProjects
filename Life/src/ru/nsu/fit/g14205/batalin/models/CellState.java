@@ -5,5 +5,13 @@ package ru.nsu.fit.g14205.batalin.models;
  */
 public enum CellState {
     ALIVE,
-    DEAD,
+    DEAD;
+
+    public static CellState opposite(CellState state) {
+        if (state == ALIVE) {
+            return DEAD;
+        }
+
+        return ALIVE;
+    }
 }

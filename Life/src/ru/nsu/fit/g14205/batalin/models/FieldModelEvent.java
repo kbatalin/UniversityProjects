@@ -7,4 +7,5 @@ import ru.nsu.fit.g14205.batalin.utils.observe.IEvent;
  */
 public enum FieldModelEvent implements IEvent {
     FIELD_UPDATED,
+    CELL_STATE_CHANGED,
 }
