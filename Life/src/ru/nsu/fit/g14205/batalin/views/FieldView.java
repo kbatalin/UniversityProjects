@@ -212,9 +212,9 @@ public class FieldView extends JLabel implements Observer {
                     spanFill(background, center, aliveColor);
                 }
 
-                if (isImpactVisible) {
+                if (isImpactVisible && hexSize >= 18) {
                     double impact = fieldModel.getImpact(x, y);
-                    backgroundGraphics.drawString(String.format("%.1f", impact), center.x, center.y + impactFontSize / 2);
+                    backgroundGraphics.drawString(String.format("%.1f", impact), center.x - 5, center.y + impactFontSize / 2);
                 }
             }
         }
