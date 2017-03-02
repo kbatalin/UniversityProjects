@@ -19,11 +19,8 @@ public class Observable implements IObservable {
 
     @Override
     public int addObserver(IEvent event, IObserverHandler handler) {
-        Map<Integer, IObserverHandler> list = observers.computeIfAbsent(event, k -> {
-            Map<Integer, IObserverHandler> handlers = new HashMap<>();
-            handlers.put(handler.hashCode(), handler);
-            return handlers;
-        });
+        Map<Integer, IObserverHandler> list = observers.computeIfAbsent(event, k -> new HashMap<>());
+        list.put(handler.hashCode(), handler);
 
         return handler.hashCode();
     }
