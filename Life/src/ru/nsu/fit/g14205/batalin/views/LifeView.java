@@ -175,6 +175,7 @@ public class LifeView extends JFrame implements Observer {
 
         JMenuItem helpMenuAbout = new JMenuItem("About");
         helpMenuAbout.setMnemonic(KeyEvent.VK_A);
+        helpMenuAbout.addActionListener(actionEvent -> lifeController.onAboutButtonClicked());
         helpMenu.add(helpMenuAbout);
     }
 
@@ -319,6 +320,7 @@ public class LifeView extends JFrame implements Observer {
         if (aboutButtonIcon != null) {
             aboutButton.setIcon(aboutButtonIcon);
         }
+        aboutButton.addActionListener(actionEvent -> lifeController.onAboutButtonClicked());
         toolBar.add(aboutButton);
     }
 

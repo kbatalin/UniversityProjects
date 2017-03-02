@@ -1,8 +1,10 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.*;
+import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.LifeView;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -12,6 +14,7 @@ import java.awt.event.MouseWheelEvent;
  */
 public class LifeController {
     private LifeView lifeView;
+    private JDialog aboutDialog;
     private IFieldModel fieldModel;
     private IPropertiesModel propertiesModel;
     private Point prevCell;
@@ -27,6 +30,18 @@ public class LifeController {
 
     public void onClearButtonClicked() {
         fieldModel.clear();
+    }
+
+    public void onAboutButtonClicked() {
+        if (aboutDialog != null) {
+            return;
+        }
+
+        aboutDialog = new JDialog(new AboutView(this), "About", Dialog.ModalityType.DOCUMENT_MODAL);
+    }
+
+    public void onAboutDialogClosing() {
+        aboutDialog = null;
     }
 
     public void onReplaceModeClicked() {
