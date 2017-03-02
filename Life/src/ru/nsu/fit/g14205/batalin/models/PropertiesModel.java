@@ -10,7 +10,7 @@ import java.awt.*;
 public class PropertiesModel extends Observable implements IPropertiesModel {
     private static int DEFAULT_HEX_SIZE = 30;
     private static Dimension DEFAULT_FIELD_SIZE = new Dimension(20, 100);
-    private static int DEFAULT_MIN_HEX_SIZE = 5;
+    private static int DEFAULT_MIN_HEX_SIZE = 4;
     private static int DEFAULT_MAX_HEX_SIZE = 50;
     private static double DEFAULT_FIRST_IMPACT = 1.0;
     private static double DEFAULT_SECOND_IMPACT = 0.3;

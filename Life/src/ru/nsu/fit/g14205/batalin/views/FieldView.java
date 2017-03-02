@@ -37,10 +37,6 @@ public class FieldView extends JLabel implements Observer {
         updSize(propertiesModel);
 
         addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                lifeController.onFieldClick(e.getPoint());
-            }
-
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 lifeController.onMousePressed(mouseEvent);

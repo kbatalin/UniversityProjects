@@ -109,37 +109,20 @@ public class LifeController {
         propertiesModel.setHexSize(newHexSize);
     }
 
-    public void onFieldClick(Point pos) {
-//        IField field = fieldModel.getActiveField();
-//
-//        Point hex = getHex(pos);
-//        if (!field.checkCrds(hex)) {
-//            System.out.println("Bad pos");
-//            return;
-//        }
-//
-//        if (field.get(hex) == CellState.ALIVE) {
-//            field.set(hex, CellState.DEAD);
-//        } else {
-//            field.set(hex, CellState.ALIVE);
-//        }
-//
-//        lifeView.repaint();
-    }
-
     private Point getHex(Point pos) {
 //        System.out.println(pos);
 
         int hexSize = propertiesModel.getHexSize();
         int hexIncircle = propertiesModel.getHexIncircle();
+        int halfHexSize = hexSize / 2;
 
-        int y = pos.y * 2 / 3 / hexSize;
+        int y = pos.y / 3 / halfHexSize;
         int offset = (y % 2 != 0) ? hexIncircle : 0;
         int x = (pos.x - offset) / 2 / hexIncircle;
 //        int shiftedX = (y % 2 == 0) ? (x) : (x - 1);
 
-        Point center1 = new Point((x * 2 + 1) * hexIncircle + offset, y * 3 * hexSize / 2 + hexSize);
-        Point center2 = new Point(center1.x - hexIncircle , center1.y - 3 * hexSize / 2);
+        Point center1 = new Point((x * 2 + 1) * hexIncircle + offset, y * 3 * halfHexSize + hexSize);
+        Point center2 = new Point(center1.x - hexIncircle , center1.y - 3 * halfHexSize);
         Point center3 = new Point(center1.x + hexIncircle , center2.y);
 
         double dist1 = pos.distanceSq(center1);
