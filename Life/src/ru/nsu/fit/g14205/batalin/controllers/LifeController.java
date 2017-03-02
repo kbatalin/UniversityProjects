@@ -74,9 +74,7 @@ public class LifeController {
     }
 
     public void onMousePressed(MouseEvent mouseEvent) {
-        IField field = fieldModel.getActiveField();
         prevCell = getHex(mouseEvent.getPoint());
-
         changeCellState(prevCell);
     }
 
