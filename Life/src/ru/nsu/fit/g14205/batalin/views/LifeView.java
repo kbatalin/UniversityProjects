@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.views;
 import ru.nsu.fit.g14205.batalin.controllers.LifeController;
 import ru.nsu.fit.g14205.batalin.models.IFieldModel;
 import ru.nsu.fit.g14205.batalin.models.IPropertiesModel;
+import ru.nsu.fit.g14205.batalin.models.PropertiesModelEvent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +18,9 @@ import java.util.Observer;
  */
 public class LifeView extends JFrame implements Observer {
     private LifeController lifeController;
+
+    private JScrollPane scrollPane;
+    private FieldView fieldView;
 
     private JCheckBoxMenuItem viewMenuImpact;
     private JToggleButton impactButton;
@@ -41,6 +45,11 @@ public class LifeView extends JFrame implements Observer {
         initToolbar();
 
         initField(lifeController, fieldModel, propertiesModel);
+
+        propertiesModel.addObserver(PropertiesModelEvent.SIZE_CHANGED, () -> {
+            fieldView.revalidate();
+            scrollPane.repaint();
+        });
     }
 
     @Override
@@ -353,8 +362,8 @@ public class LifeView extends JFrame implements Observer {
     }
 
     private void initField(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
-        FieldView fieldView = new FieldView(lifeController, fieldModel, propertiesModel);
-        JScrollPane scrollPane = new JScrollPane(fieldView);
+        fieldView = new FieldView(lifeController, fieldModel, propertiesModel);
+        scrollPane = new JScrollPane(fieldView);
         add(scrollPane, BorderLayout.CENTER);
     }
 
