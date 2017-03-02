@@ -71,7 +71,7 @@ public class FieldModel extends Observable implements IFieldModel {
             for(pos.x = 0; pos.x < fieldSize.width; ++pos.x) {
                 double impact = getImpact(pos);
 
-                if (Double.compare(impact, birthBegin) > 0 && Double.compare(impact, birthEnd) < 0) {
+                if (Double.compare(impact, birthBegin) >= 0 && Double.compare(impact, birthEnd) <= 0) {
                     fields[nextField].set(pos, CellState.ALIVE);
                 } else if (Double.compare(impact, liveBegin) < 0 || Double.compare(impact, liveEnd) > 0) {
                     fields[nextField].set(pos, CellState.DEAD);
