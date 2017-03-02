@@ -7,13 +7,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Stack;
-import java.util.function.Supplier;
 
 /**
  * Created by kir55rus on 14.02.17.
@@ -26,8 +23,10 @@ public class FieldView extends JLabel implements Observer {
     private Dimension preferredSize;
     private int hexSize;
     private int hexIncircle;
+    private int halfHexSize;
     private int backgroundOffset;
     private Color aliveColor = Color.GREEN;
+    private Point[] firstHex;
 
 
     public FieldView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
@@ -35,7 +34,7 @@ public class FieldView extends JLabel implements Observer {
         this.fieldModel = fieldModel;
         this.propertiesModel = propertiesModel;
 
-        setSize(propertiesModel);
+        updSize(propertiesModel);
 
         addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -45,14 +44,11 @@ public class FieldView extends JLabel implements Observer {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 lifeController.onMousePressed(mouseEvent);
-
-//                System.out.println("pressed:" + mouseEvent.getPoint());
             }
 
             @Override
             public void mouseReleased(MouseEvent mouseEvent) {
                 lifeController.onMouseReleased(mouseEvent);
-//                System.out.println("released:" + mouseEvent.getPoint());
             }
         });
 
@@ -60,20 +56,13 @@ public class FieldView extends JLabel implements Observer {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
                 lifeController.onMouseDragged(mouseEvent);
-
-//                System.out.println("dragged:" + mouseEvent.getPoint());
             }
         });
 
-        addMouseWheelListener(new MouseWheelListener() {
-            @Override
-            public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
-                lifeController.onMouseWheelMoved(mouseWheelEvent);
-            }
-        });
+        addMouseWheelListener(lifeController::onMouseWheelMoved);
 
         propertiesModel.addObserver(PropertiesModelEvent.SIZE_CHANGED, () -> {
-            setSize(propertiesModel);
+            updSize(propertiesModel);
             repaint();
         });
 
@@ -101,28 +90,37 @@ public class FieldView extends JLabel implements Observer {
 
         int x0 = Math.max(0, clipBounds.x / (2 * hexIncircle) - 1);
         int x1 = Math.min(fieldSize.width, (clipBounds.x + clipBounds.width) / (2 * hexIncircle) + 1);
-        int y0 = Math.max(0, clipBounds.y / (3 * hexSize / 2) - 1);
-        int y1 = Math.min(fieldSize.height, (clipBounds.y + clipBounds.height) / (3 * hexSize / 2) + 1);
+        int y0 = Math.max(0, clipBounds.y / (3 * halfHexSize) - 1);
+        int y1 = Math.min(fieldSize.height, (clipBounds.y + clipBounds.height) / (3 * halfHexSize) + 1);
 
 //        System.out.println("x0: " + x0 + ", x1: " + x1 + ", y0: " + y0 + ", y1: " + y1);
 
         drawField(background, x0, y0, x1, y1);
 
         int offsetX = Math.max(0, clipBounds.x - (clipBounds.x % (2 * hexIncircle)) - (2 * hexIncircle));
-        int offsetY = Math.max(0, clipBounds.y - (clipBounds.y % (3 * hexSize / 2)) - (3 * hexSize / 2));
+        int offsetY = Math.max(0, clipBounds.y - (clipBounds.y % (3 * halfHexSize)) - (3 * halfHexSize));
 
         graphics.drawImage(background, offsetX, offsetY, null);
     }
 
-    private void setSize(IPropertiesModel propertiesModel) {
+    private void updSize(IPropertiesModel propertiesModel) {
         Dimension fieldSize = fieldModel.getActiveField().getSize();
 
         this.hexSize = propertiesModel.getHexSize();
         this.hexIncircle = propertiesModel.getHexIncircle();
-        this.backgroundOffset = 8 * this.hexSize;
+        this.halfHexSize = this.hexSize / 2;
+        this.backgroundOffset = 8 * this.halfHexSize;
+
+        firstHex = new Point[6];
+        firstHex[0] = new Point(hexIncircle, 0);
+        firstHex[1] = new Point(2 * hexIncircle, halfHexSize);
+        firstHex[2] = new Point(2 * hexIncircle, halfHexSize * 3);
+        firstHex[3] = new Point(hexIncircle, halfHexSize * 4);
+        firstHex[4] = new Point(0, halfHexSize * 3);
+        firstHex[5] = new Point(0, halfHexSize);
 
         int preferredWidth = fieldSize.width * 2 * this.hexIncircle + 1;
-        int preferredHeight = (fieldSize.height * 3  + 1) * this.hexSize / 2 + 1;
+        int preferredHeight = (fieldSize.height * 3  + 1) * halfHexSize + 1;
         this.preferredSize = new Dimension(preferredWidth, preferredHeight);
     }
 
@@ -204,31 +202,28 @@ public class FieldView extends JLabel implements Observer {
                 int shownY = y - y0;
 
                 int offsetX = (y % 2) == 0 ? 0 : hexIncircle;
-                int xCrd = hexIncircle + shownX * 2 * hexIncircle + offsetX;
-                int yCrd = hexSize + shownY * 3 * hexSize / 2;
-                drawHexagon(background, xCrd, yCrd);
+                drawHexagon(background, shownX, shownY, offsetX);
 
-                if(field.get(x, y) == CellState.ALIVE) {
-//                    System.out.println("Alive: " + new Point(x, y));
-                    spanFill(background, new Point(xCrd, yCrd), aliveColor);
-                }
-
-                if (isImpactVisible) {
-                    double impact = fieldModel.getImpact(x, y);
-                    backgroundGraphics.drawString(String.format("%.1f", impact), xCrd, yCrd + impactFontSize / 2);
-                }
+//                if(field.get(x, y) == CellState.ALIVE) {
+////                    System.out.println("Alive: " + new Point(x, y));
+//                    spanFill(background, new Point(xCrd, yCrd), aliveColor);
+//                }
+//
+//                if (isImpactVisible) {
+//                    double impact = fieldModel.getImpact(x, y);
+//                    backgroundGraphics.drawString(String.format("%.1f", impact), xCrd, yCrd + impactFontSize / 2);
+//                }
             }
         }
     }
 
-    private void drawHexagon(BufferedImage image, int x, int y) {
-        Point[] points = new Point[6];
-        points[0] = new Point(x,y + hexSize);
-        points[1] = new Point(x + hexIncircle, y + hexSize / 2);
-        points[2] = new Point(x + hexIncircle, y - hexSize / 2);
-        points[3] = new Point(x, y - hexSize);
-        points[4] = new Point(x - hexIncircle, y - hexSize / 2);
-        points[5] = new Point(x - hexIncircle, y + hexSize / 2);
+    private void drawHexagon(BufferedImage image, int x, int y, int extraOffsetX) {
+        int offsetX = 2 * hexIncircle;
+        int offsetY = halfHexSize * 3;
+        Point[] points = new Point[firstHex.length];
+        for(int i = 0; i < firstHex.length; ++i) {
+            points[i] = new Point(firstHex[i].x + x * offsetX + extraOffsetX, firstHex[i].y + y * offsetY);
+        }
 
         drawPolygon(image, points);
     }

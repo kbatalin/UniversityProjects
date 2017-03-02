@@ -100,7 +100,9 @@ public class LifeController {
     }
 
     public void onMouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
-        int newHexSize = propertiesModel.getHexSize() - mouseWheelEvent.getWheelRotation();
+        int newHexSize = propertiesModel.getHexSize();
+        newHexSize -= newHexSize % 2;
+        newHexSize -= 2 * mouseWheelEvent.getWheelRotation();
         newHexSize = Math.min(propertiesModel.getMaxHexSize(), newHexSize);
         newHexSize = Math.max(propertiesModel.getMinHexSize(), newHexSize);
         System.out.println("New hex size: " + newHexSize);
