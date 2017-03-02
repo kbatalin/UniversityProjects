@@ -20,6 +20,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     private static double DEFAULT_BIRTH_END = 2.9;
     private static int DEFAULT_IMPACT_FONT_SIZE = 12;
     private static PaintMode DEFAULT_PAINT_MODE = PaintMode.REPLACE;
+    private static long DEFAULT_TIMER = 1000;
 
     private int hexSize;
     private int hexIncircle;
@@ -32,6 +33,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     private double birthEnd;
     private boolean isImpactVisible;
     private PaintMode paintMode;
+    private long timer;
 
     public static PropertiesModel createDefault() {
         PropertiesModel propertiesModel = new PropertiesModel();
@@ -44,6 +46,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
         propertiesModel.setBirthBegin(DEFAULT_BIRTH_BEGIN);
         propertiesModel.setLiveBegin(DEFAULT_LIVE_BEGIN);
         propertiesModel.setPaintMode(DEFAULT_PAINT_MODE);
+        propertiesModel.setTimer(DEFAULT_TIMER);
 
         return propertiesModel;
     }
@@ -199,5 +202,15 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public void setPaintMode(PaintMode paintMode) {
         this.paintMode = paintMode;
+    }
+
+    @Override
+    public long getTimer() {
+        return timer;
+    }
+
+    @Override
+    public void setTimer(long timer) {
+        this.timer = timer;
     }
 }

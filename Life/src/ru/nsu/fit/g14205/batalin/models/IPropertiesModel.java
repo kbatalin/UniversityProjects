@@ -36,4 +36,7 @@ public interface IPropertiesModel extends IObservable {
 
     PaintMode getPaintMode();
     void setPaintMode(PaintMode mode);
+
+    long getTimer();
+    void setTimer(long timer);
 }

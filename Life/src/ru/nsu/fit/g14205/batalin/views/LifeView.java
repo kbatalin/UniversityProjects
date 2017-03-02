@@ -1,14 +1,12 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.LifeController;
-import ru.nsu.fit.g14205.batalin.models.FieldModel;
 import ru.nsu.fit.g14205.batalin.models.IFieldModel;
 import ru.nsu.fit.g14205.batalin.models.IPropertiesModel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.Observable;
@@ -27,6 +25,8 @@ public class LifeView extends JFrame implements Observer {
     private JRadioButtonMenuItem modeXor;
     private JToggleButton replaceButton;
     private JToggleButton xorButton;
+    private JToggleButton runButton;
+    private JMenuItem actionMenuRun;
 
     public LifeView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
@@ -46,6 +46,27 @@ public class LifeView extends JFrame implements Observer {
     @Override
     public void update(Observable observable, Object o) {
         //todo
+    }
+
+    private void runButtonClicked(boolean isSelected) {
+        if(!isSelected) {
+            actionMenuRun.setText("Run");
+            Icon runButtonIcon = getButtonIcon("images/media_controls_dark_play.png");
+            if (runButtonIcon != null) {
+                runButton.setIcon(runButtonIcon);
+            }
+            runButton.setSelected(false);
+            lifeController.onRunButtonClicked(false);
+            return;
+        }
+
+        actionMenuRun.setText("Stop");
+        Icon runButtonIcon = getButtonIcon("images/media_controls_dark_pause.png");
+        if (runButtonIcon != null) {
+            runButton.setIcon(runButtonIcon);
+        }
+        runButton.setSelected(true);
+        lifeController.onRunButtonClicked(true);
     }
 
     private void initMenu() {
@@ -140,8 +161,12 @@ public class LifeView extends JFrame implements Observer {
         actionMenu.setMnemonic(KeyEvent.VK_A);
         menuBar.add(actionMenu);
 
-        JMenuItem actionMenuRun = new JMenuItem("Run");
+        actionMenuRun = new JMenuItem("Run");
         actionMenuRun.setMnemonic(KeyEvent.VK_R);
+        actionMenuRun.addActionListener(actionEvent -> {
+            boolean isSelected = runButton.isSelected();
+            runButtonClicked(!isSelected);
+        });
         actionMenu.add(actionMenuRun);
 
         JMenuItem actionMenuNext = new JMenuItem("Next");
@@ -273,12 +298,15 @@ public class LifeView extends JFrame implements Observer {
 
         toolBar.addSeparator();
 
-        JButton runButton = new JButton();
+        runButton = new JToggleButton();
         runButton.setToolTipText("Run");
         Icon runButtonIcon = getButtonIcon("images/media_controls_dark_play.png");
         if (runButtonIcon != null) {
             runButton.setIcon(runButtonIcon);
         }
+        runButton.addActionListener(actionEvent -> {
+            runButtonClicked(runButton.isSelected());
+        });
         toolBar.add(runButton);
 
         JButton nextButton = new JButton();

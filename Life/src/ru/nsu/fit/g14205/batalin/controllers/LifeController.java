@@ -8,6 +8,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.*;
+import java.util.Timer;
 
 /**
  * Created by kir55rus on 10.02.17.
@@ -19,6 +21,7 @@ public class LifeController {
     private IPropertiesModel propertiesModel;
     private Point prevCell;
     private CellState replaceModeNewState;
+    private Timer timer;
 
     public void run() {
         propertiesModel = PropertiesModel.createDefault();
@@ -26,6 +29,25 @@ public class LifeController {
         lifeView = new LifeView(this, fieldModel, propertiesModel);
 
         lifeView.setVisible(true);
+    }
+
+    public void onRunButtonClicked(boolean isSelected) {
+        if (!isSelected) {
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+
+            return;
+        }
+
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                fieldModel.step();
+            }
+        }, 0, propertiesModel.getTimer());
     }
 
     public void onClearButtonClicked() {
