@@ -34,21 +34,25 @@ public class LifeController {
     private boolean isSaved;
 
     public void run() {
-        reset();
-        propertiesModel = PropertiesModel.createDefault();
-        fieldModel = new FieldModel(propertiesModel);
-        lifeView = new LifeView(this, fieldModel, propertiesModel);
-
         fileChooser = new JFileChooser();
         File workingDirectory = new File(System.getProperty("user.dir") + File.separator + "FIT_14205_Batalin_Kirill_Life_Data");
         fileChooser.setCurrentDirectory(workingDirectory);
 
+        createDefaultField();
+    }
+
+    private void createDefaultField() {
+        reset();
+        propertiesModel = PropertiesModel.createDefault();
+        fieldModel = new FieldModel(propertiesModel);
+        lifeView = new LifeView(this, fieldModel, propertiesModel);
         fieldModel.addObserver(FieldModelEvent.CELL_STATE_CHANGED, () -> setSaved(false));
 
         SwingUtilities.invokeLater(() -> {
             lifeView.setLocationRelativeTo(null);
             lifeView.setVisible(true);
         });
+
     }
 
     public void onCloseButtonClicked() {
@@ -89,8 +93,9 @@ public class LifeController {
             return;
         }
 
-        save();
-        System.exit(0);
+        if(save()) {
+            System.exit(0);
+        }
     }
 
     private void setSaved(boolean isSaved) {
@@ -103,41 +108,72 @@ public class LifeController {
         });
     }
 
-    public void onSaveAsButtonClicked() {
-        saveAs();
-    }
-
-    private void saveAs() {
-        chooseSaveFile();
-        save();
-    }
-
-    public void onSaveButtonClicked() {
-        save();
-    }
-
-    private void chooseSaveFile() {
-        int result = fileChooser.showSaveDialog(lifeView);
+    public void onOpenButtonClicked() {
+        int result = fileChooser.showOpenDialog(lifeView);
 
         if (result != JFileChooser.APPROVE_OPTION) {
             return;
         }
 
         File file = fileChooser.getSelectedFile();
-        propertiesModel.setSavePath(file.toPath());
+
+        try {
+            ILoader loader = new FileLoader(file.toPath());
+            loader.load();
+
+            reset();
+
+            propertiesModel = loader.getPropertiesModel();
+            fieldModel = loader.getFieldModel();
+            fieldModel.addObserver(FieldModelEvent.CELL_STATE_CHANGED, () -> setSaved(false));
+
+            lifeView = new LifeView(this, fieldModel, propertiesModel);
+            lifeView.setLocationRelativeTo(null);
+            lifeView.setVisible(true);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(lifeView,"Can't load field: " + e.getMessage(),"Open error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        setSaved(true);
     }
 
-    private void save() {
-        if (propertiesModel.getSavePath() == null) {
-            chooseSaveFile();
+    public void onSaveAsButtonClicked() {
+        saveAs();
+    }
+
+    private boolean saveAs() {
+        return chooseSaveFile() && save();
+    }
+
+    public void onSaveButtonClicked() {
+        save();
+    }
+
+    private boolean chooseSaveFile() {
+        int result = fileChooser.showSaveDialog(lifeView);
+
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return false;
+        }
+
+        File file = fileChooser.getSelectedFile();
+        propertiesModel.setSavePath(file.toPath());
+        return true;
+    }
+
+    private boolean save() {
+        if (propertiesModel.getSavePath() == null && !chooseSaveFile()) {
+            return false;
         }
 
         try {
             ISaver saver = new FileSaver(propertiesModel, fieldModel);
             saver.save();
             setSaved(true);
+            return true;
         } catch (IOException e) {
             JOptionPane.showMessageDialog(lifeView,"Can't save field","Save error", JOptionPane.ERROR_MESSAGE);
+            return false;
         }
     }
 
@@ -174,9 +210,6 @@ public class LifeController {
     }
 
     public void onCreateNewFieldDialogOk(Dimension size) {
-        if (lifeView != null) {
-            lifeView.setVisible(false);
-        }
         reset();
 
         propertiesModel = PropertiesModel.createDefault();

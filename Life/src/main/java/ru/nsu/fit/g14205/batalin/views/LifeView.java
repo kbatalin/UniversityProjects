@@ -105,6 +105,7 @@ public class LifeView extends JFrame {
         JMenuItem fileMenuOpen = new JMenuItem("Open...");
         fileMenuOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         fileMenuOpen.setMnemonic(KeyEvent.VK_O);
+        fileMenuOpen.addActionListener(actionEvent -> lifeController.onOpenButtonClicked());
         fileMenu.add(fileMenuOpen);
 
         JMenuItem fileMenuSave = new JMenuItem("Save");
@@ -237,6 +238,7 @@ public class LifeView extends JFrame {
         if (openButtonIcon != null) {
             openButton.setIcon(openButtonIcon);
         }
+        openButton.addActionListener(actionEvent -> lifeController.onOpenButtonClicked());
         toolBar.add(openButton);
 
         JButton saveButton = new JButton();

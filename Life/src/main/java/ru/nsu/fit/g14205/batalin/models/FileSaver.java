@@ -30,7 +30,7 @@ public class FileSaver implements ISaver {
         String lineSeparator = System.lineSeparator();
         Charset charset = Charset.forName("UTF-8");
         try (BufferedWriter writer = Files.newBufferedWriter(savePath, charset)) {
-            //weight height
+            //width height
             Dimension fieldSize = propertiesModel.getFieldSize();
             writer.write(String.valueOf(fieldSize.width) + " " + String.valueOf(fieldSize.height) + lineSeparator);
 
