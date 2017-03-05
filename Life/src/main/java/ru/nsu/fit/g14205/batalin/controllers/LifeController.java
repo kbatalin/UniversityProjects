@@ -15,6 +15,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.Timer;
 
@@ -196,12 +197,14 @@ public class LifeController {
         setSaved(true);
 
         if (aboutDialog != null) {
-            aboutDialog.setVisible(false);
+            Window window = SwingUtilities.getWindowAncestor(aboutDialog);
+            window.dispose();
             aboutDialog = null;
         }
 
         if (newFieldDialog != null) {
-            newFieldDialog.setVisible(false);
+            Window window = SwingUtilities.getWindowAncestor(newFieldDialog);
+            window.dispose();
             newFieldDialog = null;
         }
 
