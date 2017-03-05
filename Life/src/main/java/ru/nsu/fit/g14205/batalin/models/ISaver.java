@@ -7,5 +7,5 @@ import java.io.IOException;
  * Created by kir55rus on 05.03.17.
  */
 public interface ISaver {
-    void save(File file) throws IOException;
+    void save() throws IOException;
 }

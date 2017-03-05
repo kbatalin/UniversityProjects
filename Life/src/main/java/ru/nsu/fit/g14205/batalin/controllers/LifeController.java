@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.Timer;
 
@@ -23,16 +25,56 @@ public class LifeController {
     private IPropertiesModel propertiesModel;
     private Point prevCell;
     private Timer timer;
+    private JFileChooser fileChooser;
 
     public void run() {
         propertiesModel = PropertiesModel.createDefault();
         fieldModel = new FieldModel(propertiesModel);
         lifeView = new LifeView(this, fieldModel, propertiesModel);
 
+        fileChooser = new JFileChooser();
+        File workingDirectory = new File(System.getProperty("user.dir") + File.separator + "FIT_14205_Batalin_Kirill_Life_Data");
+        fileChooser.setCurrentDirectory(workingDirectory);
+
         SwingUtilities.invokeLater(() -> {
             lifeView.setLocationRelativeTo(null);
             lifeView.setVisible(true);
         });
+    }
+
+    public void onSaveAsButtonClicked() {
+        saveAs();
+    }
+
+    private void saveAs() {
+        int result = fileChooser.showSaveDialog(lifeView);
+
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File file = fileChooser.getSelectedFile();
+        propertiesModel.setSavePath(file.toPath());
+
+        save();
+    }
+
+    public void onSaveButtonClicked() {
+        if (propertiesModel.getSavePath() == null) {
+            saveAs();
+            return;
+        }
+
+        save();
+    }
+
+    private void save() {
+        try {
+            ISaver saver = new FileSaver(propertiesModel, fieldModel);
+            saver.save();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(lifeView,"Can't save field","Save error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void reset() {
@@ -57,8 +99,12 @@ public class LifeController {
 
         if (timer != null) {
             timer.cancel();
+            timer = null;
         }
-        timer = null;
+
+        if (fileChooser != null) {
+            fileChooser.cancelSelection();
+        }
     }
 
     public void onCreateNewFieldDialogOk(Dimension size) {

@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.models;
 import ru.nsu.fit.g14205.batalin.utils.observe.IObservable;
 
 import java.awt.*;
+import java.nio.file.Path;
 
 /**
  * Created by kir55rus on 27.02.17.
@@ -45,4 +46,7 @@ public interface IPropertiesModel extends IObservable {
 
     long getTimer();
     void setTimer(long timer);
+
+    Path getSavePath();
+    void setSavePath(Path path);
 }

@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.models;
 import ru.nsu.fit.g14205.batalin.utils.observe.Observable;
 
 import java.awt.*;
+import java.nio.file.Path;
 
 /**
  * Created by kir55rus on 27.02.17.
@@ -40,6 +41,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     private boolean isImpactVisible;
     private PaintMode paintMode;
     private long timer;
+    private Path savePath;
 
     public static PropertiesModel createDefault() {
         PropertiesModel propertiesModel = new PropertiesModel();
@@ -238,7 +240,10 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
 
     @Override
     public void setLineThickness(int lineThickness) {
-        if(lineThickness < 0)
+        if(lineThickness < DEFAULT_MIN_LINE_THICKNESS || lineThickness > DEFAULT_MAX_LINE_THICKNESS) {
+            throw new IllegalArgumentException("Bad line thickness");
+        }
+
         this.lineThickness = lineThickness;
     }
 
@@ -250,5 +255,15 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public int getMaxLineThickness() {
         return DEFAULT_MAX_LINE_THICKNESS;
+    }
+
+    @Override
+    public Path getSavePath() {
+        return savePath;
+    }
+
+    @Override
+    public void setSavePath(Path savePath) {
+        this.savePath = savePath;
     }
 }

@@ -109,11 +109,13 @@ public class LifeView extends JFrame implements Observer {
         JMenuItem fileMenuSave = new JMenuItem("Save");
         fileMenuSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         fileMenuSave.setMnemonic(KeyEvent.VK_S);
+        fileMenuSave.addActionListener(actionEvent -> lifeController.onSaveButtonClicked());
         fileMenu.add(fileMenuSave);
 
         JMenuItem fileMenuSaveAs = new JMenuItem("Save as...");
         fileMenuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
         fileMenuSaveAs.setMnemonic(KeyEvent.VK_A);
+        fileMenuSaveAs.addActionListener(actionEvent -> lifeController.onSaveAsButtonClicked());
         fileMenu.add(fileMenuSaveAs);
 
         fileMenu.addSeparator();
@@ -241,6 +243,7 @@ public class LifeView extends JFrame implements Observer {
         if (saveButtonIcon != null) {
             saveButton.setIcon(saveButtonIcon);
         }
+        saveButton.addActionListener(actionEvent -> lifeController.onSaveButtonClicked());
         toolBar.add(saveButton);
 
         JButton saveAsButton = new JButton();
@@ -249,6 +252,7 @@ public class LifeView extends JFrame implements Observer {
         if (saveAsButtonIcon != null) {
             saveAsButton.setIcon(saveAsButtonIcon);
         }
+        saveAsButton.addActionListener(actionEvent -> lifeController.onSaveAsButtonClicked());
         toolBar.add(saveAsButton);
 
         JButton closeButton = new JButton();
