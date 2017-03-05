@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.controllers;
 import ru.nsu.fit.g14205.batalin.models.*;
 import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.LifeView;
+import ru.nsu.fit.g14205.batalin.views.NewFieldView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +18,7 @@ import java.util.Timer;
 public class LifeController {
     private LifeView lifeView;
     private JDialog aboutDialog;
+    private JDialog newFieldDialog;
     private IFieldModel fieldModel;
     private IPropertiesModel propertiesModel;
     private Point prevCell;
@@ -27,7 +29,7 @@ public class LifeController {
         fieldModel = new FieldModel(propertiesModel);
         lifeView = new LifeView(this, fieldModel, propertiesModel);
 
-        lifeView.setVisible(true);
+        SwingUtilities.invokeLater(() -> lifeView.setVisible(true));
     }
 
     public void onRunButtonClicked(boolean isSelected) {
@@ -59,6 +61,17 @@ public class LifeController {
         }
 
         aboutDialog = new JDialog(new AboutView(this), "About", Dialog.ModalityType.DOCUMENT_MODAL);
+    }
+
+    public void onNewFieldButtonClicked() {
+        if (newFieldDialog != null) {
+            return;
+        }
+
+        NewFieldView newFieldView = new NewFieldView(this, propertiesModel);
+        newFieldView.setLocationRelativeTo( lifeView );
+
+        newFieldDialog = new JDialog(newFieldView, "New field", Dialog.ModalityType.DOCUMENT_MODAL);
     }
 
     public void onAboutDialogClosing() {

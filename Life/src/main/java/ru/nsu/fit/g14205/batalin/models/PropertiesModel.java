@@ -9,6 +9,8 @@ import java.awt.*;
  */
 public class PropertiesModel extends Observable implements IPropertiesModel {
     private static int DEFAULT_HEX_SIZE = 30;
+    private static Dimension DEFAULT_MIN_FIELD_SIZE = new Dimension(1, 1);
+    private static Dimension DEFAULT_MAX_FIELD_SIZE = new Dimension(5000, 5000);
     private static Dimension DEFAULT_FIELD_SIZE = new Dimension(20, 100);
     private static int DEFAULT_MIN_HEX_SIZE = 4;
     private static int DEFAULT_MAX_HEX_SIZE = 50;
@@ -212,5 +214,15 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public void setTimer(long timer) {
         this.timer = timer;
+    }
+
+    @Override
+    public Dimension getMinFieldSize() {
+        return DEFAULT_MIN_FIELD_SIZE;
+    }
+
+    @Override
+    public Dimension getMaxFieldSize() {
+        return DEFAULT_MAX_FIELD_SIZE;
     }
 }

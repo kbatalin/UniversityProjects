@@ -13,6 +13,8 @@ public interface IPropertiesModel extends IObservable {
     int getMinHexSize();
     int getMaxHexSize();
     void setHexSize(int hexSize);
+    Dimension getMinFieldSize();
+    Dimension getMaxFieldSize();
     Dimension getFieldSize();
     void setFieldSize(Dimension fieldSize);
 

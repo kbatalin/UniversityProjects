@@ -98,6 +98,7 @@ public class LifeView extends JFrame implements Observer {
         JMenuItem fileMenuNew = new JMenuItem("New");
         fileMenuNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         fileMenuNew.setMnemonic(KeyEvent.VK_N);
+        fileMenuNew.addActionListener(actionEvent -> lifeController.onNewFieldButtonClicked());
         fileMenu.add(fileMenuNew);
 
         JMenuItem fileMenuOpen = new JMenuItem("Open...");
@@ -223,6 +224,7 @@ public class LifeView extends JFrame implements Observer {
         if (newButtonIcon != null) {
             newButton.setIcon(newButtonIcon);
         }
+        newButton.addActionListener(actionEvent -> lifeController.onNewFieldButtonClicked());
         toolBar.add(newButton);
 
         JButton openButton = new JButton();
