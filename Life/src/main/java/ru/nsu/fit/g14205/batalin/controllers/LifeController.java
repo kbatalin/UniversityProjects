@@ -60,7 +60,9 @@ public class LifeController {
             return;
         }
 
-        aboutDialog = new JDialog(new AboutView(this), "About", Dialog.ModalityType.DOCUMENT_MODAL);
+        AboutView aboutView = new AboutView(this);
+        aboutView.setLocationRelativeTo(lifeView);
+        aboutDialog = new JDialog(aboutView, "About", Dialog.ModalityType.DOCUMENT_MODAL);
     }
 
     public void onNewFieldButtonClicked() {
