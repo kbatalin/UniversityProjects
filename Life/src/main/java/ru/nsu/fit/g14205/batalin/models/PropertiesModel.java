@@ -23,10 +23,14 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     private static int DEFAULT_IMPACT_FONT_SIZE = 12;
     private static PaintMode DEFAULT_PAINT_MODE = PaintMode.REPLACE;
     private static long DEFAULT_TIMER = 1000;
+    private static int DEFAULT_LINE_THICKNESS = 1;
+    private static int DEFAULT_MIN_LINE_THICKNESS = 1;
+    private static int DEFAULT_MAX_LINE_THICKNESS = 20;
 
     private int hexSize;
     private int hexIncircle;
     private Dimension fieldSize;
+    private int lineThickness;
     private double firstImpact;
     private double secondImpact;
     private double liveBegin;
@@ -49,6 +53,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
         propertiesModel.setLiveBegin(DEFAULT_LIVE_BEGIN);
         propertiesModel.setPaintMode(DEFAULT_PAINT_MODE);
         propertiesModel.setTimer(DEFAULT_TIMER);
+        propertiesModel.setLineThickness(DEFAULT_LINE_THICKNESS);
 
         return propertiesModel;
     }
@@ -224,5 +229,26 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public Dimension getMaxFieldSize() {
         return DEFAULT_MAX_FIELD_SIZE;
+    }
+
+    @Override
+    public int getLineThickness() {
+        return lineThickness;
+    }
+
+    @Override
+    public void setLineThickness(int lineThickness) {
+        if(lineThickness < 0)
+        this.lineThickness = lineThickness;
+    }
+
+    @Override
+    public int getMinLineThickness() {
+        return DEFAULT_MIN_LINE_THICKNESS;
+    }
+
+    @Override
+    public int getMaxLineThickness() {
+        return DEFAULT_MAX_LINE_THICKNESS;
     }
 }

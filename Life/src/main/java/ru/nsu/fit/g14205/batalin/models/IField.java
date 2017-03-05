@@ -16,4 +16,5 @@ public interface IField {
     void set(int x, int y, CellState cellState);
     void set(Point pos, CellState cellState);
     void clear();
+    int getLivingCellsCount();
 }

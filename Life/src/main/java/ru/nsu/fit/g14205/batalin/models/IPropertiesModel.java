@@ -17,6 +17,10 @@ public interface IPropertiesModel extends IObservable {
     Dimension getMaxFieldSize();
     Dimension getFieldSize();
     void setFieldSize(Dimension fieldSize);
+    int getLineThickness();
+    void setLineThickness(int thickness);
+    int getMinLineThickness();
+    int getMaxLineThickness();
 
     double getFirstImpact();
     double getSecondImpact();

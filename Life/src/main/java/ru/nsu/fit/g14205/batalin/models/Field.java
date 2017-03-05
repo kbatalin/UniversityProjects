@@ -1,7 +1,5 @@
 package ru.nsu.fit.g14205.batalin.models;
 
-import ru.nsu.fit.g14205.batalin.utils.observe.Observable;
-
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -11,6 +9,7 @@ import java.util.ArrayList;
 public class Field implements IField {
     private ArrayList<ArrayList<CellState>> field;
     private Dimension fieldSize;
+    private int livingCellsCount;
 
     public Field(Dimension fieldSize) {
         this.fieldSize = fieldSize;
@@ -29,6 +28,8 @@ public class Field implements IField {
                 arr.add(j, CellState.DEAD);
             }
         }
+
+        livingCellsCount = 0;
     }
 
     @Override
@@ -67,6 +68,18 @@ public class Field implements IField {
         }
 
         ArrayList<CellState> line = field.get(x);
+        CellState oldState = line.get(y);
+
+        if (oldState == cellState) {
+            return;
+        }
+
+        if (cellState == CellState.ALIVE) {
+            ++livingCellsCount;
+        } else {
+            --livingCellsCount;
+        }
+
         line.set(y, cellState);
         field.set(x, line);
     }
@@ -79,5 +92,10 @@ public class Field implements IField {
     @Override
     public void clear() {
         resetField();
+    }
+
+    @Override
+    public int getLivingCellsCount() {
+        return livingCellsCount;
     }
 }
