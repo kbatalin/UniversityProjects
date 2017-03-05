@@ -53,6 +53,7 @@ public class LifeController {
 
     public void onCloseButtonClicked() {
         if (isSaved) {
+            System.exit(0);
             return;
         }
 
@@ -84,6 +85,7 @@ public class LifeController {
 
         int value = ((Number)valueObj).intValue();
         if (value != JOptionPane.YES_OPTION) {
+            System.exit(0);
             return;
         }
 

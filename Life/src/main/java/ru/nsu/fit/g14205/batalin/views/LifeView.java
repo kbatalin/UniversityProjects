@@ -56,13 +56,6 @@ public class LifeView extends JFrame {
             fieldView.revalidate();
             scrollPane.repaint();
         });
-
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent windowEvent) {
-                lifeController.onCloseButtonClicked();
-            }
-        });
     }
 
     private void runButtonClicked(boolean isSelected) {
