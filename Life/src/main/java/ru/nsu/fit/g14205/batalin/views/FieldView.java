@@ -121,62 +121,82 @@ public class FieldView extends JLabel implements Observer {
         this.preferredSize = new Dimension(preferredWidth, preferredHeight);
     }
 
+    private class Span {
+        private Point startPoint;
+        private int width;
+
+        Span(Point start, int width) {
+            startPoint = start;
+            this.width = width;
+        }
+
+        Point getStartPoint() {
+            return startPoint;
+        }
+
+        int getWidth() {
+            return width;
+        }
+    }
+
     private void spanFill(BufferedImage image, Point seed, Color color) {
         Color oldColor = new Color(image.getRGB(seed.x, seed.y));
         if (color == null || color.equals(oldColor)) {
             return;
         }
 
-        Stack<Rectangle> spans = new Stack<>();
-        spans.push(getSpan(image, seed));
+        Stack<Span> spans = new Stack<>();
+        spans.push(getSpan(image, seed, color));
         while (!spans.empty()) {
-            Rectangle span = spans.pop();
+            Span span = spans.pop();
+            Point startPoint = span.getStartPoint();
 
-            for(int i = 0; i < span.width; ++i) {
-                image.setRGB(span.x + i, span.y, color.getRGB());
+            for(int i = 0, width = span.getWidth(); i < width; ++i) {
+                image.setRGB(startPoint.x + i, startPoint.y, color.getRGB());
             }
 
             findNearSpans(spans, image, span, oldColor);
         }
     }
 
-    private void findNearSpans(Stack<Rectangle> spans, BufferedImage image, Rectangle span, Color oldColor) {
+    private void findNearSpans(Stack<Span> spans, BufferedImage image, Span span, Color oldColor) {
+        Point startPoint = span.getStartPoint();
         for (int offset : new int[]{-1, 1}) {
-            int y = span.y + offset;
+            int y = startPoint.y + offset;
             if (y < 0 || y >= image.getHeight()) {
                 continue;
             }
 
-            for (int i = 0; i < span.width;) {
-                int x = i + span.x;
+            for (int i = 0, width = span.getWidth(); i < width;) {
+                int x = i + startPoint.x;
                 if (image.getRGB(x, y) != oldColor.getRGB()) {
                     ++i;
                     continue;
                 }
-                Rectangle newSpan = getSpan(image, new Point(x, y));
+                Span newSpan = getSpan(image, new Point(x, y), oldColor);
                 spans.push(newSpan);
                 i += newSpan.width;
             }
         }
     }
 
-    private Rectangle getSpan(BufferedImage image, Point crds) {
-        int color = image.getRGB(crds.x, crds.y);
+    private Span getSpan(BufferedImage image, Point crds, Color color) {
+        int rgbColor = color.getRGB();
 
         int x0 = crds.x;
         int y = crds.y;
 
-        while(x0 > 0 && color == image.getRGB(x0 - 1, y)) {
+        while(x0 > 0 && rgbColor == image.getRGB(x0 - 1, y)) {
             --x0;
         }
 
         int x1 = crds.x;
         int width = image.getWidth() - 1;
-        while (x1 < width && color == image.getRGB(x1 + 1, y)) {
+        while (x1 < width && rgbColor == image.getRGB(x1 + 1, y)) {
             ++x1;
         }
 
-        return new Rectangle(x0, y, x1 - x0 + 1, 1);
+        return new Span(new Point(x0, y), x1 - x0 + 1);
     }
 
     private void drawField(BufferedImage background, int x0, int y0, int x1, int y1) {
