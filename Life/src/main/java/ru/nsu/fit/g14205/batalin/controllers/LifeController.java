@@ -29,7 +29,10 @@ public class LifeController {
         fieldModel = new FieldModel(propertiesModel);
         lifeView = new LifeView(this, fieldModel, propertiesModel);
 
-        SwingUtilities.invokeLater(() -> lifeView.setVisible(true));
+        SwingUtilities.invokeLater(() -> {
+            lifeView.setLocationRelativeTo(null);
+            lifeView.setVisible(true);
+        });
     }
 
     public void onRunButtonClicked(boolean isSelected) {
