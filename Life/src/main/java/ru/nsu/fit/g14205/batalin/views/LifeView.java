@@ -7,10 +7,7 @@ import ru.nsu.fit.g14205.batalin.models.PropertiesModelEvent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.net.URL;
 
 /**
@@ -21,6 +18,7 @@ public class LifeView extends JFrame {
 
     private JScrollPane scrollPane;
     private FieldView fieldView;
+    private StatusBarView statusBarView;
 
     private JCheckBoxMenuItem viewMenuImpact;
     private JToggleButton impactButton;
@@ -51,6 +49,8 @@ public class LifeView extends JFrame {
         initToolbar();
 
         initField(lifeController, fieldModel, propertiesModel);
+
+        initStatusBar();
 
         propertiesModel.addObserver(PropertiesModelEvent.SIZE_CHANGED, () -> {
             fieldView.revalidate();
@@ -230,6 +230,17 @@ public class LifeView extends JFrame {
             newButton.setIcon(newButtonIcon);
         }
         newButton.addActionListener(actionEvent -> lifeController.onNewFieldButtonClicked());
+        newButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(newButton);
 
         JButton openButton = new JButton();
@@ -239,6 +250,17 @@ public class LifeView extends JFrame {
             openButton.setIcon(openButtonIcon);
         }
         openButton.addActionListener(actionEvent -> lifeController.onOpenButtonClicked());
+        openButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(openButton);
 
         JButton saveButton = new JButton();
@@ -248,6 +270,17 @@ public class LifeView extends JFrame {
             saveButton.setIcon(saveButtonIcon);
         }
         saveButton.addActionListener(actionEvent -> lifeController.onSaveButtonClicked());
+        saveButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(saveButton);
 
         JButton saveAsButton = new JButton();
@@ -257,6 +290,17 @@ public class LifeView extends JFrame {
             saveAsButton.setIcon(saveAsButtonIcon);
         }
         saveAsButton.addActionListener(actionEvent -> lifeController.onSaveAsButtonClicked());
+        saveAsButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(saveAsButton);
 
         JButton closeButton = new JButton();
@@ -266,6 +310,17 @@ public class LifeView extends JFrame {
             closeButton.setIcon(closeButtonIcon);
         }
         closeButton.addActionListener(actionEvent -> lifeController.onCloseButtonClicked());
+        closeButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(closeButton);
 
         toolBar.addSeparator();
@@ -277,6 +332,17 @@ public class LifeView extends JFrame {
             clearButton.setIcon(clearButtonIcon);
         }
         clearButton.addActionListener(actionEvent -> lifeController.onClearButtonClicked());
+        clearButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(clearButton);
 
         ButtonGroup modeGroup = new ButtonGroup();
@@ -291,6 +357,17 @@ public class LifeView extends JFrame {
             lifeController.onReplaceModeClicked();
         });
         replaceButton.setSelected(true);
+        replaceButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         modeGroup.add(replaceButton);
         toolBar.add(replaceButton);
 
@@ -304,6 +381,17 @@ public class LifeView extends JFrame {
             modeXor.setSelected(true);
             lifeController.onXorModeClicked();
         });
+        xorButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         modeGroup.add(xorButton);
         toolBar.add(xorButton);
 
@@ -314,6 +402,17 @@ public class LifeView extends JFrame {
         if (propertiesButtonIcon != null) {
             propertiesButton.setIcon(propertiesButtonIcon);
         }
+        propertiesButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(propertiesButton);
 
         toolBar.addSeparator();
@@ -324,8 +423,17 @@ public class LifeView extends JFrame {
         if (runButtonIcon != null) {
             runButton.setIcon(runButtonIcon);
         }
-        runButton.addActionListener(actionEvent -> {
-            runButtonClicked(runButton.isSelected());
+        runButton.addActionListener(actionEvent -> runButtonClicked(runButton.isSelected()));
+        runButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
         });
         toolBar.add(runButton);
 
@@ -336,6 +444,17 @@ public class LifeView extends JFrame {
             nextButton.setIcon(nextButtonIcon);
         }
         nextButton.addActionListener(actionEvent -> lifeController.onNextButtonClicked());
+        nextButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(nextButton);
 
         toolBar.addSeparator();
@@ -346,6 +465,17 @@ public class LifeView extends JFrame {
         if (colorButtonIcon != null) {
             colorButton.setIcon(colorButtonIcon);
         }
+        colorButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(colorButton);
 
         impactButton = new JToggleButton();
@@ -358,6 +488,17 @@ public class LifeView extends JFrame {
             viewMenuImpact.setState(impactButton.isSelected());
             lifeController.onImpactButtonClicked(impactButton.isSelected());
         });
+        impactButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(impactButton);
 
         toolBar.addSeparator();
@@ -368,6 +509,17 @@ public class LifeView extends JFrame {
         if (aboutButtonIcon != null) {
             aboutButton.setIcon(aboutButtonIcon);
         }
+        aboutButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         aboutButton.addActionListener(actionEvent -> lifeController.onAboutButtonClicked());
         toolBar.add(aboutButton);
     }
@@ -376,6 +528,15 @@ public class LifeView extends JFrame {
         fieldView = new FieldView(lifeController, fieldModel, propertiesModel);
         scrollPane = new JScrollPane(fieldView);
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void initStatusBar() {
+        statusBarView = new StatusBarView();
+        add(statusBarView, BorderLayout.PAGE_END);
+    }
+
+    public StatusBarView getStatusBarView() {
+        return statusBarView;
     }
 
     private Icon getButtonIcon(String imgPath) {

@@ -55,6 +55,21 @@ public class LifeController {
 
     }
 
+    public void onEnterToolbarButton(MouseEvent event) {
+        Component component = event.getComponent();
+        if (!(component instanceof JComponent)) {
+            return;
+        }
+
+        JComponent button = ((JComponent) component);
+
+        lifeView.getStatusBarView().setMessage(button.getToolTipText());
+    }
+
+    public void onExitToolbarButton(MouseEvent event) {
+        lifeView.getStatusBarView().setMessage("");
+    }
+
     public void onCloseButtonClicked() {
         if (isSaved) {
             System.exit(0);
