@@ -35,6 +35,48 @@ public class LifeController {
         });
     }
 
+    private void reset() {
+        if (aboutDialog != null) {
+            aboutDialog.setVisible(false);
+            aboutDialog = null;
+        }
+
+        if (newFieldDialog != null) {
+            newFieldDialog.setVisible(false);
+            newFieldDialog = null;
+        }
+
+        if (lifeView != null) {
+            lifeView.setVisible(false);
+            lifeView = null;
+        }
+
+        fieldModel = null;
+        propertiesModel = null;
+        prevCell = null;
+
+        if (timer != null) {
+            timer.cancel();
+        }
+        timer = null;
+    }
+
+    public void onCreateNewFieldDialogOk(Dimension size) {
+        if (lifeView != null) {
+            lifeView.setVisible(false);
+        }
+        reset();
+
+        propertiesModel = PropertiesModel.createDefault();
+        propertiesModel.setFieldSize(size);
+
+        fieldModel = new FieldModel(propertiesModel);
+
+        lifeView = new LifeView(this, fieldModel, propertiesModel);
+        lifeView.setLocationRelativeTo(null);
+        lifeView.setVisible(true);
+    }
+
     public void onRunButtonClicked(boolean isSelected) {
         if (!isSelected) {
             if (timer != null) {

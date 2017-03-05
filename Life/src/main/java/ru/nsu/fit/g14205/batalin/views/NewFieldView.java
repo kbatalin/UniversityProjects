@@ -34,7 +34,7 @@ public class NewFieldView extends JFrame {
         widthPanel.add(widthLabel);
         widthPanel.add(Box.createHorizontalStrut(10));
 
-        SpinnerModel widthSpinnerModel = new SpinnerNumberModel(30,
+        SpinnerNumberModel widthSpinnerModel = new SpinnerNumberModel(30,
                 minFieldSize.getWidth(), //min
                 maxFieldSize.getWidth(), //max
                 1); //step
@@ -54,7 +54,7 @@ public class NewFieldView extends JFrame {
         heightPanel.add(heightLabel);
         heightPanel.add(Box.createHorizontalStrut(10));
 
-        SpinnerModel heightSpinnerModel = new SpinnerNumberModel(30,
+        SpinnerNumberModel heightSpinnerModel = new SpinnerNumberModel(30,
                 minFieldSize.getHeight(), //min
                 maxFieldSize.getHeight(), //max
                 1); //step
@@ -72,6 +72,11 @@ public class NewFieldView extends JFrame {
         panel.add(buttonPanels);
 
         JButton okButton = new JButton("Create");
+        okButton.addActionListener(actionEvent -> {
+            int width = (int) widthSpinnerModel.getNumber().intValue();
+            int height = heightSpinnerModel.getNumber().intValue();
+            lifeController.onCreateNewFieldDialogOk(new Dimension(width, height));
+        });
         buttonPanels.add(okButton);
 
         pack();
