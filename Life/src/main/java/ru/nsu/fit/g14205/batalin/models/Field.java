@@ -1,12 +1,14 @@
 package ru.nsu.fit.g14205.batalin.models;
 
+import ru.nsu.fit.g14205.batalin.utils.observe.Observable;
+
 import java.awt.*;
 import java.util.ArrayList;
 
 /**
  * Created by kir55rus on 27.02.17.
  */
-public class Field implements IField {
+public class Field extends Observable implements IField {
     private ArrayList<ArrayList<CellState>> field;
     private Dimension fieldSize;
     private int livingCellsCount;
@@ -30,6 +32,7 @@ public class Field implements IField {
         }
 
         livingCellsCount = 0;
+        notifyObservers(FieldEvent.FILED_RESET);
     }
 
     @Override
@@ -82,6 +85,8 @@ public class Field implements IField {
 
         line.set(y, cellState);
         field.set(x, line);
+
+        notifyObservers(FieldEvent.CELL_STATE_CHANGED);
     }
 
     @Override

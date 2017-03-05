@@ -9,14 +9,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.URL;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Created by kir55rus on 10.02.17.
  */
-public class LifeView extends JFrame implements Observer {
+public class LifeView extends JFrame {
     private LifeController lifeController;
 
     private JScrollPane scrollPane;
@@ -36,7 +36,13 @@ public class LifeView extends JFrame implements Observer {
         this.lifeController = lifeController;
 
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Life");
+        setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                lifeController.onCloseButtonClicked();
+            }
+        });
 
         initMenu();
 
@@ -50,11 +56,13 @@ public class LifeView extends JFrame implements Observer {
             fieldView.revalidate();
             scrollPane.repaint();
         });
-    }
 
-    @Override
-    public void update(Observable observable, Object o) {
-        //todo
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                lifeController.onCloseButtonClicked();
+            }
+        });
     }
 
     private void runButtonClicked(boolean isSelected) {
@@ -123,6 +131,7 @@ public class LifeView extends JFrame implements Observer {
         JMenuItem fileMenuExit = new JMenuItem("Exit");
         fileMenuExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         fileMenuExit.setMnemonic(KeyEvent.VK_X);
+        fileMenuExit.addActionListener(actionEvent -> lifeController.onCloseButtonClicked());
         fileMenu.add(fileMenuExit);
     }
 
@@ -261,6 +270,7 @@ public class LifeView extends JFrame implements Observer {
         if (closeButtonIcon != null) {
             closeButton.setIcon(closeButtonIcon);
         }
+        closeButton.addActionListener(actionEvent -> lifeController.onCloseButtonClicked());
         toolBar.add(closeButton);
 
         toolBar.addSeparator();

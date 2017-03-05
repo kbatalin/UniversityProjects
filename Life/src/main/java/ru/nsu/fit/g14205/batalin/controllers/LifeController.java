@@ -9,6 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -21,13 +25,16 @@ public class LifeController {
     private LifeView lifeView;
     private JDialog aboutDialog;
     private JDialog newFieldDialog;
+    private JDialog saveOnCloseDialog;
     private IFieldModel fieldModel;
     private IPropertiesModel propertiesModel;
     private Point prevCell;
     private Timer timer;
     private JFileChooser fileChooser;
+    private boolean isSaved;
 
     public void run() {
+        reset();
         propertiesModel = PropertiesModel.createDefault();
         fieldModel = new FieldModel(propertiesModel);
         lifeView = new LifeView(this, fieldModel, propertiesModel);
@@ -36,9 +43,61 @@ public class LifeController {
         File workingDirectory = new File(System.getProperty("user.dir") + File.separator + "FIT_14205_Batalin_Kirill_Life_Data");
         fileChooser.setCurrentDirectory(workingDirectory);
 
+        fieldModel.addObserver(FieldModelEvent.CELL_STATE_CHANGED, () -> setSaved(false));
+
         SwingUtilities.invokeLater(() -> {
             lifeView.setLocationRelativeTo(null);
             lifeView.setVisible(true);
+        });
+    }
+
+    public void onCloseButtonClicked() {
+        if (isSaved) {
+            return;
+        }
+
+        JOptionPane optionPane = new JOptionPane(
+                "The field is not saved. Do you want to save?",
+                JOptionPane.QUESTION_MESSAGE,
+                JOptionPane.YES_NO_OPTION);
+
+        saveOnCloseDialog = new JDialog(lifeView,"Save...",true);
+        saveOnCloseDialog.setContentPane(optionPane);
+
+        optionPane.addPropertyChangeListener(e -> {
+            String prop = e.getPropertyName();
+
+            if (saveOnCloseDialog.isVisible()
+                    && (e.getSource() == optionPane)
+                    && (JOptionPane.VALUE_PROPERTY.equals(prop))) {
+                saveOnCloseDialog.setVisible(false);
+            }
+        });
+        saveOnCloseDialog.pack();
+        saveOnCloseDialog.setLocationRelativeTo(lifeView);
+        saveOnCloseDialog.setVisible(true);
+
+        Object valueObj = optionPane.getValue();
+        if (!(valueObj instanceof Number)) {
+            return;
+        }
+
+        int value = ((Number)valueObj).intValue();
+        if (value != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        save();
+        System.exit(0);
+    }
+
+    private void setSaved(boolean isSaved) {
+        this.isSaved = isSaved;
+
+        SwingUtilities.invokeLater(() -> {
+            if(lifeView != null) {
+                lifeView.setTitle("Life" + (isSaved ? "" : " *"));
+            }
         });
     }
 
@@ -47,6 +106,15 @@ public class LifeController {
     }
 
     private void saveAs() {
+        chooseSaveFile();
+        save();
+    }
+
+    public void onSaveButtonClicked() {
+        save();
+    }
+
+    private void chooseSaveFile() {
         int result = fileChooser.showSaveDialog(lifeView);
 
         if (result != JFileChooser.APPROVE_OPTION) {
@@ -55,29 +123,25 @@ public class LifeController {
 
         File file = fileChooser.getSelectedFile();
         propertiesModel.setSavePath(file.toPath());
-
-        save();
-    }
-
-    public void onSaveButtonClicked() {
-        if (propertiesModel.getSavePath() == null) {
-            saveAs();
-            return;
-        }
-
-        save();
     }
 
     private void save() {
+        if (propertiesModel.getSavePath() == null) {
+            chooseSaveFile();
+        }
+
         try {
             ISaver saver = new FileSaver(propertiesModel, fieldModel);
             saver.save();
+            setSaved(true);
         } catch (IOException e) {
             JOptionPane.showMessageDialog(lifeView,"Can't save field","Save error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void reset() {
+        setSaved(true);
+
         if (aboutDialog != null) {
             aboutDialog.setVisible(false);
             aboutDialog = null;
@@ -117,6 +181,7 @@ public class LifeController {
         propertiesModel.setFieldSize(size);
 
         fieldModel = new FieldModel(propertiesModel);
+        fieldModel.addObserver(FieldModelEvent.CELL_STATE_CHANGED, () -> setSaved(false));
 
         lifeView = new LifeView(this, fieldModel, propertiesModel);
         lifeView.setLocationRelativeTo(null);
@@ -154,6 +219,10 @@ public class LifeController {
         AboutView aboutView = new AboutView(this);
         aboutView.setLocationRelativeTo(lifeView);
         aboutDialog = new JDialog(aboutView, "About", Dialog.ModalityType.DOCUMENT_MODAL);
+    }
+
+    public void onNewFieldDialogClosing() {
+        newFieldDialog = null;
     }
 
     public void onNewFieldButtonClicked() {
@@ -224,8 +293,6 @@ public class LifeController {
         } else {
             field.set(pos, CellState.ALIVE);
         }
-
-        lifeView.repaint();
     }
 
     public void onNextButtonClicked() {

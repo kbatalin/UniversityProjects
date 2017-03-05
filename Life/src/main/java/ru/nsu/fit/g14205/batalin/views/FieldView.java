@@ -62,8 +62,9 @@ public class FieldView extends JLabel implements Observer {
             repaint();
         });
 
-        fieldModel.addObserver(FieldModelEvent.FIELD_UPDATED, this::repaint);
+        fieldModel.addObserver(FieldModelEvent.NEXT_STEP, this::repaint);
         fieldModel.addObserver(FieldModelEvent.FILED_CLEARED, this::repaint);
+        fieldModel.addObserver(FieldModelEvent.CELL_STATE_CHANGED, this::repaint);
         propertiesModel.addObserver(PropertiesModelEvent.IMPACT_VISIBLE_CHANGED, this::repaint);
     }
 

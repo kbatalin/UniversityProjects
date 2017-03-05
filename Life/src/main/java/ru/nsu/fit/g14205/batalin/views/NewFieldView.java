@@ -8,6 +8,8 @@ import sun.font.TextLabel;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * Created by kir55rus on 05.03.17.
@@ -78,6 +80,13 @@ public class NewFieldView extends JFrame {
             lifeController.onCreateNewFieldDialogOk(new Dimension(width, height));
         });
         buttonPanels.add(okButton);
+
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                lifeController.onNewFieldDialogClosing();
+            }
+        });
 
         pack();
         setResizable(false);
