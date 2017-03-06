@@ -234,11 +234,19 @@ public class FieldView extends JLabel implements Observer {
                 }
 
                 if (isImpactVisible && hexSize >= 18) {
-                    double impact = fieldModel.getImpact(x, y);
-                    backgroundGraphics.drawString(String.format("%.1f", impact), center.x - 5, center.y + impactFontSize / 2);
+                    printImpact(backgroundGraphics, x, y, center);
                 }
             }
         }
+    }
+
+    private void printImpact(Graphics2D backgroundGraphics, int x, int y, Point pos) {
+        FontMetrics fontMetrics = backgroundGraphics.getFontMetrics();
+        int impactFontSize = propertiesModel.getImpactFontSize();
+        double impact = fieldModel.getImpact(x, y);
+        int intImpact = (int)impact;
+        String impactStr = (Double.compare(impact, intImpact) == 0) ? String.format("%d", intImpact) : String.format("%.1f", impact);
+        backgroundGraphics.drawString(impactStr, pos.x - fontMetrics.stringWidth(impactStr) / 2, pos.y + impactFontSize / 2);
     }
 
     private Point[] shiftPoints(int x, int y, int extraOffsetX) {
