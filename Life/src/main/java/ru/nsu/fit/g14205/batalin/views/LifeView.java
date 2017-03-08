@@ -33,6 +33,7 @@ public class LifeView extends JFrame {
     public LifeView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
 
+        setMinimumSize(new Dimension(800, 600));
         setSize(800, 600);
         setTitle("Life");
         setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
