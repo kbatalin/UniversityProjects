@@ -530,6 +530,10 @@ public class LifeView extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
     }
 
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
     private void initStatusBar() {
         statusBarView = new StatusBarView();
         add(statusBarView, BorderLayout.PAGE_END);

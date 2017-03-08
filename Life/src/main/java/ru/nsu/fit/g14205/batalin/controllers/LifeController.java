@@ -357,12 +357,28 @@ public class LifeController {
     }
 
     public void onMouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
+//        System.out.println(mouseWheelEvent.getPoint());
+//
+//        lifeView.getScrollPane().getVerticalScrollBar().setValue(lifeView.getScrollPane().getVerticalScrollBar().getMaximum());
+
+//        System.out.println(lifeView.getScrollPane().getVerticalScrollBar().getMaximum());
+
         int newHexSize = propertiesModel.getHexSize();
         newHexSize -= newHexSize % 2;
         newHexSize -= 2 * mouseWheelEvent.getWheelRotation();
         newHexSize = Math.min(propertiesModel.getMaxHexSize(), newHexSize);
         newHexSize = Math.max(propertiesModel.getMinHexSize(), newHexSize);
-        System.out.println("New hex size: " + newHexSize);
+//        System.out.println("New hex size: " + newHexSize);
+
+//        double k = (double) newHexSize / propertiesModel.getHexSize();
+//        int dx = (int)((k - 1) * mouseWheelEvent.getPoint().x);
+//        int dy = (int)((k - 1) * mouseWheelEvent.getPoint().y);
+//        SwingUtilities.invokeLater(() -> {
+//            JScrollPane scrollPane = lifeView.getScrollPane();
+//            scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getValue() + dx);
+//            scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getValue() + dy);
+//        });
+
         propertiesModel.setHexSize(newHexSize);
     }
 
