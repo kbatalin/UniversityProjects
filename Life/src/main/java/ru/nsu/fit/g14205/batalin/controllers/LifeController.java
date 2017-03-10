@@ -331,7 +331,7 @@ public class LifeController {
 
         String birthBeginStr = propertiesView.getBirthBeginText().getText();
         String birthEndStr = propertiesView.getBirthEndText().getText();
-        String liveEndStr = propertiesView.getLiveBeginText().getText();
+        String liveEndStr = propertiesView.getLiveEndText().getText();
         String liveBeginStr = propertiesView.getLiveBeginText().getText();
         double liveBegin = Double.parseDouble(liveBeginStr);
         double liveEnd = Double.parseDouble(liveEndStr);
@@ -405,7 +405,7 @@ public class LifeController {
             }
 
             try {
-                String liveEndStr = propertiesView.getLiveBeginText().getText();
+                String liveEndStr = propertiesView.getLiveEndText().getText();
                 String birthEndStr = propertiesView.getBirthEndText().getText();
                 double liveEnd = Double.parseDouble(liveEndStr);
                 double birthEnd = Double.parseDouble(birthEndStr);
@@ -449,7 +449,7 @@ public class LifeController {
             try {
                 String birthBeginStr = propertiesView.getBirthBeginText().getText();
                 String birthEndStr = propertiesView.getBirthEndText().getText();
-                String liveEndStr = propertiesView.getLiveBeginText().getText();
+                String liveEndStr = propertiesView.getLiveEndText().getText();
                 double liveEnd = Double.parseDouble(liveEndStr);
                 double birthBegin = Double.parseDouble(birthBeginStr);
                 double birthEnd = Double.parseDouble(birthEndStr);
@@ -752,15 +752,15 @@ public class LifeController {
 //        System.out.println(center2 + ": " + dist2);
 //        System.out.println(center3 + ": " + dist3);
 
-        if (dist1 < dist2) {
-            if(dist1 < dist3) {
+        if (Double.compare(dist1, dist2) < 0) {
+            if(Double.compare(dist1, dist3) < 0) {
                 return new Point(x, y);
             } else {
                 return new Point(x + (y % 2 != 0 ? 1 : 0), y - 1);
             }
         }
 
-        if (dist2 < dist3) {
+        if (Double.compare(dist2, dist3) < 0) {
             return new Point(x + (y % 2 != 0 ? 0 : -1), y - 1);
         }
         return new Point(x + (y % 2 != 0 ? 1 : 0), y - 1);

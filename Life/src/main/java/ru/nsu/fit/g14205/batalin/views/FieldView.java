@@ -24,7 +24,10 @@ public class FieldView extends JLabel {
     private int halfHexSize;
     private int backgroundOffset;
     private Color aliveColor = Color.GREEN;
+    private Color lineColor = Color.BLACK;
+    private Color fontColor = Color.BLACK;
     private Point[] firstHex;
+    private BufferedImage background;
 
 
     public FieldView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
@@ -37,6 +40,10 @@ public class FieldView extends JLabel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                Point pos = mouseEvent.getPoint();
+                if(background == null || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
+                    return;
+                }
                 lifeController.onMousePressed(mouseEvent);
             }
 
@@ -49,6 +56,10 @@ public class FieldView extends JLabel {
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
+                Point pos = mouseEvent.getPoint();
+                if(background == null || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
+                    return;
+                }
                 lifeController.onMouseDragged(mouseEvent);
             }
         });
@@ -80,7 +91,7 @@ public class FieldView extends JLabel {
         Dimension fieldSize = fieldModel.getActiveField().getSize();
         Rectangle clipBounds = graphics.getClipBounds();
 
-        BufferedImage background = new BufferedImage(clipBounds.width + backgroundOffset, clipBounds.height + backgroundOffset, BufferedImage.TYPE_INT_RGB);
+        background = new BufferedImage(clipBounds.width + backgroundOffset, clipBounds.height + backgroundOffset, BufferedImage.TYPE_INT_RGB);
         Graphics2D backgroundGraphics = background.createGraphics();
         backgroundGraphics.setPaint(Color.WHITE);
         backgroundGraphics.fillRect(0, 0, background.getWidth(), background.getHeight());
@@ -208,7 +219,7 @@ public class FieldView extends JLabel {
         boolean isImpactVisible = propertiesModel.isImpactVisible();
         int impactFontSize = propertiesModel.getImpactFontSize();
         Graphics2D backgroundGraphics = background.createGraphics();
-        backgroundGraphics.setPaint(Color.BLACK);
+        backgroundGraphics.setPaint(fontColor);
         backgroundGraphics.setFont(new Font("Dialog", Font.PLAIN, impactFontSize));
 
         for(int y = y0; y < y1; ++y) {
@@ -285,7 +296,7 @@ public class FieldView extends JLabel {
                 {
                     graphics2D = image.createGraphics();
                     graphics2D.setStroke(new BasicStroke(propertiesModel.getLineThickness()));
-                    graphics2D.setPaint(Color.BLACK);
+                    graphics2D.setPaint(lineColor);
                 }
 
                 @Override
@@ -338,7 +349,7 @@ public class FieldView extends JLabel {
         int x = x0;
         int y = y0;
         int err = maxLength / 2;
-        field.setRGB(x, y, Color.BLACK.getRGB());
+        field.setRGB(x, y, lineColor.getRGB());
 
         for (int i = 0; i < maxLength; i++) {
             err -= minLength;
@@ -351,7 +362,7 @@ public class FieldView extends JLabel {
                 y += pdy;
             }
 
-            field.setRGB(x, y, Color.BLACK.getRGB());
+            field.setRGB(x, y, lineColor.getRGB());
         }
     }
 
