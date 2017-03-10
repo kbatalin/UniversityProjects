@@ -37,6 +37,12 @@ public class PropertiesView extends JFrame {
     private JTextField lineThicknessText;
     private JSlider lineThicknessSlider;
 
+    private JTextField firstImpactText;
+    private JTextField secondImpactText;
+    private JTextField liveBeginText;
+    private JTextField liveEndText;
+    private JTextField birthBeginText;
+    private JTextField birthEndText;
 
     public PropertiesView(LifeController lifeController, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
@@ -113,7 +119,13 @@ public class PropertiesView extends JFrame {
 
         firstImpactPanel.add(new JLabel("FST_IMPACT:"));
         firstImpactPanel.add(Box.createVerticalStrut(5));
-        JTextField firstImpactText = new JTextField(3);
+        firstImpactText = new JTextField(3);
+        firstImpactText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                lifeController.onPropertiesDialogFstImpactTextFocusLost();
+            }
+        });
         firstImpactText.setText(String.valueOf(propertiesModel.getFirstImpact()));
         firstImpactPanel.add(firstImpactText);
 
@@ -126,7 +138,13 @@ public class PropertiesView extends JFrame {
 
         secondImpactPanel.add(new JLabel("SND_IMPACT:"));
         secondImpactPanel.add(Box.createVerticalStrut(5));
-        JTextField secondImpactText = new JTextField(3);
+        secondImpactText = new JTextField(3);
+        secondImpactText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                lifeController.onPropertiesDialogSndImpactTextFocusLost();
+            }
+        });
         secondImpactText.setText(String.valueOf(propertiesModel.getSecondImpact()));
         secondImpactPanel.add(secondImpactText);
 
@@ -138,7 +156,13 @@ public class PropertiesView extends JFrame {
 
         liveBeginPanel.add(new JLabel("LIVE_BEGIN:"));
         liveBeginPanel.add(Box.createVerticalStrut(5));
-        JTextField liveBeginText = new JTextField(3);
+        liveBeginText = new JTextField(3);
+        liveBeginText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                lifeController.onPropertiesDialogLiveBeginTextFocusLost();
+            }
+        });
         liveBeginText.setText(String.valueOf(propertiesModel.getLiveBegin()));
         liveBeginPanel.add(liveBeginText);
 
@@ -150,7 +174,13 @@ public class PropertiesView extends JFrame {
 
         liveEndPanel.add(new JLabel("LIVE_END:"));
         liveEndPanel.add(Box.createVerticalStrut(5));
-        JTextField liveEndText = new JTextField(3);
+        liveEndText = new JTextField(3);
+        liveEndText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                lifeController.onPropertiesDialogLiveEndTextFocusLost();
+            }
+        });
         liveEndText.setText(String.valueOf(propertiesModel.getLiveEnd()));
         liveEndPanel.add(liveEndText);
 
@@ -162,7 +192,13 @@ public class PropertiesView extends JFrame {
 
         birthBeginPanel.add(new JLabel("BIRTH_BEGIN:"));
         birthBeginPanel.add(Box.createVerticalStrut(5));
-        JTextField birthBeginText = new JTextField(3);
+        birthBeginText = new JTextField(3);
+        birthBeginText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                lifeController.onPropertiesDialogBirthBeginTextFocusLost();
+            }
+        });
         birthBeginText.setText(String.valueOf(propertiesModel.getBirthBegin()));
         birthBeginPanel.add(birthBeginText);
 
@@ -174,9 +210,39 @@ public class PropertiesView extends JFrame {
 
         birthEndPanel.add(new JLabel("BIRTH_END:"));
         birthEndPanel.add(Box.createVerticalStrut(5));
-        JTextField birthEndText = new JTextField(3);
+        birthEndText = new JTextField(3);
+        birthEndText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                lifeController.onPropertiesDialogBirthEndTextFocusLost();
+            }
+        });
         birthEndText.setText(String.valueOf(propertiesModel.getBirthEnd()));
         birthEndPanel.add(birthEndText);
+    }
+
+    public JTextField getFirstImpactText() {
+        return firstImpactText;
+    }
+
+    public JTextField getSecondImpactText() {
+        return secondImpactText;
+    }
+
+    public JTextField getLiveBeginText() {
+        return liveBeginText;
+    }
+
+    public JTextField getLiveEndText() {
+        return liveEndText;
+    }
+
+    public JTextField getBirthBeginText() {
+        return birthBeginText;
+    }
+
+    public JTextField getBirthEndText() {
+        return birthEndText;
     }
 
     private void initCellProperties(IPropertiesModel propertiesModel, JPanel parent) {

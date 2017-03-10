@@ -321,7 +321,145 @@ public class LifeController {
 
         propertiesModel.setLineThickness(propertiesView.getLineThicknessSlider().getValue());
 
+        String firstImpactStr = propertiesView.getFirstImpactText().getText();
+        double firstImpact = Double.parseDouble(firstImpactStr);
+        propertiesModel.setFirstImpact(firstImpact);
+
+        String secondImpactStr = propertiesView.getSecondImpactText().getText();
+        double secondImpact = Double.parseDouble(secondImpactStr);
+        propertiesModel.setSecondImpact(secondImpact);
+
+        String birthBeginStr = propertiesView.getBirthBeginText().getText();
+        String birthEndStr = propertiesView.getBirthEndText().getText();
+        String liveEndStr = propertiesView.getLiveBeginText().getText();
+        String liveBeginStr = propertiesView.getLiveBeginText().getText();
+        double liveBegin = Double.parseDouble(liveBeginStr);
+        double liveEnd = Double.parseDouble(liveEndStr);
+        double birthBegin = Double.parseDouble(birthBeginStr);
+        double birthEnd = Double.parseDouble(birthEndStr);
+        propertiesModel.setLifeRules(liveBegin, birthBegin, birthEnd, liveEnd);
+
         propertiesDialog = null;
+    }
+
+    public void onPropertiesDialogFstImpactTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String firstImpactStr = propertiesView.getFirstImpactText().getText();
+                double firstImpact = Double.parseDouble(firstImpactStr);
+                if(Double.compare(firstImpact, 0.) < 0) {
+                    propertiesView.getFirstImpactText().setText(String.valueOf(propertiesModel.getFirstImpact()));
+                }
+            } catch (Exception e) {
+                propertiesView.getFirstImpactText().setText(String.valueOf(propertiesModel.getFirstImpact()));
+            }
+        });
+    }
+
+    public void onPropertiesDialogSndImpactTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String secondImpactStr = propertiesView.getSecondImpactText().getText();
+                double secondImpact = Double.parseDouble(secondImpactStr);
+                if(Double.compare(secondImpact, 0.) < 0) {
+                    propertiesView.getSecondImpactText().setText(String.valueOf(propertiesModel.getSecondImpact()));
+                }
+            } catch (Exception e) {
+                propertiesView.getSecondImpactText().setText(String.valueOf(propertiesModel.getSecondImpact()));
+            }
+        });
+    }
+
+    public void onPropertiesDialogLiveBeginTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String liveBeginStr = propertiesView.getLiveBeginText().getText();
+                String birthBeginStr = propertiesView.getBirthBeginText().getText();
+                double liveBegin = Double.parseDouble(liveBeginStr);
+                double birthBegin = Double.parseDouble(birthBeginStr);
+                if(Double.compare(liveBegin, birthBegin) > 0) {
+                    propertiesView.getLiveBeginText().setText(String.valueOf(propertiesModel.getLiveBegin()));
+                }
+            } catch (Exception e) {
+                propertiesView.getLiveBeginText().setText(String.valueOf(propertiesModel.getLiveBegin()));
+            }
+        });
+    }
+
+    public void onPropertiesDialogLiveEndTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String liveEndStr = propertiesView.getLiveBeginText().getText();
+                String birthEndStr = propertiesView.getBirthEndText().getText();
+                double liveEnd = Double.parseDouble(liveEndStr);
+                double birthEnd = Double.parseDouble(birthEndStr);
+                if(Double.compare(liveEnd, birthEnd) < 0) {
+                    propertiesView.getLiveEndText().setText(String.valueOf(propertiesModel.getLiveEnd()));
+                }
+            } catch (Exception e) {
+                propertiesView.getLiveEndText().setText(String.valueOf(propertiesModel.getLiveEnd()));
+            }
+        });
+    }
+
+    public void onPropertiesDialogBirthBeginTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String liveBeginStr = propertiesView.getLiveBeginText().getText();
+                String birthBeginStr = propertiesView.getBirthBeginText().getText();
+                String birthEndStr = propertiesView.getBirthEndText().getText();
+                double liveBegin = Double.parseDouble(liveBeginStr);
+                double birthBegin = Double.parseDouble(birthBeginStr);
+                double birthEnd = Double.parseDouble(birthEndStr);
+                if(Double.compare(birthBegin, liveBegin) < 0 || Double.compare(birthBegin, birthEnd) > 0) {
+                    propertiesView.getBirthBeginText().setText(String.valueOf(propertiesModel.getBirthBegin()));
+                }
+            } catch (Exception e) {
+                propertiesView.getBirthBeginText().setText(String.valueOf(propertiesModel.getBirthBegin()));
+            }
+        });
+    }
+
+    public void onPropertiesDialogBirthEndTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String birthBeginStr = propertiesView.getBirthBeginText().getText();
+                String birthEndStr = propertiesView.getBirthEndText().getText();
+                String liveEndStr = propertiesView.getLiveBeginText().getText();
+                double liveEnd = Double.parseDouble(liveEndStr);
+                double birthBegin = Double.parseDouble(birthBeginStr);
+                double birthEnd = Double.parseDouble(birthEndStr);
+                if(Double.compare(birthEnd, liveEnd) > 0 || Double.compare(birthEnd, birthBegin) < 0) {
+                    propertiesView.getBirthEndText().setText(String.valueOf(propertiesModel.getBirthEnd()));
+                }
+            } catch (Exception e) {
+                propertiesView.getBirthEndText().setText(String.valueOf(propertiesModel.getBirthEnd()));
+            }
+        });
     }
 
     public void onPropertiesDialogLineThicknessTextFocusLost() {

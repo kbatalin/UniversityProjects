@@ -10,5 +10,6 @@ public enum PropertiesModelEvent implements IEvent {
     FIELD_SIZE_CHANGED,
     LINE_THICKNESS_CHANGED,
     IMPACT_VISIBLE_CHANGED,
+    IMPACT_VALUE_CHANGED,
     PAINTING_MODE_CHANGED,
 }
