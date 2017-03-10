@@ -24,16 +24,22 @@ public interface IPropertiesModel extends IObservable {
     int getMaxLineThickness();
 
     double getFirstImpact();
-    double getSecondImpact();
-    double getLiveBegin();
-    double getLiveEnd();
-    double getBirthBegin();
-    double getBirthEnd();
+    boolean checkFirstImpact(double val);
     void setFirstImpact(double val);
+    double getSecondImpact();
+    boolean checkSecondImpact(double val);
     void setSecondImpact(double val);
+    double getLiveBegin();
+    boolean checkLiveBegin(double val);
     void setLiveBegin(double val);
+    double getLiveEnd();
+    boolean checkLiveEnd(double val);
     void setLiveEnd(double val);
+    double getBirthBegin();
+    boolean checkBirthBegin(double val);
     void setBirthBegin(double val);
+    double getBirthEnd();
+    boolean checkBirthEnd(double val);
     void setBirthEnd(double val);
 
     boolean isImpactVisible();

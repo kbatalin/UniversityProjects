@@ -4,6 +4,7 @@ import ru.nsu.fit.g14205.batalin.models.*;
 import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.LifeView;
 import ru.nsu.fit.g14205.batalin.views.NewFieldView;
+import ru.nsu.fit.g14205.batalin.views.PropertiesView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,8 +28,10 @@ public class LifeController {
     private JDialog aboutDialog;
     private JDialog newFieldDialog;
     private JDialog saveOnCloseDialog;
-    private IFieldModel fieldModel;
+    private JDialog propertiesDialog;
+    private PropertiesView propertiesView;
     private IPropertiesModel propertiesModel;
+    private IFieldModel fieldModel;
     private Point prevCell;
     private Timer timer;
     private JFileChooser fileChooser;
@@ -54,6 +57,16 @@ public class LifeController {
             lifeView.setVisible(true);
         });
 
+    }
+
+    public void onPropertiesButtonClicked() {
+        if (propertiesDialog != null) {
+            return;
+        }
+
+        propertiesView = new PropertiesView(this, propertiesModel);
+        propertiesView.setLocationRelativeTo(lifeView);
+        propertiesDialog = new JDialog(propertiesView, "Properties", Dialog.ModalityType.DOCUMENT_MODAL);
     }
 
     public void onEnterToolbarButton(MouseEvent event) {
@@ -202,6 +215,12 @@ public class LifeController {
             aboutDialog = null;
         }
 
+        if (propertiesDialog != null) {
+            Window window = SwingUtilities.getWindowAncestor(propertiesDialog);
+            window.dispose();
+            propertiesDialog = null;
+        }
+
         if (newFieldDialog != null) {
             Window window = SwingUtilities.getWindowAncestor(newFieldDialog);
             window.dispose();
@@ -261,6 +280,11 @@ public class LifeController {
     }
 
     public void onClearButtonClicked() {
+//        if (timer != null) {
+//            timer.cancel();
+//            timer = null;
+//        }
+
         fieldModel.clear();
     }
 
@@ -272,6 +296,106 @@ public class LifeController {
         AboutView aboutView = new AboutView(this);
         aboutView.setLocationRelativeTo(lifeView);
         aboutDialog = new JDialog(aboutView, "About", Dialog.ModalityType.DOCUMENT_MODAL);
+    }
+
+    public void onPropertiesDialogClosing() {
+        propertiesDialog = null;
+    }
+
+    public void onPropertiesDialogCancelButtonClicked() {
+        propertiesDialog = null;
+    }
+
+    public void onPropertiesDialogOkButtonClicked() {
+        if (propertiesDialog == null) {
+            return;
+        }
+
+        propertiesModel.setPaintMode(propertiesView.getPaintMode());
+
+        int fieldWidth = propertiesView.getWidthSlider().getValue();
+        int fieldHeight = propertiesView.getHeightSlider().getValue();
+        propertiesModel.setFieldSize(new Dimension(fieldWidth, fieldHeight));
+
+        propertiesDialog = null;
+    }
+
+    public void onPropertiesDialogWidthTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String widthStr = propertiesView.getWidthText().getText();
+                int width = Integer.parseInt(widthStr);
+                if (width < propertiesModel.getMinFieldSize().width) {
+                    width = propertiesModel.getMinFieldSize().width;
+                }
+                if (width > propertiesModel.getMaxFieldSize().width) {
+                    width = propertiesModel.getMaxFieldSize().width;
+                }
+                propertiesView.setWidth(width);
+            } catch (Exception e) {
+                propertiesView.setWidth(propertiesModel.getFieldSize().width);
+            }
+        });
+    }
+
+    public void onPropertiesDialogWidthSliderChanged() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            int width = propertiesView.getWidthSlider().getValue();
+            if (width < propertiesModel.getMinFieldSize().width) {
+                width = propertiesModel.getMinFieldSize().width;
+            }
+            if (width > propertiesModel.getMaxFieldSize().width) {
+                width = propertiesModel.getMaxFieldSize().width;
+            }
+            propertiesView.setWidth(width);
+        });
+    }
+
+    public void onPropertiesDialogHeightTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String heightStr = propertiesView.getHeightText().getText();
+                int height = Integer.parseInt(heightStr);
+                if (height < propertiesModel.getMinFieldSize().height) {
+                    height = propertiesModel.getMinFieldSize().height;
+                }
+                if (height > propertiesModel.getMaxFieldSize().height) {
+                    height = propertiesModel.getMaxFieldSize().height;
+                }
+                propertiesView.setHeight(height);
+            } catch (Exception e) {
+                propertiesView.setHeight(propertiesModel.getFieldSize().height);
+            }
+        });
+    }
+
+    public void onPropertiesDialogHeightSliderChanged() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            int height = propertiesView.getHeightSlider().getValue();
+            if (height < propertiesModel.getMinFieldSize().height) {
+                height = propertiesModel.getMinFieldSize().height;
+            }
+            if (height > propertiesModel.getMaxFieldSize().height) {
+                height = propertiesModel.getMaxFieldSize().height;
+            }
+            propertiesView.setHeight(height);
+        });
     }
 
     public void onNewFieldDialogClosing() {

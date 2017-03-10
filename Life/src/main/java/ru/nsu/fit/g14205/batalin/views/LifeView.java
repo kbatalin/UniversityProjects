@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.views;
 import ru.nsu.fit.g14205.batalin.controllers.LifeController;
 import ru.nsu.fit.g14205.batalin.models.IFieldModel;
 import ru.nsu.fit.g14205.batalin.models.IPropertiesModel;
+import ru.nsu.fit.g14205.batalin.models.PaintMode;
 import ru.nsu.fit.g14205.batalin.models.PropertiesModelEvent;
 
 import javax.swing.*;
@@ -15,6 +16,7 @@ import java.net.URL;
  */
 public class LifeView extends JFrame {
     private LifeController lifeController;
+    private IPropertiesModel propertiesModel;
 
     private JScrollPane scrollPane;
     private FieldView fieldView;
@@ -32,6 +34,7 @@ public class LifeView extends JFrame {
 
     public LifeView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
+        this.propertiesModel = propertiesModel;
 
         setMinimumSize(new Dimension(800, 600));
         setSize(800, 600);
@@ -53,9 +56,26 @@ public class LifeView extends JFrame {
 
         initStatusBar();
 
-        propertiesModel.addObserver(PropertiesModelEvent.SIZE_CHANGED, () -> {
+        propertiesModel.addObserver(PropertiesModelEvent.HEX_SIZE_CHANGED, () -> {
             fieldView.revalidate();
             scrollPane.repaint();
+        });
+
+        propertiesModel.addObserver(PropertiesModelEvent.FIELD_SIZE_CHANGED, () -> {
+            fieldView.revalidate();
+            scrollPane.repaint();
+        });
+
+        propertiesModel.addObserver(PropertiesModelEvent.PAINTING_MODE_CHANGED, () -> {
+            PaintMode mode = propertiesModel.getPaintMode();
+            boolean isReplaceMode = mode == PaintMode.REPLACE;
+
+            SwingUtilities.invokeLater(() -> {
+                replaceButton.setSelected(isReplaceMode);
+                modeReplace.setSelected(isReplaceMode);
+                xorButton.setSelected(!isReplaceMode);
+                modeXor.setSelected(!isReplaceMode);
+            });
         });
     }
 
@@ -147,10 +167,9 @@ public class LifeView extends JFrame {
         ButtonGroup modeGroup = new ButtonGroup();
 
         modeReplace = new JRadioButtonMenuItem("Replace");
-        modeReplace.setSelected(true);
+        modeReplace.setSelected(propertiesModel.getPaintMode() == PaintMode.REPLACE);
         modeReplace.setMnemonic(KeyEvent.VK_R);
         modeReplace.addActionListener(actionEvent -> {
-            replaceButton.setSelected(true);
             lifeController.onReplaceModeClicked();
         });
         modeGroup.add(modeReplace);
@@ -158,8 +177,8 @@ public class LifeView extends JFrame {
 
         modeXor = new JRadioButtonMenuItem("XOR");
         modeXor.setMnemonic(KeyEvent.VK_X);
+        modeXor.setSelected(propertiesModel.getPaintMode() == PaintMode.XOR);
         modeXor.addActionListener(actionEvent -> {
-            xorButton.setSelected(true);
             lifeController.onXorModeClicked();
         });
         modeGroup.add(modeXor);
@@ -170,6 +189,7 @@ public class LifeView extends JFrame {
         JMenuItem editMenuProperties = new JMenuItem("Properties");
         editMenuProperties.setMnemonic(KeyEvent.VK_P);
         editMenu.add(editMenuProperties);
+        editMenuProperties.addActionListener(actionEvent -> lifeController.onPropertiesButtonClicked());
     }
 
     private void initActionMenu(JMenuBar menuBar) {
@@ -354,10 +374,9 @@ public class LifeView extends JFrame {
             replaceButton.setIcon(replaceButtonIcon);
         }
         replaceButton.addActionListener(actionEvent -> {
-            modeReplace.setSelected(true);
             lifeController.onReplaceModeClicked();
         });
-        replaceButton.setSelected(true);
+        replaceButton.setSelected(propertiesModel.getPaintMode() == PaintMode.REPLACE);
         replaceButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -379,9 +398,9 @@ public class LifeView extends JFrame {
             xorButton.setIcon(xorButtonIcon);
         }
         xorButton.addActionListener(actionEvent -> {
-            modeXor.setSelected(true);
             lifeController.onXorModeClicked();
         });
+        xorButton.setSelected(propertiesModel.getPaintMode() == PaintMode.XOR);
         xorButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -403,6 +422,7 @@ public class LifeView extends JFrame {
         if (propertiesButtonIcon != null) {
             propertiesButton.setIcon(propertiesButtonIcon);
         }
+        propertiesButton.addActionListener(actionEvent -> lifeController.onPropertiesButtonClicked());
         propertiesButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {

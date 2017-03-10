@@ -14,12 +14,21 @@ public class Field extends Observable implements IField {
     private int livingCellsCount;
 
     public Field(Dimension fieldSize) {
+        this(fieldSize, null);
+    }
+
+    public Field(Dimension fieldSize, IField source) {
         this.fieldSize = fieldSize;
 
-        resetField();
+        resetField(source);
     }
 
     private void resetField() {
+        resetField(null);
+        notifyObservers(FieldEvent.FILED_RESET);
+    }
+
+    private void resetField(IField source) {
         field = new ArrayList<>();
 
         for(int i = 0; i < fieldSize.width; ++i) {
@@ -27,7 +36,12 @@ public class Field extends Observable implements IField {
             field.add(i, arr);
 
             for(int j = 0; j < fieldSize.height; ++j) {
-                arr.add(j, CellState.DEAD);
+                CellState state = CellState.DEAD;
+                if(source != null && source.checkCrds(i, j)) {
+                    state = source.get(i, j);
+                }
+
+                arr.add(j, state);
             }
         }
 

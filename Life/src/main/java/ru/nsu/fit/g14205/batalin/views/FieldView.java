@@ -57,7 +57,12 @@ public class FieldView extends JLabel implements Observer {
 
         addMouseWheelListener(lifeController::onMouseWheelMoved);
 
-        propertiesModel.addObserver(PropertiesModelEvent.SIZE_CHANGED, () -> {
+        propertiesModel.addObserver(PropertiesModelEvent.HEX_SIZE_CHANGED, () -> {
+            updSize(propertiesModel);
+            repaint();
+        });
+
+        propertiesModel.addObserver(PropertiesModelEvent.FIELD_SIZE_CHANGED, () -> {
             updSize(propertiesModel);
             repaint();
         });

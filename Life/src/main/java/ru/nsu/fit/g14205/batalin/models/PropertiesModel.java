@@ -81,7 +81,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
         this.hexSize = hexSize;
         this.hexIncircle = (int)(hexSize * Math.sqrt(3) / 2);
 
-        notifyObservers(PropertiesModelEvent.SIZE_CHANGED);
+        notifyObservers(PropertiesModelEvent.HEX_SIZE_CHANGED);
     }
 
     @Override
@@ -96,7 +96,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
         }
         this.fieldSize = fieldSize;
 
-        notifyObservers(PropertiesModelEvent.SIZE_CHANGED);
+        notifyObservers(PropertiesModelEvent.FIELD_SIZE_CHANGED);
     }
 
     @Override
@@ -211,6 +211,8 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public void setPaintMode(PaintMode paintMode) {
         this.paintMode = paintMode;
+
+        notifyObservers(PropertiesModelEvent.PAINTING_MODE_CHANGED);
     }
 
     @Override
@@ -265,5 +267,35 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public void setSavePath(Path savePath) {
         this.savePath = savePath;
+    }
+
+    @Override
+    public boolean checkFirstImpact(double val) {
+        return false;
+    }
+
+    @Override
+    public boolean checkSecondImpact(double val) {
+        return false;
+    }
+
+    @Override
+    public boolean checkLiveBegin(double val) {
+        return false;
+    }
+
+    @Override
+    public boolean checkLiveEnd(double val) {
+        return false;
+    }
+
+    @Override
+    public boolean checkBirthBegin(double val) {
+        return false;
+    }
+
+    @Override
+    public boolean checkBirthEnd(double val) {
+        return false;
     }
 }
