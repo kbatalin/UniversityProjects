@@ -41,6 +41,8 @@ public class FieldView extends JLabel {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 Point pos = mouseEvent.getPoint();
+                pos.x %= background.getWidth();
+                pos.y %= background.getHeight();
                 if(background == null || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
                     return;
                 }
@@ -57,6 +59,8 @@ public class FieldView extends JLabel {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
                 Point pos = mouseEvent.getPoint();
+                pos.x %= background.getWidth();
+                pos.y %= background.getHeight();
                 if(background == null || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
                     return;
                 }
