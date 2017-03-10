@@ -74,6 +74,7 @@ public class PropertiesView extends JFrame {
         });
 
         pack();
+        setResizable(false);
         setVisible(true);
     }
 
