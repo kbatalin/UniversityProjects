@@ -168,24 +168,6 @@ public class PropertiesView extends JFrame {
 
         gameProperties.add(Box.createHorizontalStrut(7));
 
-        JPanel liveEndPanel = new JPanel();
-        liveEndPanel.setLayout(new BoxLayout(liveEndPanel, BoxLayout.Y_AXIS));
-        gameProperties.add(liveEndPanel);
-
-        liveEndPanel.add(new JLabel("LIVE_END:"));
-        liveEndPanel.add(Box.createVerticalStrut(5));
-        liveEndText = new JTextField(3);
-        liveEndText.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent focusEvent) {
-                lifeController.onPropertiesDialogLiveEndTextFocusLost();
-            }
-        });
-        liveEndText.setText(String.valueOf(propertiesModel.getLiveEnd()));
-        liveEndPanel.add(liveEndText);
-
-        gameProperties.add(Box.createHorizontalStrut(7));
-
         JPanel birthBeginPanel = new JPanel();
         birthBeginPanel.setLayout(new BoxLayout(birthBeginPanel, BoxLayout.Y_AXIS));
         gameProperties.add(birthBeginPanel);
@@ -219,6 +201,24 @@ public class PropertiesView extends JFrame {
         });
         birthEndText.setText(String.valueOf(propertiesModel.getBirthEnd()));
         birthEndPanel.add(birthEndText);
+
+        gameProperties.add(Box.createHorizontalStrut(7));
+
+        JPanel liveEndPanel = new JPanel();
+        liveEndPanel.setLayout(new BoxLayout(liveEndPanel, BoxLayout.Y_AXIS));
+        gameProperties.add(liveEndPanel);
+
+        liveEndPanel.add(new JLabel("LIVE_END:"));
+        liveEndPanel.add(Box.createVerticalStrut(5));
+        liveEndText = new JTextField(3);
+        liveEndText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                lifeController.onPropertiesDialogLiveEndTextFocusLost();
+            }
+        });
+        liveEndText.setText(String.valueOf(propertiesModel.getLiveEnd()));
+        liveEndPanel.add(liveEndText);
     }
 
     public JTextField getFirstImpactText() {
