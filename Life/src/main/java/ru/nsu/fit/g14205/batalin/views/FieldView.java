@@ -8,14 +8,12 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Stack;
 
 /**
  * Created by kir55rus on 14.02.17.
  */
-public class FieldView extends JLabel implements Observer {
+public class FieldView extends JLabel {
     private LifeController lifeController;
     private IFieldModel fieldModel;
     private IPropertiesModel propertiesModel;
@@ -71,10 +69,6 @@ public class FieldView extends JLabel implements Observer {
         fieldModel.addObserver(FieldModelEvent.FILED_CLEARED, this::repaint);
         fieldModel.addObserver(FieldModelEvent.CELL_STATE_CHANGED, this::repaint);
         propertiesModel.addObserver(PropertiesModelEvent.IMPACT_VISIBLE_CHANGED, this::repaint);
-    }
-
-    @Override
-    public void update(Observable observable, Object o) {
     }
 
     @Override
@@ -276,12 +270,39 @@ public class FieldView extends JLabel implements Observer {
         drawPolygon(image, points);
     }
 
+    private interface ILinePainter {
+        void draw(int x0, int y0, int x1, int y1);
+    }
+
     private void drawPolygon(BufferedImage image, Point[] points) {
+        ILinePainter linePainter;
+
+        if(propertiesModel.getLineThickness() > 1) {
+            linePainter = new ILinePainter() {
+                private Graphics2D graphics2D;
+                {
+                    graphics2D = image.createGraphics();
+                    graphics2D.setStroke(new BasicStroke(propertiesModel.getLineThickness()));
+                    graphics2D.setPaint(Color.BLACK);
+                }
+
+                @Override
+                public void draw(int x0, int y0, int x1, int y1) {
+                    graphics2D.drawLine(x0, y0, x1, y1);
+                }
+            };
+        } else {
+            linePainter = (x0, y0, x1, y1) -> {
+                drawLine(image, x0, y0, x1, y1);
+            };
+        }
+
+
         for(int i = 0; i < points.length; ++i) {
             int next = (i + 1) % points.length;
 
             try {
-                drawLine(image, points[i].x, points[i].y, points[next].x, points[next].y);
+                linePainter.draw(points[i].x, points[i].y, points[next].x, points[next].y);
             } catch (Exception e) {
                 System.out.println(points[i] + ", " + points[next]);
                 System.out.println("Size: " + image.getWidth() + ", " + image.getHeight());
