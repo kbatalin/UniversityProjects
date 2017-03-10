@@ -216,9 +216,9 @@ public class LifeView extends JFrame {
         viewMenu.setMnemonic(KeyEvent.VK_V);
         menuBar.add(viewMenu);
 
-        JCheckBoxMenuItem viewMenuColors = new JCheckBoxMenuItem("Colors");
-        viewMenuColors.setMnemonic(KeyEvent.VK_C);
-        viewMenu.add(viewMenuColors);
+//        JCheckBoxMenuItem viewMenuColors = new JCheckBoxMenuItem("Colors");
+//        viewMenuColors.setMnemonic(KeyEvent.VK_C);
+//        viewMenu.add(viewMenuColors);
 
         viewMenuImpact = new JCheckBoxMenuItem("Impact");
         viewMenuImpact.setMnemonic(KeyEvent.VK_I);
@@ -480,24 +480,24 @@ public class LifeView extends JFrame {
 
         toolBar.addSeparator();
 
-        JButton colorButton = new JButton();
-        colorButton.setToolTipText("Color");
-        Icon colorButtonIcon = getButtonIcon("images/rich_text_color.png");
-        if (colorButtonIcon != null) {
-            colorButton.setIcon(colorButtonIcon);
-        }
-        colorButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                lifeController.onEnterToolbarButton(mouseEvent);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                lifeController.onExitToolbarButton(mouseEvent);
-            }
-        });
-        toolBar.add(colorButton);
+//        JButton colorButton = new JButton();
+//        colorButton.setToolTipText("Color");
+//        Icon colorButtonIcon = getButtonIcon("images/rich_text_color.png");
+//        if (colorButtonIcon != null) {
+//            colorButton.setIcon(colorButtonIcon);
+//        }
+//        colorButton.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseEntered(MouseEvent mouseEvent) {
+//                lifeController.onEnterToolbarButton(mouseEvent);
+//            }
+//
+//            @Override
+//            public void mouseExited(MouseEvent mouseEvent) {
+//                lifeController.onExitToolbarButton(mouseEvent);
+//            }
+//        });
+//        toolBar.add(colorButton);
 
         impactButton = new JToggleButton();
         impactButton.setToolTipText("Impact");

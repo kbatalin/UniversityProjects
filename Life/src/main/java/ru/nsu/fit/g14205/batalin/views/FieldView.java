@@ -43,7 +43,7 @@ public class FieldView extends JLabel {
                 Point pos = mouseEvent.getPoint();
                 pos.x %= background.getWidth();
                 pos.y %= background.getHeight();
-                if(background == null || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
+                if(background == null || pos.x < 0 || pos.y < 0 || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
                     return;
                 }
                 lifeController.onMousePressed(mouseEvent);
@@ -61,7 +61,7 @@ public class FieldView extends JLabel {
                 Point pos = mouseEvent.getPoint();
                 pos.x %= background.getWidth();
                 pos.y %= background.getHeight();
-                if(background == null || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
+                if(background == null || pos.x < 0 || pos.y < 0 || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
                     return;
                 }
                 lifeController.onMouseDragged(mouseEvent);
