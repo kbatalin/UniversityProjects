@@ -69,6 +69,7 @@ public class FieldView extends JLabel {
         fieldModel.addObserver(FieldModelEvent.FILED_CLEARED, this::repaint);
         fieldModel.addObserver(FieldModelEvent.CELL_STATE_CHANGED, this::repaint);
         propertiesModel.addObserver(PropertiesModelEvent.IMPACT_VISIBLE_CHANGED, this::repaint);
+        propertiesModel.addObserver(PropertiesModelEvent.LINE_THICKNESS_CHANGED, this::repaint);
     }
 
     @Override

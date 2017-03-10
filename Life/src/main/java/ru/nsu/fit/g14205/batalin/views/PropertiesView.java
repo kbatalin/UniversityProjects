@@ -32,6 +32,12 @@ public class PropertiesView extends JFrame {
     private JTextField heightText;
     private JSlider heightSlider;
 
+    private JTextField hexSizeText;
+    private JSlider hexSizeSlider;
+    private JTextField lineThicknessText;
+    private JSlider lineThicknessSlider;
+
+
     public PropertiesView(LifeController lifeController, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
 
@@ -188,11 +194,18 @@ public class PropertiesView extends JFrame {
         JLabel hexSizeLabel = new JLabel("Hex size:");
         hexSizeLine.add(hexSizeLabel);
         hexSizeLine.add(Box.createHorizontalStrut(7));
-        JTextField hexSizeText = new JTextField(5);
+        hexSizeText = new JTextField(5);
+        hexSizeText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                lifeController.onPropertiesDialogHexSizeTextFocusLost();
+            }
+        });
         hexSizeText.setText(String.valueOf(currentHexSize));
         hexSizeLine.add(hexSizeText);
         hexSizeLine.add(Box.createHorizontalStrut(7));
-        JSlider hexSizeSlider = new JSlider(SwingConstants.HORIZONTAL, minHexSize, maxHexSize, currentHexSize);
+        hexSizeSlider = new JSlider(SwingConstants.HORIZONTAL, minHexSize, maxHexSize, currentHexSize);
+        hexSizeSlider.addChangeListener(changeEvent -> lifeController.onPropertiesDialogHexSizeSliderChanged());
         hexSizeLine.add(hexSizeSlider);
 
         cellProperties.add(Box.createVerticalStrut(5));
@@ -206,12 +219,45 @@ public class PropertiesView extends JFrame {
         int currentLineThickness = propertiesModel.getLineThickness();
         lineThicknessLine.add(new JLabel("Line thickness:"));
         lineThicknessLine.add(Box.createHorizontalStrut(7));
-        JTextField lineThicknessText = new JTextField(5);
+        lineThicknessText = new JTextField(5);
+        lineThicknessText.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent focusEvent) {
+                lifeController.onPropertiesDialogLineThicknessTextFocusLost();
+            }
+        });
         lineThicknessText.setText(String.valueOf(currentLineThickness));
         lineThicknessLine.add(lineThicknessText);
         lineThicknessLine.add(Box.createHorizontalStrut(7));
-        JSlider lineThicknessSlider = new JSlider(SwingConstants.HORIZONTAL, minLineThickness, maxLineThickness, currentLineThickness);
+        lineThicknessSlider = new JSlider(SwingConstants.HORIZONTAL, minLineThickness, maxLineThickness, currentLineThickness);
+        lineThicknessSlider.addChangeListener(changeEvent -> lifeController.onPropertiesDialogLineThicknessSliderChanged());
         lineThicknessLine.add(lineThicknessSlider);
+    }
+
+    public void setHexSize(int hexSize) {
+        hexSizeText.setText(String.valueOf(hexSize));
+        hexSizeSlider.setValue(hexSize);
+    }
+
+    public JTextField getHexSizeText() {
+        return hexSizeText;
+    }
+
+    public JSlider getHexSizeSlider() {
+        return hexSizeSlider;
+    }
+
+    public void setLineThickness(int lineThickness) {
+        lineThicknessText.setText(String.valueOf(lineThickness));
+        lineThicknessSlider.setValue(lineThickness);
+    }
+
+    public JTextField getLineThicknessText() {
+        return lineThicknessText;
+    }
+
+    public JSlider getLineThicknessSlider() {
+        return lineThicknessSlider;
     }
 
     private void initFieldSize(IPropertiesModel propertiesModel, JPanel parent) {

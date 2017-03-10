@@ -247,6 +247,8 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
         }
 
         this.lineThickness = lineThickness;
+
+        notifyObservers(PropertiesModelEvent.LINE_THICKNESS_CHANGED);
     }
 
     @Override

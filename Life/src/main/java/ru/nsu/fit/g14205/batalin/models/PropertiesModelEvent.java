@@ -8,6 +8,7 @@ import ru.nsu.fit.g14205.batalin.utils.observe.IEvent;
 public enum PropertiesModelEvent implements IEvent {
     HEX_SIZE_CHANGED,
     FIELD_SIZE_CHANGED,
+    LINE_THICKNESS_CHANGED,
     IMPACT_VISIBLE_CHANGED,
     PAINTING_MODE_CHANGED,
 }

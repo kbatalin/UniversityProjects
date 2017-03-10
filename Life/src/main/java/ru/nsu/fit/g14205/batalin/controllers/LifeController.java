@@ -317,7 +317,89 @@ public class LifeController {
         int fieldHeight = propertiesView.getHeightSlider().getValue();
         propertiesModel.setFieldSize(new Dimension(fieldWidth, fieldHeight));
 
+        propertiesModel.setHexSize(propertiesView.getHexSizeSlider().getValue());
+
+        propertiesModel.setLineThickness(propertiesView.getLineThicknessSlider().getValue());
+
         propertiesDialog = null;
+    }
+
+    public void onPropertiesDialogLineThicknessTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String lineThicknessStr = propertiesView.getLineThicknessText().getText();
+                int lineThickness = Integer.parseInt(lineThicknessStr);
+                if (lineThickness < propertiesModel.getMinLineThickness()) {
+                    lineThickness = propertiesModel.getMinLineThickness();
+                }
+                if (lineThickness > propertiesModel.getMaxLineThickness()) {
+                    lineThickness = propertiesModel.getMaxLineThickness();
+                }
+                propertiesView.setLineThickness(lineThickness);
+            } catch (Exception e) {
+                propertiesView.setLineThickness(propertiesModel.getLineThickness());
+            }
+        });
+    }
+
+    public void onPropertiesDialogLineThicknessSliderChanged() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            int lineThickness = propertiesView.getLineThicknessSlider().getValue();
+            if (lineThickness < propertiesModel.getMinLineThickness()) {
+                lineThickness = propertiesModel.getMinLineThickness();
+            }
+            if (lineThickness > propertiesModel.getMaxLineThickness()) {
+                lineThickness = propertiesModel.getMaxLineThickness();
+            }
+            propertiesView.setLineThickness(lineThickness);
+        });
+    }
+
+    public void onPropertiesDialogHexSizeTextFocusLost() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            try {
+                String hexSizeStr = propertiesView.getHexSizeText().getText();
+                int hexSize = Integer.parseInt(hexSizeStr);
+                if (hexSize < propertiesModel.getMinHexSize()) {
+                    hexSize = propertiesModel.getMinHexSize();
+                }
+                if (hexSize > propertiesModel.getMaxHexSize()) {
+                    hexSize = propertiesModel.getMaxHexSize();
+                }
+                propertiesView.setHexSize(hexSize);
+            } catch (Exception e) {
+                propertiesView.setHexSize(propertiesModel.getHexSize());
+            }
+        });
+    }
+
+    public void onPropertiesDialogHexSizeSliderChanged() {
+        SwingUtilities.invokeLater(() -> {
+            if (propertiesDialog == null) {
+                return;
+            }
+
+            int hexSize = propertiesView.getHexSizeSlider().getValue();
+            if (hexSize < propertiesModel.getMinHexSize()) {
+                hexSize = propertiesModel.getMinHexSize();
+            }
+            if (hexSize > propertiesModel.getMaxHexSize()) {
+                hexSize = propertiesModel.getMaxHexSize();
+            }
+            propertiesView.setHexSize(hexSize);
+        });
     }
 
     public void onPropertiesDialogWidthTextFocusLost() {
