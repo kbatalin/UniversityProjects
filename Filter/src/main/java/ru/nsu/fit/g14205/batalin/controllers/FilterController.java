@@ -18,6 +18,7 @@ public class FilterController {
 
     public void run() {
         filterView = new FilterView(this);
+        filterView.setLocationRelativeTo(null);
     }
 
     public void onAboutButtonClicked() {
