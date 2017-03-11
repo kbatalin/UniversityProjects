@@ -115,6 +115,7 @@ public class FilterView extends JFrame {
 
         JMenuItem helpMenuAbout = new JMenuItem("About");
         helpMenuAbout.setMnemonic(KeyEvent.VK_A);
+        helpMenuAbout.addActionListener(actionEvent -> filterController.onAboutButtonClicked());
         helpMenu.add(helpMenuAbout);
     }
 
@@ -251,6 +252,7 @@ public class FilterView extends JFrame {
         if (aboutButtonIcon != null) {
             aboutButton.setIcon(aboutButtonIcon);
         }
+        aboutButton.addActionListener(actionEvent -> filterController.onAboutButtonClicked());
         aboutButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {

@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
+import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.FilterView;
 
 import javax.swing.*;
@@ -12,8 +13,30 @@ import java.awt.event.MouseEvent;
 public class FilterController {
     private FilterView filterView;
 
+    private JDialog aboutDialog;
+    private AboutView aboutView;
+
     public void run() {
         filterView = new FilterView(this);
+    }
+
+    public void onAboutButtonClicked() {
+        if (aboutDialog != null) {
+            return;
+        }
+
+        aboutView = new AboutView(this);
+        aboutView.setLocationRelativeTo(filterView);
+        aboutDialog = new JDialog(aboutView, "About", Dialog.ModalityType.DOCUMENT_MODAL);
+    }
+
+    public void onAboutDialogClosing() {
+        if (aboutView != null) {
+            aboutView.setVisible(false);
+            aboutView = null;
+        }
+
+        aboutDialog = null;
     }
 
     public void onEnterToolbarButton(MouseEvent event) {
