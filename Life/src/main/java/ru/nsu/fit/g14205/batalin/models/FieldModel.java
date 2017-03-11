@@ -21,6 +21,23 @@ public class FieldModel extends Observable implements IFieldModel {
 
         fields = new IField[]{new Field(propertiesModel.getFieldSize()), new Field(propertiesModel.getFieldSize())};
 
+        fields[0].addObserver(FieldEvent.CELL_STATE_CHANGED, () -> notifyObservers(FieldModelEvent.CELL_STATE_CHANGED));
+        fields[1].addObserver(FieldEvent.CELL_STATE_CHANGED, () -> notifyObservers(FieldModelEvent.CELL_STATE_CHANGED));
+
+        initOffsets();
+
+        propertiesModel.addObserver(PropertiesModelEvent.FIELD_SIZE_CHANGED, () -> {
+            fields = new IField[]{
+                    new Field(propertiesModel.getFieldSize(), fields[0]),
+                    new Field(propertiesModel.getFieldSize(), fields[1])
+            };
+
+            fields[0].addObserver(FieldEvent.CELL_STATE_CHANGED, () -> notifyObservers(FieldModelEvent.CELL_STATE_CHANGED));
+            fields[1].addObserver(FieldEvent.CELL_STATE_CHANGED, () -> notifyObservers(FieldModelEvent.CELL_STATE_CHANGED));
+        });
+    }
+
+    private void initOffsets() {
         firstOffsets = new Point[2][6];
         secondOffsets = new Point[2][6];
         firstOffsets[0][0] = new Point(-1, -1);
@@ -82,7 +99,7 @@ public class FieldModel extends Observable implements IFieldModel {
         }
 
         activeField = nextField;
-        notifyObservers(FieldModelEvent.FIELD_UPDATED);
+        notifyObservers(FieldModelEvent.NEXT_STEP);
     }
 
     @Override

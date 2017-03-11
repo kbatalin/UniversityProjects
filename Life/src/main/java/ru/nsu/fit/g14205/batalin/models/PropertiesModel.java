@@ -3,12 +3,15 @@ package ru.nsu.fit.g14205.batalin.models;
 import ru.nsu.fit.g14205.batalin.utils.observe.Observable;
 
 import java.awt.*;
+import java.nio.file.Path;
 
 /**
  * Created by kir55rus on 27.02.17.
  */
 public class PropertiesModel extends Observable implements IPropertiesModel {
     private static int DEFAULT_HEX_SIZE = 30;
+    private static Dimension DEFAULT_MIN_FIELD_SIZE = new Dimension(1, 1);
+    private static Dimension DEFAULT_MAX_FIELD_SIZE = new Dimension(5000, 5000);
     private static Dimension DEFAULT_FIELD_SIZE = new Dimension(20, 100);
     private static int DEFAULT_MIN_HEX_SIZE = 4;
     private static int DEFAULT_MAX_HEX_SIZE = 50;
@@ -21,10 +24,14 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     private static int DEFAULT_IMPACT_FONT_SIZE = 12;
     private static PaintMode DEFAULT_PAINT_MODE = PaintMode.REPLACE;
     private static long DEFAULT_TIMER = 1000;
+    private static int DEFAULT_LINE_THICKNESS = 1;
+    private static int DEFAULT_MIN_LINE_THICKNESS = 1;
+    private static int DEFAULT_MAX_LINE_THICKNESS = 20;
 
     private int hexSize;
     private int hexIncircle;
     private Dimension fieldSize;
+    private int lineThickness;
     private double firstImpact;
     private double secondImpact;
     private double liveBegin;
@@ -34,6 +41,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     private boolean isImpactVisible;
     private PaintMode paintMode;
     private long timer;
+    private Path savePath;
 
     public static PropertiesModel createDefault() {
         PropertiesModel propertiesModel = new PropertiesModel();
@@ -47,6 +55,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
         propertiesModel.setLiveBegin(DEFAULT_LIVE_BEGIN);
         propertiesModel.setPaintMode(DEFAULT_PAINT_MODE);
         propertiesModel.setTimer(DEFAULT_TIMER);
+        propertiesModel.setLineThickness(DEFAULT_LINE_THICKNESS);
 
         return propertiesModel;
     }
@@ -72,7 +81,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
         this.hexSize = hexSize;
         this.hexIncircle = (int)(hexSize * Math.sqrt(3) / 2);
 
-        notifyObservers(PropertiesModelEvent.SIZE_CHANGED);
+        notifyObservers(PropertiesModelEvent.HEX_SIZE_CHANGED);
     }
 
     @Override
@@ -87,7 +96,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
         }
         this.fieldSize = fieldSize;
 
-        notifyObservers(PropertiesModelEvent.SIZE_CHANGED);
+        notifyObservers(PropertiesModelEvent.FIELD_SIZE_CHANGED);
     }
 
     @Override
@@ -132,23 +141,27 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
 
     @Override
     public void setFirstImpact(double firstImpact) {
-        if(firstImpact < 0.) {
+        if(Double.compare(firstImpact, 0.) < 0) {
             throw new IllegalArgumentException("First impact must be >= 0");
         }
         this.firstImpact = firstImpact;
+
+        notifyObservers(PropertiesModelEvent.IMPACT_VALUE_CHANGED);
     }
 
     @Override
     public void setSecondImpact(double secondImpact) {
-        if(secondImpact < 0.) {
+        if(Double.compare(secondImpact, 0.) < 0) {
             throw new IllegalArgumentException("Second impact must be >= 0");
         }
         this.secondImpact = secondImpact;
+
+        notifyObservers(PropertiesModelEvent.IMPACT_VALUE_CHANGED);
     }
 
     @Override
     public void setLiveBegin(double liveBegin) {
-        if (liveBegin > birthBegin) {
+        if (Double.compare(liveBegin, birthBegin) > 0) {
             throw new IllegalArgumentException("liveBegin > birthBegin");
         }
         this.liveBegin = liveBegin;
@@ -156,7 +169,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
 
     @Override
     public void setLiveEnd(double liveEnd) {
-        if (liveEnd < birthEnd) {
+        if (Double.compare(liveEnd, birthEnd) < 0) {
             throw new IllegalArgumentException("liveEnd < birthEnd");
         }
         this.liveEnd = liveEnd;
@@ -164,7 +177,7 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
 
     @Override
     public void setBirthBegin(double birthBegin) {
-        if (birthBegin < liveBegin || birthBegin > birthEnd) {
+        if (Double.compare(birthBegin, liveBegin) < 0 || Double.compare(birthBegin, birthEnd) > 0) {
             throw new IllegalArgumentException("birthBegin < liveBegin || birthBegin > birthEnd");
         }
         this.birthBegin = birthBegin;
@@ -172,9 +185,26 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
 
     @Override
     public void setBirthEnd(double birthEnd) {
-        if (birthEnd > liveEnd || birthEnd < birthBegin) {
+        if (Double.compare(birthEnd, liveEnd) > 0 || Double.compare(birthEnd, birthBegin) < 0) {
             throw new IllegalArgumentException("birthEnd > liveEnd || birthEnd < birthBegin");
         }
+        this.birthEnd = birthEnd;
+    }
+
+    @Override
+    public void setLifeRules(double liveBegin, double birthBegin, double birthEnd, double liveEnd) {
+        if(Double.compare(liveBegin, birthBegin) > 0
+                || Double.compare(liveEnd, birthEnd) < 0
+                || Double.compare(birthBegin, liveBegin) < 0
+                || Double.compare(birthBegin, birthEnd) > 0
+                || Double.compare(birthEnd, liveEnd) > 0
+                || Double.compare(birthEnd, birthBegin) < 0) {
+            throw new IllegalArgumentException("Bad life rules");
+        }
+
+        this.liveBegin = liveBegin;
+        this.liveEnd = liveEnd;
+        this.birthBegin = birthBegin;
         this.birthEnd = birthEnd;
     }
 
@@ -202,6 +232,8 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public void setPaintMode(PaintMode paintMode) {
         this.paintMode = paintMode;
+
+        notifyObservers(PropertiesModelEvent.PAINTING_MODE_CHANGED);
     }
 
     @Override
@@ -212,5 +244,51 @@ public class PropertiesModel extends Observable implements IPropertiesModel {
     @Override
     public void setTimer(long timer) {
         this.timer = timer;
+    }
+
+    @Override
+    public Dimension getMinFieldSize() {
+        return DEFAULT_MIN_FIELD_SIZE;
+    }
+
+    @Override
+    public Dimension getMaxFieldSize() {
+        return DEFAULT_MAX_FIELD_SIZE;
+    }
+
+    @Override
+    public int getLineThickness() {
+        return lineThickness;
+    }
+
+    @Override
+    public void setLineThickness(int lineThickness) {
+        if(lineThickness < DEFAULT_MIN_LINE_THICKNESS || lineThickness > DEFAULT_MAX_LINE_THICKNESS) {
+            throw new IllegalArgumentException("Bad line thickness");
+        }
+
+        this.lineThickness = lineThickness;
+
+        notifyObservers(PropertiesModelEvent.LINE_THICKNESS_CHANGED);
+    }
+
+    @Override
+    public int getMinLineThickness() {
+        return DEFAULT_MIN_LINE_THICKNESS;
+    }
+
+    @Override
+    public int getMaxLineThickness() {
+        return DEFAULT_MAX_LINE_THICKNESS;
+    }
+
+    @Override
+    public Path getSavePath() {
+        return savePath;
+    }
+
+    @Override
+    public void setSavePath(Path savePath) {
+        this.savePath = savePath;
     }
 }

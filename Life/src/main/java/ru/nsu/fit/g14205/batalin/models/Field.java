@@ -8,17 +8,27 @@ import java.util.ArrayList;
 /**
  * Created by kir55rus on 27.02.17.
  */
-public class Field implements IField {
+public class Field extends Observable implements IField {
     private ArrayList<ArrayList<CellState>> field;
     private Dimension fieldSize;
+    private int livingCellsCount;
 
     public Field(Dimension fieldSize) {
+        this(fieldSize, null);
+    }
+
+    public Field(Dimension fieldSize, IField source) {
         this.fieldSize = fieldSize;
 
-        resetField();
+        resetField(source);
     }
 
     private void resetField() {
+        resetField(null);
+        notifyObservers(FieldEvent.FILED_RESET);
+    }
+
+    private void resetField(IField source) {
         field = new ArrayList<>();
 
         for(int i = 0; i < fieldSize.width; ++i) {
@@ -26,9 +36,17 @@ public class Field implements IField {
             field.add(i, arr);
 
             for(int j = 0; j < fieldSize.height; ++j) {
-                arr.add(j, CellState.DEAD);
+                CellState state = CellState.DEAD;
+                if(source != null && source.checkCrds(i, j)) {
+                    state = source.get(i, j);
+                }
+
+                arr.add(j, state);
             }
         }
+
+        livingCellsCount = 0;
+        notifyObservers(FieldEvent.FILED_RESET);
     }
 
     @Override
@@ -67,8 +85,22 @@ public class Field implements IField {
         }
 
         ArrayList<CellState> line = field.get(x);
+        CellState oldState = line.get(y);
+
+        if (oldState == cellState) {
+            return;
+        }
+
+        if (cellState == CellState.ALIVE) {
+            ++livingCellsCount;
+        } else {
+            --livingCellsCount;
+        }
+
         line.set(y, cellState);
         field.set(x, line);
+
+        notifyObservers(FieldEvent.CELL_STATE_CHANGED);
     }
 
     @Override
@@ -79,5 +111,10 @@ public class Field implements IField {
     @Override
     public void clear() {
         resetField();
+    }
+
+    @Override
+    public int getLivingCellsCount() {
+        return livingCellsCount;
     }
 }

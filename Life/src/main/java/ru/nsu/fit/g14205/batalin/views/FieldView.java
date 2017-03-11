@@ -8,14 +8,12 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.Observable;
-import java.util.Observer;
 import java.util.Stack;
 
 /**
  * Created by kir55rus on 14.02.17.
  */
-public class FieldView extends JLabel implements Observer {
+public class FieldView extends JLabel {
     private LifeController lifeController;
     private IFieldModel fieldModel;
     private IPropertiesModel propertiesModel;
@@ -26,7 +24,10 @@ public class FieldView extends JLabel implements Observer {
     private int halfHexSize;
     private int backgroundOffset;
     private Color aliveColor = Color.GREEN;
+    private Color lineColor = Color.BLACK;
+    private Color fontColor = Color.BLACK;
     private Point[] firstHex;
+    private BufferedImage background;
 
 
     public FieldView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
@@ -39,6 +40,12 @@ public class FieldView extends JLabel implements Observer {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
+                Point pos = mouseEvent.getPoint();
+                pos.x %= background.getWidth();
+                pos.y %= background.getHeight();
+                if(background == null || pos.x < 0 || pos.y < 0 || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
+                    return;
+                }
                 lifeController.onMousePressed(mouseEvent);
             }
 
@@ -51,24 +58,34 @@ public class FieldView extends JLabel implements Observer {
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
+                Point pos = mouseEvent.getPoint();
+                pos.x %= background.getWidth();
+                pos.y %= background.getHeight();
+                if(background == null || pos.x < 0 || pos.y < 0 || background.getRGB(pos.x, pos.y) == lineColor.getRGB()) {
+                    return;
+                }
                 lifeController.onMouseDragged(mouseEvent);
             }
         });
 
         addMouseWheelListener(lifeController::onMouseWheelMoved);
 
-        propertiesModel.addObserver(PropertiesModelEvent.SIZE_CHANGED, () -> {
+        propertiesModel.addObserver(PropertiesModelEvent.HEX_SIZE_CHANGED, () -> {
             updSize(propertiesModel);
             repaint();
         });
 
-        fieldModel.addObserver(FieldModelEvent.FIELD_UPDATED, this::repaint);
-        fieldModel.addObserver(FieldModelEvent.FILED_CLEARED, this::repaint);
-        propertiesModel.addObserver(PropertiesModelEvent.IMPACT_VISIBLE_CHANGED, this::repaint);
-    }
+        propertiesModel.addObserver(PropertiesModelEvent.FIELD_SIZE_CHANGED, () -> {
+            updSize(propertiesModel);
+            repaint();
+        });
 
-    @Override
-    public void update(Observable observable, Object o) {
+        fieldModel.addObserver(FieldModelEvent.NEXT_STEP, this::repaint);
+        fieldModel.addObserver(FieldModelEvent.FILED_CLEARED, this::repaint);
+        fieldModel.addObserver(FieldModelEvent.CELL_STATE_CHANGED, this::repaint);
+        propertiesModel.addObserver(PropertiesModelEvent.IMPACT_VISIBLE_CHANGED, this::repaint);
+        propertiesModel.addObserver(PropertiesModelEvent.LINE_THICKNESS_CHANGED, this::repaint);
+        propertiesModel.addObserver(PropertiesModelEvent.IMPACT_VALUE_CHANGED, this::repaint);
     }
 
     @Override
@@ -78,7 +95,7 @@ public class FieldView extends JLabel implements Observer {
         Dimension fieldSize = fieldModel.getActiveField().getSize();
         Rectangle clipBounds = graphics.getClipBounds();
 
-        BufferedImage background = new BufferedImage(clipBounds.width + backgroundOffset, clipBounds.height + backgroundOffset, BufferedImage.TYPE_INT_RGB);
+        background = new BufferedImage(clipBounds.width + backgroundOffset, clipBounds.height + backgroundOffset, BufferedImage.TYPE_INT_RGB);
         Graphics2D backgroundGraphics = background.createGraphics();
         backgroundGraphics.setPaint(Color.WHITE);
         backgroundGraphics.fillRect(0, 0, background.getWidth(), background.getHeight());
@@ -121,62 +138,82 @@ public class FieldView extends JLabel implements Observer {
         this.preferredSize = new Dimension(preferredWidth, preferredHeight);
     }
 
+    private class Span {
+        private Point startPoint;
+        private int width;
+
+        Span(Point start, int width) {
+            startPoint = start;
+            this.width = width;
+        }
+
+        Point getStartPoint() {
+            return startPoint;
+        }
+
+        int getWidth() {
+            return width;
+        }
+    }
+
     private void spanFill(BufferedImage image, Point seed, Color color) {
         Color oldColor = new Color(image.getRGB(seed.x, seed.y));
         if (color == null || color.equals(oldColor)) {
             return;
         }
 
-        Stack<Rectangle> spans = new Stack<>();
-        spans.push(getSpan(image, seed));
+        Stack<Span> spans = new Stack<>();
+        spans.push(getSpan(image, seed, color));
         while (!spans.empty()) {
-            Rectangle span = spans.pop();
+            Span span = spans.pop();
+            Point startPoint = span.getStartPoint();
 
-            for(int i = 0; i < span.width; ++i) {
-                image.setRGB(span.x + i, span.y, color.getRGB());
+            for(int i = 0, width = span.getWidth(); i < width; ++i) {
+                image.setRGB(startPoint.x + i, startPoint.y, color.getRGB());
             }
 
             findNearSpans(spans, image, span, oldColor);
         }
     }
 
-    private void findNearSpans(Stack<Rectangle> spans, BufferedImage image, Rectangle span, Color oldColor) {
+    private void findNearSpans(Stack<Span> spans, BufferedImage image, Span span, Color oldColor) {
+        Point startPoint = span.getStartPoint();
         for (int offset : new int[]{-1, 1}) {
-            int y = span.y + offset;
+            int y = startPoint.y + offset;
             if (y < 0 || y >= image.getHeight()) {
                 continue;
             }
 
-            for (int i = 0; i < span.width;) {
-                int x = i + span.x;
+            for (int i = 0, width = span.getWidth(); i < width;) {
+                int x = i + startPoint.x;
                 if (image.getRGB(x, y) != oldColor.getRGB()) {
                     ++i;
                     continue;
                 }
-                Rectangle newSpan = getSpan(image, new Point(x, y));
+                Span newSpan = getSpan(image, new Point(x, y), oldColor);
                 spans.push(newSpan);
                 i += newSpan.width;
             }
         }
     }
 
-    private Rectangle getSpan(BufferedImage image, Point crds) {
-        int color = image.getRGB(crds.x, crds.y);
+    private Span getSpan(BufferedImage image, Point crds, Color color) {
+        int rgbColor = color.getRGB();
 
         int x0 = crds.x;
         int y = crds.y;
 
-        while(x0 > 0 && color == image.getRGB(x0 - 1, y)) {
+        while(x0 > 0 && rgbColor == image.getRGB(x0 - 1, y)) {
             --x0;
         }
 
         int x1 = crds.x;
         int width = image.getWidth() - 1;
-        while (x1 < width && color == image.getRGB(x1 + 1, y)) {
+        while (x1 < width && rgbColor == image.getRGB(x1 + 1, y)) {
             ++x1;
         }
 
-        return new Rectangle(x0, y, x1 - x0 + 1, 1);
+        return new Span(new Point(x0, y), x1 - x0 + 1);
     }
 
     private void drawField(BufferedImage background, int x0, int y0, int x1, int y1) {
@@ -186,7 +223,7 @@ public class FieldView extends JLabel implements Observer {
         boolean isImpactVisible = propertiesModel.isImpactVisible();
         int impactFontSize = propertiesModel.getImpactFontSize();
         Graphics2D backgroundGraphics = background.createGraphics();
-        backgroundGraphics.setPaint(Color.BLACK);
+        backgroundGraphics.setPaint(fontColor);
         backgroundGraphics.setFont(new Font("Dialog", Font.PLAIN, impactFontSize));
 
         for(int y = y0; y < y1; ++y) {
@@ -207,17 +244,25 @@ public class FieldView extends JLabel implements Observer {
 //                drawHexagon(background, shownX, shownY, offsetX);
 
                 Point center = new Point(points[5].x + hexIncircle, points[0].y + halfHexSize * 2);
-                if(field.get(x, y) == CellState.ALIVE) {
+                if(field.get(x, y) == CellState.ALIVE && background.getRGB(center.x, center.y) != lineColor.getRGB()) {
 //                    System.out.println("Alive: " + new Point(x, y));
                     spanFill(background, center, aliveColor);
                 }
 
                 if (isImpactVisible && hexSize >= 18) {
-                    double impact = fieldModel.getImpact(x, y);
-                    backgroundGraphics.drawString(String.format("%.1f", impact), center.x - 5, center.y + impactFontSize / 2);
+                    printImpact(backgroundGraphics, x, y, center);
                 }
             }
         }
+    }
+
+    private void printImpact(Graphics2D backgroundGraphics, int x, int y, Point pos) {
+        FontMetrics fontMetrics = backgroundGraphics.getFontMetrics();
+        int impactFontSize = propertiesModel.getImpactFontSize();
+        double impact = fieldModel.getImpact(x, y);
+        int intImpact = (int)impact;
+        String impactStr = (Double.compare(impact, intImpact) == 0) ? String.format("%d", intImpact) : String.format("%.1f", impact);
+        backgroundGraphics.drawString(impactStr, pos.x - fontMetrics.stringWidth(impactStr) / 2, pos.y + impactFontSize / 2);
     }
 
     private Point[] shiftPoints(int x, int y, int extraOffsetX) {
@@ -242,12 +287,39 @@ public class FieldView extends JLabel implements Observer {
         drawPolygon(image, points);
     }
 
+    private interface ILinePainter {
+        void draw(int x0, int y0, int x1, int y1);
+    }
+
     private void drawPolygon(BufferedImage image, Point[] points) {
+        ILinePainter linePainter;
+
+        if(propertiesModel.getLineThickness() > 1) {
+            linePainter = new ILinePainter() {
+                private Graphics2D graphics2D;
+                {
+                    graphics2D = image.createGraphics();
+                    graphics2D.setStroke(new BasicStroke(propertiesModel.getLineThickness()));
+                    graphics2D.setPaint(lineColor);
+                }
+
+                @Override
+                public void draw(int x0, int y0, int x1, int y1) {
+                    graphics2D.drawLine(x0, y0, x1, y1);
+                }
+            };
+        } else {
+            linePainter = (x0, y0, x1, y1) -> {
+                drawLine(image, x0, y0, x1, y1);
+            };
+        }
+
+
         for(int i = 0; i < points.length; ++i) {
             int next = (i + 1) % points.length;
 
             try {
-                drawLine(image, points[i].x, points[i].y, points[next].x, points[next].y);
+                linePainter.draw(points[i].x, points[i].y, points[next].x, points[next].y);
             } catch (Exception e) {
                 System.out.println(points[i] + ", " + points[next]);
                 System.out.println("Size: " + image.getWidth() + ", " + image.getHeight());
@@ -281,7 +353,7 @@ public class FieldView extends JLabel implements Observer {
         int x = x0;
         int y = y0;
         int err = maxLength / 2;
-        field.setRGB(x, y, Color.BLACK.getRGB());
+        field.setRGB(x, y, lineColor.getRGB());
 
         for (int i = 0; i < maxLength; i++) {
             err -= minLength;
@@ -294,7 +366,7 @@ public class FieldView extends JLabel implements Observer {
                 y += pdy;
             }
 
-            field.setRGB(x, y, Color.BLACK.getRGB());
+            field.setRGB(x, y, lineColor.getRGB());
         }
     }
 
