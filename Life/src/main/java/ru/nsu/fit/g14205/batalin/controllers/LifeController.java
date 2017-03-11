@@ -321,23 +321,26 @@ public class LifeController {
 
         propertiesModel.setLineThickness(propertiesView.getLineThicknessSlider().getValue());
 
-        String firstImpactStr = propertiesView.getFirstImpactText().getText();
-        double firstImpact = Double.parseDouble(firstImpactStr);
-        propertiesModel.setFirstImpact(firstImpact);
+        try {
+            String firstImpactStr = propertiesView.getFirstImpactText().getText();
+            double firstImpact = Double.parseDouble(firstImpactStr);
+            propertiesModel.setFirstImpact(firstImpact);
 
-        String secondImpactStr = propertiesView.getSecondImpactText().getText();
-        double secondImpact = Double.parseDouble(secondImpactStr);
-        propertiesModel.setSecondImpact(secondImpact);
+            String secondImpactStr = propertiesView.getSecondImpactText().getText();
+            double secondImpact = Double.parseDouble(secondImpactStr);
+            propertiesModel.setSecondImpact(secondImpact);
 
-        String birthBeginStr = propertiesView.getBirthBeginText().getText();
-        String birthEndStr = propertiesView.getBirthEndText().getText();
-        String liveEndStr = propertiesView.getLiveEndText().getText();
-        String liveBeginStr = propertiesView.getLiveBeginText().getText();
-        double liveBegin = Double.parseDouble(liveBeginStr);
-        double liveEnd = Double.parseDouble(liveEndStr);
-        double birthBegin = Double.parseDouble(birthBeginStr);
-        double birthEnd = Double.parseDouble(birthEndStr);
-        propertiesModel.setLifeRules(liveBegin, birthBegin, birthEnd, liveEnd);
+            String birthBeginStr = propertiesView.getBirthBeginText().getText();
+            String birthEndStr = propertiesView.getBirthEndText().getText();
+            String liveEndStr = propertiesView.getLiveEndText().getText();
+            String liveBeginStr = propertiesView.getLiveBeginText().getText();
+            double liveBegin = Double.parseDouble(liveBeginStr);
+            double liveEnd = Double.parseDouble(liveEndStr);
+            double birthBegin = Double.parseDouble(birthBeginStr);
+            double birthEnd = Double.parseDouble(birthEndStr);
+            propertiesModel.setLifeRules(liveBegin, birthBegin, birthEnd, liveEnd);
+        } catch (Exception e) {
+        }
 
         propertiesDialog = null;
     }
