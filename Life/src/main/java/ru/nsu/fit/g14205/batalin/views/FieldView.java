@@ -244,7 +244,7 @@ public class FieldView extends JLabel {
 //                drawHexagon(background, shownX, shownY, offsetX);
 
                 Point center = new Point(points[5].x + hexIncircle, points[0].y + halfHexSize * 2);
-                if(field.get(x, y) == CellState.ALIVE) {
+                if(field.get(x, y) == CellState.ALIVE && background.getRGB(center.x, center.y) != lineColor.getRGB()) {
 //                    System.out.println("Alive: " + new Point(x, y));
                     spanFill(background, center, aliveColor);
                 }
