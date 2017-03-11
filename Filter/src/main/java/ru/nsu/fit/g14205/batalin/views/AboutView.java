@@ -14,7 +14,7 @@ import java.net.URL;
 public class AboutView extends JFrame {
     public AboutView(FilterController filterController) {
 
-        setTitle("About FIT_14205_Batalin_Kirill_Life");
+        setTitle("About FIT_14205_Batalin_Kirill_Filter");
 
         setLayout(new FlowLayout(FlowLayout.LEADING));
         URL imgUrl = this.getClass().getClassLoader().getResource("images/about.jpg");
@@ -34,7 +34,7 @@ public class AboutView extends JFrame {
 
         textPanel.add(new JLabel("Author: Batalin Kirill"));
         textPanel.add(new JLabel("Group: 14205, NSU"));
-        textPanel.add(new JLabel("Task: Life"));
+        textPanel.add(new JLabel("Task: Filter"));
 
         textPanel.add(Box.createVerticalStrut(20));
 
