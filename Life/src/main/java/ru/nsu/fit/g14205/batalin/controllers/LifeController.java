@@ -680,7 +680,7 @@ public class LifeController {
         //Replace
         if (propertiesModel.getPaintMode() == PaintMode.REPLACE) {
             field.set(pos, CellState.ALIVE);
-            lifeView.repaint();
+//            lifeView.repaint();
             return;
         }
 

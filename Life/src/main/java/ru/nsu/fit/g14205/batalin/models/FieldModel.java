@@ -31,6 +31,9 @@ public class FieldModel extends Observable implements IFieldModel {
                     new Field(propertiesModel.getFieldSize(), fields[0]),
                     new Field(propertiesModel.getFieldSize(), fields[1])
             };
+
+            fields[0].addObserver(FieldEvent.CELL_STATE_CHANGED, () -> notifyObservers(FieldModelEvent.CELL_STATE_CHANGED));
+            fields[1].addObserver(FieldEvent.CELL_STATE_CHANGED, () -> notifyObservers(FieldModelEvent.CELL_STATE_CHANGED));
         });
     }
 
