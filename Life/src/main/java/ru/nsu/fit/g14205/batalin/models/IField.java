@@ -7,7 +7,7 @@ import java.awt.*;
 /**
  * Created by kir55rus on 27.02.17.
  */
-public interface IField {
+public interface IField extends IObservable {
     Dimension getSize();
     boolean checkCrds(int x, int y);
     boolean checkCrds(Point pos);
@@ -16,4 +16,5 @@ public interface IField {
     void set(int x, int y, CellState cellState);
     void set(Point pos, CellState cellState);
     void clear();
+    int getLivingCellsCount();
 }

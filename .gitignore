@@ -1,4 +1,5 @@
-*.idea
-*.directory
-*.iml
-Life/out/ 
+**.idea
+**.directory
+**.iml
+**/target/
+

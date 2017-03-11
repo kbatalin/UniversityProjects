@@ -3,24 +3,24 @@ package ru.nsu.fit.g14205.batalin.views;
 import ru.nsu.fit.g14205.batalin.controllers.LifeController;
 import ru.nsu.fit.g14205.batalin.models.IFieldModel;
 import ru.nsu.fit.g14205.batalin.models.IPropertiesModel;
+import ru.nsu.fit.g14205.batalin.models.PaintMode;
 import ru.nsu.fit.g14205.batalin.models.PropertiesModelEvent;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.net.URL;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Created by kir55rus on 10.02.17.
  */
-public class LifeView extends JFrame implements Observer {
+public class LifeView extends JFrame {
     private LifeController lifeController;
+    private IPropertiesModel propertiesModel;
 
     private JScrollPane scrollPane;
     private FieldView fieldView;
+    private StatusBarView statusBarView;
 
     private JCheckBoxMenuItem viewMenuImpact;
     private JToggleButton impactButton;
@@ -34,9 +34,17 @@ public class LifeView extends JFrame implements Observer {
 
     public LifeView(LifeController lifeController, IFieldModel fieldModel, IPropertiesModel propertiesModel) {
         this.lifeController = lifeController;
+        this.propertiesModel = propertiesModel;
 
+        setMinimumSize(new Dimension(800, 600));
         setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setTitle("Life");
+        setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            public void windowClosing(WindowEvent we) {
+                lifeController.onCloseButtonClicked();
+            }
+        });
 
         initMenu();
 
@@ -46,15 +54,29 @@ public class LifeView extends JFrame implements Observer {
 
         initField(lifeController, fieldModel, propertiesModel);
 
-        propertiesModel.addObserver(PropertiesModelEvent.SIZE_CHANGED, () -> {
+        initStatusBar();
+
+        propertiesModel.addObserver(PropertiesModelEvent.HEX_SIZE_CHANGED, () -> {
             fieldView.revalidate();
             scrollPane.repaint();
         });
-    }
 
-    @Override
-    public void update(Observable observable, Object o) {
-        //todo
+        propertiesModel.addObserver(PropertiesModelEvent.FIELD_SIZE_CHANGED, () -> {
+            fieldView.revalidate();
+            scrollPane.repaint();
+        });
+
+        propertiesModel.addObserver(PropertiesModelEvent.PAINTING_MODE_CHANGED, () -> {
+            PaintMode mode = propertiesModel.getPaintMode();
+            boolean isReplaceMode = mode == PaintMode.REPLACE;
+
+            SwingUtilities.invokeLater(() -> {
+                replaceButton.setSelected(isReplaceMode);
+                modeReplace.setSelected(isReplaceMode);
+                xorButton.setSelected(!isReplaceMode);
+                modeXor.setSelected(!isReplaceMode);
+            });
+        });
     }
 
     private void runButtonClicked(boolean isSelected) {
@@ -98,21 +120,25 @@ public class LifeView extends JFrame implements Observer {
         JMenuItem fileMenuNew = new JMenuItem("New");
         fileMenuNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
         fileMenuNew.setMnemonic(KeyEvent.VK_N);
+        fileMenuNew.addActionListener(actionEvent -> lifeController.onNewFieldButtonClicked());
         fileMenu.add(fileMenuNew);
 
         JMenuItem fileMenuOpen = new JMenuItem("Open...");
         fileMenuOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
         fileMenuOpen.setMnemonic(KeyEvent.VK_O);
+        fileMenuOpen.addActionListener(actionEvent -> lifeController.onOpenButtonClicked());
         fileMenu.add(fileMenuOpen);
 
         JMenuItem fileMenuSave = new JMenuItem("Save");
         fileMenuSave.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
         fileMenuSave.setMnemonic(KeyEvent.VK_S);
+        fileMenuSave.addActionListener(actionEvent -> lifeController.onSaveButtonClicked());
         fileMenu.add(fileMenuSave);
 
         JMenuItem fileMenuSaveAs = new JMenuItem("Save as...");
         fileMenuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK + ActionEvent.SHIFT_MASK));
         fileMenuSaveAs.setMnemonic(KeyEvent.VK_A);
+        fileMenuSaveAs.addActionListener(actionEvent -> lifeController.onSaveAsButtonClicked());
         fileMenu.add(fileMenuSaveAs);
 
         fileMenu.addSeparator();
@@ -120,6 +146,7 @@ public class LifeView extends JFrame implements Observer {
         JMenuItem fileMenuExit = new JMenuItem("Exit");
         fileMenuExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         fileMenuExit.setMnemonic(KeyEvent.VK_X);
+        fileMenuExit.addActionListener(actionEvent -> lifeController.onCloseButtonClicked());
         fileMenu.add(fileMenuExit);
     }
 
@@ -140,10 +167,9 @@ public class LifeView extends JFrame implements Observer {
         ButtonGroup modeGroup = new ButtonGroup();
 
         modeReplace = new JRadioButtonMenuItem("Replace");
-        modeReplace.setSelected(true);
+        modeReplace.setSelected(propertiesModel.getPaintMode() == PaintMode.REPLACE);
         modeReplace.setMnemonic(KeyEvent.VK_R);
         modeReplace.addActionListener(actionEvent -> {
-            replaceButton.setSelected(true);
             lifeController.onReplaceModeClicked();
         });
         modeGroup.add(modeReplace);
@@ -151,8 +177,8 @@ public class LifeView extends JFrame implements Observer {
 
         modeXor = new JRadioButtonMenuItem("XOR");
         modeXor.setMnemonic(KeyEvent.VK_X);
+        modeXor.setSelected(propertiesModel.getPaintMode() == PaintMode.XOR);
         modeXor.addActionListener(actionEvent -> {
-            xorButton.setSelected(true);
             lifeController.onXorModeClicked();
         });
         modeGroup.add(modeXor);
@@ -163,6 +189,7 @@ public class LifeView extends JFrame implements Observer {
         JMenuItem editMenuProperties = new JMenuItem("Properties");
         editMenuProperties.setMnemonic(KeyEvent.VK_P);
         editMenu.add(editMenuProperties);
+        editMenuProperties.addActionListener(actionEvent -> lifeController.onPropertiesButtonClicked());
     }
 
     private void initActionMenu(JMenuBar menuBar) {
@@ -189,9 +216,9 @@ public class LifeView extends JFrame implements Observer {
         viewMenu.setMnemonic(KeyEvent.VK_V);
         menuBar.add(viewMenu);
 
-        JCheckBoxMenuItem viewMenuColors = new JCheckBoxMenuItem("Colors");
-        viewMenuColors.setMnemonic(KeyEvent.VK_C);
-        viewMenu.add(viewMenuColors);
+//        JCheckBoxMenuItem viewMenuColors = new JCheckBoxMenuItem("Colors");
+//        viewMenuColors.setMnemonic(KeyEvent.VK_C);
+//        viewMenu.add(viewMenuColors);
 
         viewMenuImpact = new JCheckBoxMenuItem("Impact");
         viewMenuImpact.setMnemonic(KeyEvent.VK_I);
@@ -223,6 +250,18 @@ public class LifeView extends JFrame implements Observer {
         if (newButtonIcon != null) {
             newButton.setIcon(newButtonIcon);
         }
+        newButton.addActionListener(actionEvent -> lifeController.onNewFieldButtonClicked());
+        newButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(newButton);
 
         JButton openButton = new JButton();
@@ -231,6 +270,18 @@ public class LifeView extends JFrame implements Observer {
         if (openButtonIcon != null) {
             openButton.setIcon(openButtonIcon);
         }
+        openButton.addActionListener(actionEvent -> lifeController.onOpenButtonClicked());
+        openButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(openButton);
 
         JButton saveButton = new JButton();
@@ -239,6 +290,18 @@ public class LifeView extends JFrame implements Observer {
         if (saveButtonIcon != null) {
             saveButton.setIcon(saveButtonIcon);
         }
+        saveButton.addActionListener(actionEvent -> lifeController.onSaveButtonClicked());
+        saveButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(saveButton);
 
         JButton saveAsButton = new JButton();
@@ -247,6 +310,18 @@ public class LifeView extends JFrame implements Observer {
         if (saveAsButtonIcon != null) {
             saveAsButton.setIcon(saveAsButtonIcon);
         }
+        saveAsButton.addActionListener(actionEvent -> lifeController.onSaveAsButtonClicked());
+        saveAsButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(saveAsButton);
 
         JButton closeButton = new JButton();
@@ -255,6 +330,18 @@ public class LifeView extends JFrame implements Observer {
         if (closeButtonIcon != null) {
             closeButton.setIcon(closeButtonIcon);
         }
+        closeButton.addActionListener(actionEvent -> lifeController.onCloseButtonClicked());
+        closeButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(closeButton);
 
         toolBar.addSeparator();
@@ -266,6 +353,17 @@ public class LifeView extends JFrame implements Observer {
             clearButton.setIcon(clearButtonIcon);
         }
         clearButton.addActionListener(actionEvent -> lifeController.onClearButtonClicked());
+        clearButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(clearButton);
 
         ButtonGroup modeGroup = new ButtonGroup();
@@ -276,10 +374,20 @@ public class LifeView extends JFrame implements Observer {
             replaceButton.setIcon(replaceButtonIcon);
         }
         replaceButton.addActionListener(actionEvent -> {
-            modeReplace.setSelected(true);
             lifeController.onReplaceModeClicked();
         });
-        replaceButton.setSelected(true);
+        replaceButton.setSelected(propertiesModel.getPaintMode() == PaintMode.REPLACE);
+        replaceButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         modeGroup.add(replaceButton);
         toolBar.add(replaceButton);
 
@@ -290,8 +398,19 @@ public class LifeView extends JFrame implements Observer {
             xorButton.setIcon(xorButtonIcon);
         }
         xorButton.addActionListener(actionEvent -> {
-            modeXor.setSelected(true);
             lifeController.onXorModeClicked();
+        });
+        xorButton.setSelected(propertiesModel.getPaintMode() == PaintMode.XOR);
+        xorButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
         });
         modeGroup.add(xorButton);
         toolBar.add(xorButton);
@@ -303,6 +422,18 @@ public class LifeView extends JFrame implements Observer {
         if (propertiesButtonIcon != null) {
             propertiesButton.setIcon(propertiesButtonIcon);
         }
+        propertiesButton.addActionListener(actionEvent -> lifeController.onPropertiesButtonClicked());
+        propertiesButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(propertiesButton);
 
         toolBar.addSeparator();
@@ -313,8 +444,17 @@ public class LifeView extends JFrame implements Observer {
         if (runButtonIcon != null) {
             runButton.setIcon(runButtonIcon);
         }
-        runButton.addActionListener(actionEvent -> {
-            runButtonClicked(runButton.isSelected());
+        runButton.addActionListener(actionEvent -> runButtonClicked(runButton.isSelected()));
+        runButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
         });
         toolBar.add(runButton);
 
@@ -325,17 +465,39 @@ public class LifeView extends JFrame implements Observer {
             nextButton.setIcon(nextButtonIcon);
         }
         nextButton.addActionListener(actionEvent -> lifeController.onNextButtonClicked());
+        nextButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(nextButton);
 
         toolBar.addSeparator();
 
-        JButton colorButton = new JButton();
-        colorButton.setToolTipText("Color");
-        Icon colorButtonIcon = getButtonIcon("images/rich_text_color.png");
-        if (colorButtonIcon != null) {
-            colorButton.setIcon(colorButtonIcon);
-        }
-        toolBar.add(colorButton);
+//        JButton colorButton = new JButton();
+//        colorButton.setToolTipText("Color");
+//        Icon colorButtonIcon = getButtonIcon("images/rich_text_color.png");
+//        if (colorButtonIcon != null) {
+//            colorButton.setIcon(colorButtonIcon);
+//        }
+//        colorButton.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseEntered(MouseEvent mouseEvent) {
+//                lifeController.onEnterToolbarButton(mouseEvent);
+//            }
+//
+//            @Override
+//            public void mouseExited(MouseEvent mouseEvent) {
+//                lifeController.onExitToolbarButton(mouseEvent);
+//            }
+//        });
+//        toolBar.add(colorButton);
 
         impactButton = new JToggleButton();
         impactButton.setToolTipText("Impact");
@@ -347,6 +509,17 @@ public class LifeView extends JFrame implements Observer {
             viewMenuImpact.setState(impactButton.isSelected());
             lifeController.onImpactButtonClicked(impactButton.isSelected());
         });
+        impactButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         toolBar.add(impactButton);
 
         toolBar.addSeparator();
@@ -357,6 +530,17 @@ public class LifeView extends JFrame implements Observer {
         if (aboutButtonIcon != null) {
             aboutButton.setIcon(aboutButtonIcon);
         }
+        aboutButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                lifeController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                lifeController.onExitToolbarButton(mouseEvent);
+            }
+        });
         aboutButton.addActionListener(actionEvent -> lifeController.onAboutButtonClicked());
         toolBar.add(aboutButton);
     }
@@ -365,6 +549,19 @@ public class LifeView extends JFrame implements Observer {
         fieldView = new FieldView(lifeController, fieldModel, propertiesModel);
         scrollPane = new JScrollPane(fieldView);
         add(scrollPane, BorderLayout.CENTER);
+    }
+
+    public JScrollPane getScrollPane() {
+        return scrollPane;
+    }
+
+    private void initStatusBar() {
+        statusBarView = new StatusBarView();
+        add(statusBarView, BorderLayout.PAGE_END);
+    }
+
+    public StatusBarView getStatusBarView() {
+        return statusBarView;
     }
 
     private Icon getButtonIcon(String imgPath) {
