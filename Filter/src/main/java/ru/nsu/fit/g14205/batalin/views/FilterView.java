@@ -17,8 +17,8 @@ public class FilterView extends JFrame {
     public FilterView(FilterController filterController) {
         this.filterController = filterController;
 
-        setMinimumSize(new Dimension(800, 600));
-        setSize(800, 600);
+        setMinimumSize(new Dimension(800, 800));
+        setSize(1200, 600);
         setTitle("Filter");
         setDefaultCloseOperation(JDialog.EXIT_ON_CLOSE);
 //        setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
