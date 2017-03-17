@@ -34,7 +34,7 @@ public class FilterView extends JFrame {
 
         initToolbar();
 
-        initWorkSpace();
+        initWorkSpace(filterController);
 
         initStatusBar();
 
@@ -267,9 +267,11 @@ public class FilterView extends JFrame {
         toolBar.add(aboutButton);
     }
 
-    private void initWorkSpace() {
-        WorkspaceView workspaceView = new WorkspaceView();
-        add(workspaceView, BorderLayout.CENTER);
+    private void initWorkSpace(FilterController filterController) {
+        WorkspaceView workspaceView = new WorkspaceView(filterController);
+
+        JScrollPane workspaceScrollPane = new JScrollPane(workspaceView);
+        add(workspaceScrollPane, BorderLayout.CENTER);
     }
 
     private void initStatusBar() {
