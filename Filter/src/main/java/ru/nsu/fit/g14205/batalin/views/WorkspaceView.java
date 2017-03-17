@@ -37,8 +37,8 @@ public class WorkspaceView extends JPanel {
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
-        Shape clip = graphics.getClip();
+        Rectangle area = graphics.getClip().getBounds();
         graphics.setColor(Color.WHITE);
-        graphics.fillRect(0, 0, clip.getBounds().width, clip.getBounds().height);
+        graphics.fillRect(area.x, area.y, area.width, area.height);
     }
 }
