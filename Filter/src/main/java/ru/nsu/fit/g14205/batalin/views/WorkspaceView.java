@@ -20,16 +20,19 @@ public class WorkspaceView extends JPanel {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 
         aImage = new ImageView(filterController);
+        aImage.setAlignmentY(Component.TOP_ALIGNMENT);
         add(aImage);
 
         add(Box.createHorizontalStrut(10));
 
         bImage = new ImageView(filterController);
+        bImage.setAlignmentY(Component.TOP_ALIGNMENT);
         add(bImage);
 
         add(Box.createHorizontalStrut(10));
 
         cImage = new ImageView(filterController);
+        cImage.setAlignmentY(Component.TOP_ALIGNMENT);
         add(cImage);
     }
 
