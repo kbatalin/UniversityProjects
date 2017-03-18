@@ -1,6 +1,7 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.FilterController;
+import ru.nsu.fit.g14205.batalin.models.ImageModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,7 +15,7 @@ public class FilterView extends JFrame {
     private FilterController filterController;
     private StatusBarView statusBarView;
 
-    public FilterView(FilterController filterController) {
+    public FilterView(FilterController filterController, ImageModel aImageModel, ImageModel bImageModel, ImageModel cImageModel) {
         this.filterController = filterController;
 
         setMinimumSize(new Dimension(800, 800));
@@ -34,7 +35,7 @@ public class FilterView extends JFrame {
 
         initToolbar();
 
-        initWorkSpace(filterController);
+        initWorkSpace(filterController, aImageModel, bImageModel, cImageModel);
 
         initStatusBar();
 
@@ -60,11 +61,13 @@ public class FilterView extends JFrame {
         JMenuItem fileMenuNew = new JMenuItem("New");
         fileMenuNew.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, InputEvent.CTRL_MASK));
         fileMenuNew.setMnemonic(KeyEvent.VK_N);
+        fileMenuNew.addActionListener(actionEvent -> filterController.onNewButtonClicked());
         fileMenu.add(fileMenuNew);
 
         JMenuItem fileMenuOpen = new JMenuItem("Open...");
         fileMenuOpen.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK));
         fileMenuOpen.setMnemonic(KeyEvent.VK_O);
+        fileMenuOpen.addActionListener(actionEvent -> filterController.onOpenButtonClicked());
         fileMenu.add(fileMenuOpen);
 
         JMenuItem fileMenuSaveAs = new JMenuItem("Save as...");
@@ -130,6 +133,7 @@ public class FilterView extends JFrame {
         if (newButtonIcon != null) {
             newButton.setIcon(newButtonIcon);
         }
+        newButton.addActionListener(actionEvent -> filterController.onNewButtonClicked());
         newButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -149,6 +153,7 @@ public class FilterView extends JFrame {
         if (openButtonIcon != null) {
             openButton.setIcon(openButtonIcon);
         }
+        openButton.addActionListener(actionEvent -> filterController.onOpenButtonClicked());
         openButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -267,8 +272,8 @@ public class FilterView extends JFrame {
         toolBar.add(aboutButton);
     }
 
-    private void initWorkSpace(FilterController filterController) {
-        WorkspaceView workspaceView = new WorkspaceView(filterController);
+    private void initWorkSpace(FilterController filterController, ImageModel aImageModel, ImageModel bImageModel, ImageModel cImageModel) {
+        WorkspaceView workspaceView = new WorkspaceView(filterController, aImageModel, bImageModel, cImageModel);
 
         JScrollPane workspaceScrollPane = new JScrollPane(workspaceView);
         add(workspaceScrollPane, BorderLayout.CENTER);

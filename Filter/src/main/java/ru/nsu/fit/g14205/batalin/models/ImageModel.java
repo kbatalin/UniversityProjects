@@ -15,12 +15,25 @@ import java.io.IOException;
 public class ImageModel extends ObservableBase implements Observable {
     private BufferedImage image;
 
+    public ImageModel() {
+
+    }
+
     public ImageModel(BufferedImage image) {
         this.image = image;
     }
 
     public ImageModel(File file) throws IOException {
         image = ImageIO.read(file);
+    }
+
+    public void reset() {
+        setImage(null);
+    }
+
+    public void setImage(BufferedImage image) {
+        this.image = image;
+        notifyObservers(ImageModelEvent.IMAGE_UPDATED);
     }
 
     public BufferedImage getImage() {
