@@ -50,6 +50,11 @@ public class FilterController {
         resetImages();
     }
 
+    public void onSelectButtonClicked(boolean isSelected) {
+        filterView.getSelectButton().setSelected(isSelected);
+        filterView.getEditMenuSelect().setState(isSelected);
+    }
+
     public void onCopyBToCButtonClicked() {
         cImageModel.setImage(bImageModel.getImage());
     }

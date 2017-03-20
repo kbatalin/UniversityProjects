@@ -17,6 +17,7 @@ public class FilterView extends JFrame {
     private WorkspaceView workspaceView;
 
     private JToggleButton selectButton;
+    private JCheckBoxMenuItem editMenuSelect;
 
     public FilterView(FilterController filterController, ImageModel aImageModel, ImageModel bImageModel, ImageModel cImageModel) {
         this.filterController = filterController;
@@ -91,9 +92,10 @@ public class FilterView extends JFrame {
         editMenu.setMnemonic(KeyEvent.VK_E);
         menuBar.add(editMenu);
 
-        JMenuItem editMenuClear = new JMenuItem("Select");
-        editMenuClear.setMnemonic(KeyEvent.VK_S);
-        editMenu.add(editMenuClear);
+        editMenuSelect = new JCheckBoxMenuItem("Select");
+        editMenuSelect.setMnemonic(KeyEvent.VK_S);
+        editMenuSelect.addActionListener(actionEvent -> filterController.onSelectButtonClicked(editMenuSelect.isSelected()));
+        editMenu.add(editMenuSelect);
 
         JMenuItem editMenuCopyBToC = new JMenuItem("Copy B to C");
         editMenuCopyBToC.setMnemonic(KeyEvent.VK_B);
@@ -199,6 +201,7 @@ public class FilterView extends JFrame {
         if (selectButtonIcon != null) {
             selectButton.setIcon(selectButtonIcon);
         }
+        selectButton.addActionListener(actionEvent -> filterController.onSelectButtonClicked(selectButton.isSelected()));
         selectButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -292,6 +295,10 @@ public class FilterView extends JFrame {
 
     public JToggleButton getSelectButton() {
         return selectButton;
+    }
+
+    public JCheckBoxMenuItem getEditMenuSelect() {
+        return editMenuSelect;
     }
 
     private void initStatusBar() {
