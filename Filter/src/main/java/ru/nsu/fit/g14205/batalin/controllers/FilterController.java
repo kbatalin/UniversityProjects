@@ -50,6 +50,14 @@ public class FilterController {
         resetImages();
     }
 
+    public void onCopyBToCButtonClicked() {
+        cImageModel.setImage(bImageModel.getImage());
+    }
+
+    public void onCopyCToBButtonClicked() {
+        bImageModel.setImage(cImageModel.getImage());
+    }
+
     public void onMousePressed(MouseEvent mouseEvent) {
         boolean isSelectButtonPushed = filterView.getSelectButton().isSelected();
         if (!isSelectButtonPushed) {

@@ -97,10 +97,12 @@ public class FilterView extends JFrame {
 
         JMenuItem editMenuCopyBToC = new JMenuItem("Copy B to C");
         editMenuCopyBToC.setMnemonic(KeyEvent.VK_B);
+        editMenuCopyBToC.addActionListener(actionEvent -> filterController.onCopyBToCButtonClicked());
         editMenu.add(editMenuCopyBToC);
 
         JMenuItem editMenuCopyCToB = new JMenuItem("Copy C to B");
         editMenuCopyCToB.setMnemonic(KeyEvent.VK_C);
+        editMenuCopyCToB.addActionListener(actionEvent -> filterController.onCopyCToBButtonClicked());
         editMenu.add(editMenuCopyCToB);
     }
 
@@ -216,6 +218,7 @@ public class FilterView extends JFrame {
         if (copyBToCButtonIcon != null) {
             copyBToCButton.setIcon(copyBToCButtonIcon);
         }
+        copyBToCButton.addActionListener(actionEvent -> filterController.onCopyBToCButtonClicked());
         copyBToCButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
@@ -235,6 +238,7 @@ public class FilterView extends JFrame {
         if (copyCToBButtonIcon != null) {
             copyCToBButton.setIcon(copyCToBButtonIcon);
         }
+        copyCToBButton.addActionListener(actionEvent -> filterController.onCopyCToBButtonClicked());
         copyCToBButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {
