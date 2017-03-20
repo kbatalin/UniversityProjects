@@ -37,6 +37,18 @@ public class WorkspaceView extends JPanel {
         add(cImage);
     }
 
+    public ImageView getAImage() {
+        return aImage;
+    }
+
+    public ImageView getBImage() {
+        return bImage;
+    }
+
+    public ImageView getCImage() {
+        return cImage;
+    }
+
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);

@@ -40,7 +40,7 @@ public class ImageModel extends ObservableBase implements Observable {
         return image;
     }
 
-    public Image getImage(Rectangle area) {
+    public BufferedImage getImage(Rectangle area) {
         return image.getSubimage(area.x, area.y, area.width, area.height);
     }
 }

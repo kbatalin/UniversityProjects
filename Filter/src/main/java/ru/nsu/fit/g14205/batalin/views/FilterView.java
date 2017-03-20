@@ -14,6 +14,9 @@ import java.net.URL;
 public class FilterView extends JFrame {
     private FilterController filterController;
     private StatusBarView statusBarView;
+    private WorkspaceView workspaceView;
+
+    private JToggleButton selectButton;
 
     public FilterView(FilterController filterController, ImageModel aImageModel, ImageModel bImageModel, ImageModel cImageModel) {
         this.filterController = filterController;
@@ -188,7 +191,7 @@ public class FilterView extends JFrame {
 
         toolBar.addSeparator();
 
-        JButton selectButton = new JButton();
+        selectButton = new JToggleButton();
         selectButton.setToolTipText("Select");
         Icon selectButtonIcon = getButtonIcon("images/image_modernist.png");
         if (selectButtonIcon != null) {
@@ -273,10 +276,18 @@ public class FilterView extends JFrame {
     }
 
     private void initWorkSpace(FilterController filterController, ImageModel aImageModel, ImageModel bImageModel, ImageModel cImageModel) {
-        WorkspaceView workspaceView = new WorkspaceView(filterController, aImageModel, bImageModel, cImageModel);
+        workspaceView = new WorkspaceView(filterController, aImageModel, bImageModel, cImageModel);
 
         JScrollPane workspaceScrollPane = new JScrollPane(workspaceView);
         add(workspaceScrollPane, BorderLayout.CENTER);
+    }
+
+    public WorkspaceView getWorkspaceView() {
+        return workspaceView;
+    }
+
+    public JToggleButton getSelectButton() {
+        return selectButton;
     }
 
     private void initStatusBar() {

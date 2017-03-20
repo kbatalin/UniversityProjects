@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.controllers;
 import ru.nsu.fit.g14205.batalin.models.ImageModel;
 import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.FilterView;
+import ru.nsu.fit.g14205.batalin.views.ImageView;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -47,6 +48,73 @@ public class FilterController {
 
     public void onNewButtonClicked() {
         resetImages();
+    }
+
+    public void onMousePressed(MouseEvent mouseEvent) {
+        boolean isSelectButtonPushed = filterView.getSelectButton().isSelected();
+        if (!isSelectButtonPushed) {
+            return;
+        }
+
+        Point pos = mouseEvent.getPoint();
+        selectImageArea(pos);
+    }
+
+    public void onMouseDragged(MouseEvent mouseEvent) {
+        boolean isSelectButtonPushed = filterView.getSelectButton().isSelected();
+        if (!isSelectButtonPushed) {
+            return;
+        }
+
+        Point pos = mouseEvent.getPoint();
+        selectImageArea(pos);
+    }
+
+    private void selectImageArea(Point pos) {
+        BufferedImage originalImage = aImageModel.getImage();
+        if (originalImage == null) {
+            bImageModel.setImage(null);
+            return;
+        }
+        int imageSize = Math.max(originalImage.getHeight(), originalImage.getWidth());
+        double sizeRatio = imageSize / 350.;
+        int selectedAreaSize = Math.min(350, (int) (350 / sizeRatio));
+
+        pos.x -= Math.max(0, pos.x + selectedAreaSize / 2 - 350);
+        pos.y -= Math.max(0, pos.y + selectedAreaSize / 2 - 350);
+
+        pos.x = Math.max(0, pos.x - selectedAreaSize / 2);
+        pos.y = Math.max(0, pos.y - selectedAreaSize / 2);
+        Rectangle selectedAreaRect = new Rectangle(pos.x, pos.y, selectedAreaSize, selectedAreaSize);
+
+        ImageView aImage = filterView.getWorkspaceView().getAImage();
+        aImage.setSelectedArea(selectedAreaRect);
+        aImage.repaint();
+
+        Rectangle selectedArea = new Rectangle((int)(selectedAreaRect.x * sizeRatio), (int)(selectedAreaRect.y * sizeRatio), 350, 350);
+
+        selectedArea.setSize(
+                Math.max(0, 350 - Math.max(0, (selectedArea.x + 350 - originalImage.getWidth()))),
+                Math.max(0, 350 - Math.max(0, (selectedArea.y + 350 - originalImage.getHeight())))
+                );
+        if (selectedArea.width == 0 || selectedArea.height == 0) {
+            bImageModel.setImage(null);
+            return;
+        }
+
+        BufferedImage selectedImage = aImageModel.getImage(selectedArea);
+        bImageModel.setImage(selectedImage);
+    }
+
+    public void onMouseReleased(MouseEvent mouseEvent) {
+        boolean isSelectButtonPushed = filterView.getSelectButton().isSelected();
+        if (!isSelectButtonPushed) {
+            return;
+        }
+
+        ImageView aImage = filterView.getWorkspaceView().getAImage();
+        aImage.setSelectedArea(null);
+        aImage.repaint();
     }
 
     private void resetImages() {
