@@ -280,6 +280,26 @@ public class FilterView extends JFrame {
         });
         toolBar.add(blackWhiteFilterButton);
 
+        JButton negativeFilterButton = new JButton();
+        negativeFilterButton.setToolTipText("Negative");
+        Icon negativeFilterButtonIcon = getButtonIcon("images/negative-sign.png");
+        if (negativeFilterButtonIcon != null) {
+            negativeFilterButton.setIcon(negativeFilterButtonIcon);
+        }
+        negativeFilterButton.addActionListener(actionEvent -> filterController.onNegativeFilterClicked());
+        negativeFilterButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                filterController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                filterController.onExitToolbarButton(mouseEvent);
+            }
+        });
+        toolBar.add(negativeFilterButton);
+
         toolBar.addSeparator();
 
         JButton aboutButton = new JButton();

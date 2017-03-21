@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.controllers;
 import ru.nsu.fit.g14205.batalin.models.ImageModel;
 import ru.nsu.fit.g14205.batalin.models.filters.BlackWhiteFilter;
 import ru.nsu.fit.g14205.batalin.models.filters.Filter;
+import ru.nsu.fit.g14205.batalin.models.filters.NegativeFilter;
 import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.FilterView;
 import ru.nsu.fit.g14205.batalin.views.ImageView;
@@ -69,6 +70,17 @@ public class FilterController {
         }
 
         Filter filter = new BlackWhiteFilter();
+        BufferedImage image = filter.process(srcImage);
+        cImageModel.setImage(image);
+    }
+
+    public void onNegativeFilterClicked() {
+        BufferedImage srcImage = bImageModel.getImage();
+        if (srcImage == null) {
+            return;
+        }
+
+        Filter filter = new NegativeFilter();
         BufferedImage image = filter.process(srcImage);
         cImageModel.setImage(image);
     }
