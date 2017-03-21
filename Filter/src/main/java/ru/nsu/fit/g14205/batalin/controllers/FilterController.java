@@ -88,6 +88,11 @@ public class FilterController {
         }
     }
 
+    public void onExitButtonClicked() {
+        filterView.setVisible(false);
+        System.exit(0);
+    }
+
     public void onSaveButtonClicked() {
         saveImage();
     }

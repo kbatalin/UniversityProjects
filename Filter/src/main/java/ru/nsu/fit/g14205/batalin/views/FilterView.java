@@ -85,6 +85,7 @@ public class FilterView extends JFrame {
         JMenuItem fileMenuExit = new JMenuItem("Exit");
         fileMenuExit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
         fileMenuExit.setMnemonic(KeyEvent.VK_X);
+        fileMenuExit.addActionListener(actionEvent -> filterController.onExitButtonClicked());
         fileMenu.add(fileMenuExit);
     }
 
