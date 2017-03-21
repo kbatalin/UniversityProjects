@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.controllers;
 import ru.nsu.fit.g14205.batalin.models.ImageModel;
 import ru.nsu.fit.g14205.batalin.models.filters.BlackWhiteFilter;
 import ru.nsu.fit.g14205.batalin.models.filters.Filter;
+import ru.nsu.fit.g14205.batalin.models.filters.FilterFactory;
 import ru.nsu.fit.g14205.batalin.models.filters.NegativeFilter;
 import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.FilterView;
@@ -16,6 +17,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * Created by kir55rus on 11.03.17.
@@ -24,6 +26,8 @@ public class FilterController {
     private ImageModel aImageModel;
     private ImageModel bImageModel;
     private ImageModel cImageModel;
+
+    private FilterFactory filterFactory;
 
     private JFileChooser fileOpenChooser;
     private FileFilter imageFileFilter;
@@ -57,32 +61,31 @@ public class FilterController {
 
         filterView = new FilterView(this, aImageModel, bImageModel, cImageModel);
         filterView.setLocationRelativeTo(null);
+
+        try {
+            filterFactory = new FilterFactory();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(filterView,"Can't load filters: " + e.getMessage(),"Loading error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void onNewButtonClicked() {
         resetImages();
     }
 
-    public void onBlackAndWhiteFilterClicked() {
+    public void onFilterButtonClicked(String filterName) {
         BufferedImage srcImage = bImageModel.getImage();
         if (srcImage == null) {
             return;
         }
 
-        Filter filter = new BlackWhiteFilter();
-        BufferedImage image = filter.process(srcImage);
-        cImageModel.setImage(image);
-    }
-
-    public void onNegativeFilterClicked() {
-        BufferedImage srcImage = bImageModel.getImage();
-        if (srcImage == null) {
-            return;
+        try {
+            Filter filter = filterFactory.initFilter(filterName);
+            BufferedImage image = filter.process(srcImage);
+            cImageModel.setImage(image);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(filterView,"Can't find filter: " + e.getMessage(),"Filter error", JOptionPane.ERROR_MESSAGE);
         }
-
-        Filter filter = new NegativeFilter();
-        BufferedImage image = filter.process(srcImage);
-        cImageModel.setImage(image);
     }
 
     public void onSaveButtonClicked() {

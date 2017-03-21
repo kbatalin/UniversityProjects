@@ -115,8 +115,12 @@ public class FilterView extends JFrame {
         menuBar.add(filtersMenu);
 
         JMenuItem filtersMenuBlackWhite = new JMenuItem("Black and white");
-        filtersMenuBlackWhite.addActionListener(actionEvent -> filterController.onBlackAndWhiteFilterClicked());
+        filtersMenuBlackWhite.addActionListener(actionEvent -> filterController.onFilterButtonClicked("Black and white"));
         filtersMenu.add(filtersMenuBlackWhite);
+
+        JMenuItem filtersMenuNegative = new JMenuItem("Negative");
+        filtersMenuNegative.addActionListener(actionEvent -> filterController.onFilterButtonClicked("Negative"));
+        filtersMenu.add(filtersMenuNegative);
     }
 
     private void initHelpMenu(JMenuBar menuBar) {
@@ -260,45 +264,7 @@ public class FilterView extends JFrame {
         toolBar.addSeparator();
 
         //filters
-        JButton blackWhiteFilterButton = new JButton();
-        blackWhiteFilterButton.setToolTipText("Black and white");
-        Icon blackWhiteFilterButtonIcon = getButtonIcon("images/two-circles-sign-one-black-other-white.png");
-        if (blackWhiteFilterButtonIcon != null) {
-            blackWhiteFilterButton.setIcon(blackWhiteFilterButtonIcon);
-        }
-        blackWhiteFilterButton.addActionListener(actionEvent -> filterController.onBlackAndWhiteFilterClicked());
-        blackWhiteFilterButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                filterController.onEnterToolbarButton(mouseEvent);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                filterController.onExitToolbarButton(mouseEvent);
-            }
-        });
-        toolBar.add(blackWhiteFilterButton);
-
-        JButton negativeFilterButton = new JButton();
-        negativeFilterButton.setToolTipText("Negative");
-        Icon negativeFilterButtonIcon = getButtonIcon("images/negative-sign.png");
-        if (negativeFilterButtonIcon != null) {
-            negativeFilterButton.setIcon(negativeFilterButtonIcon);
-        }
-        negativeFilterButton.addActionListener(actionEvent -> filterController.onNegativeFilterClicked());
-        negativeFilterButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent mouseEvent) {
-                filterController.onEnterToolbarButton(mouseEvent);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent mouseEvent) {
-                filterController.onExitToolbarButton(mouseEvent);
-            }
-        });
-        toolBar.add(negativeFilterButton);
+        initFiltersToolbar(toolBar);
 
         toolBar.addSeparator();
 
@@ -321,6 +287,33 @@ public class FilterView extends JFrame {
             }
         });
         toolBar.add(aboutButton);
+    }
+
+    private void initFiltersToolbar(JToolBar toolBar) {
+        createFilterButton(toolBar, "Black and white", "two-circles-sign-one-black-other-white.png");
+        createFilterButton(toolBar, "Negative", "negative-sign.png");
+    }
+
+    private void createFilterButton(JToolBar toolBar, String filterName, String icoName) {
+        JButton filterButton = new JButton();
+        filterButton.setToolTipText(filterName);
+        Icon filterButtonIcon = getButtonIcon("images/" + icoName);
+        if (filterButtonIcon != null) {
+            filterButton.setIcon(filterButtonIcon);
+        }
+        filterButton.addActionListener(actionEvent -> filterController.onFilterButtonClicked(filterName));
+        filterButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                filterController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                filterController.onExitToolbarButton(mouseEvent);
+            }
+        });
+        toolBar.add(filterButton);
     }
 
     private void initWorkSpace(FilterController filterController, ImageModel aImageModel, ImageModel bImageModel, ImageModel cImageModel) {
