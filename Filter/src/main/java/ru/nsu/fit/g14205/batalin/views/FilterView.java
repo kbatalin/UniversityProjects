@@ -77,6 +77,7 @@ public class FilterView extends JFrame {
         JMenuItem fileMenuSaveAs = new JMenuItem("Save as...");
         fileMenuSaveAs.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_MASK));
         fileMenuSaveAs.setMnemonic(KeyEvent.VK_A);
+        fileMenuSaveAs.addActionListener(actionEvent -> filterController.onSaveButtonClicked());
         fileMenu.add(fileMenuSaveAs);
 
         fileMenu.addSeparator();
@@ -180,6 +181,7 @@ public class FilterView extends JFrame {
         if (saveAsButtonIcon != null) {
             saveAsButton.setIcon(saveAsButtonIcon);
         }
+        saveAsButton.addActionListener(actionEvent -> filterController.onSaveButtonClicked());
         saveAsButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent mouseEvent) {

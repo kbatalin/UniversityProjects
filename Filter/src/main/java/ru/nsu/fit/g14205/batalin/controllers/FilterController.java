@@ -22,9 +22,10 @@ public class FilterController {
     private ImageModel bImageModel;
     private ImageModel cImageModel;
 
-    private JFileChooser fileChooser;
+    private JFileChooser fileOpenChooser;
     private FileFilter imageFileFilter;
     private FileFilter allFilesFilter;
+    private JFileChooser fileSaveChooser;
 
     private FilterView filterView;
 
@@ -32,11 +33,20 @@ public class FilterController {
     private AboutView aboutView;
 
     public void run() {
-        fileChooser = new JFileChooser();
+        fileOpenChooser = new JFileChooser();
         File workingDirectory = new File(System.getProperty("user.dir") + File.separator + "FIT_14205_Batalin_Kirill_Filter_Data");
-        fileChooser.setCurrentDirectory(workingDirectory);
-        allFilesFilter = fileChooser.getFileFilter();
+        fileOpenChooser.setCurrentDirectory(workingDirectory);
+        allFilesFilter = fileOpenChooser.getFileFilter();
         imageFileFilter = new FileNameExtensionFilter("Images (*.bmp, *.jpg, *.png)", "jpg", "bmp", "png");
+
+        fileSaveChooser = new JFileChooser();
+        fileSaveChooser.setCurrentDirectory(workingDirectory);
+        FileNameExtensionFilter bmpFilter = new FileNameExtensionFilter("bmp images (*.bmp)", "bmp");
+        fileSaveChooser.addChoosableFileFilter(bmpFilter);
+        fileSaveChooser.setFileFilter(bmpFilter);
+        FileNameExtensionFilter pngFilter = new FileNameExtensionFilter("png images (*.png)", "png");
+        fileSaveChooser.addChoosableFileFilter(pngFilter);
+        fileSaveChooser.setFileFilter(pngFilter);
 
         aImageModel = new ImageModel();
         bImageModel = new ImageModel();
@@ -48,6 +58,37 @@ public class FilterController {
 
     public void onNewButtonClicked() {
         resetImages();
+    }
+
+    public void onSaveButtonClicked() {
+        saveImage();
+    }
+
+    private boolean saveImage() {
+        BufferedImage image = cImageModel.getImage();
+        if (image == null) {
+            return false;
+        }
+
+        int result = fileSaveChooser.showSaveDialog(filterView);
+
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return false;
+        }
+
+        File file = fileSaveChooser.getSelectedFile();
+        try {
+            if (file.getName().endsWith(".jpg")) {
+                return ImageIO.write(image, "jpg", file);
+            } else if (file.getName().endsWith(".png")) {
+                return ImageIO.write(image, "png", file);
+            } else {
+                throw new IllegalArgumentException("Bad file name");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(filterView,"Can't save image: " + e.getMessage(),"Save error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
     }
 
     public void onSelectButtonClicked(boolean isSelected) {
@@ -137,16 +178,16 @@ public class FilterController {
     }
 
     public void onOpenButtonClicked() {
-        fileChooser.setFileFilter(imageFileFilter);
+        fileOpenChooser.setFileFilter(imageFileFilter);
 
-        int result = fileChooser.showOpenDialog(filterView);
+        int result = fileOpenChooser.showOpenDialog(filterView);
 
         if (result != JFileChooser.APPROVE_OPTION) {
             return;
         }
 
         try {
-            File file = fileChooser.getSelectedFile();
+            File file = fileOpenChooser.getSelectedFile();
             BufferedImage image = ImageIO.read(file);
             if (image == null) {
                 throw new IllegalArgumentException("Bad file");
