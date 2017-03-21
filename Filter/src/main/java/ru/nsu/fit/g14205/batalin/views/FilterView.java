@@ -110,13 +110,13 @@ public class FilterView extends JFrame {
     }
 
     private void initFiltersMenu(JMenuBar menuBar) {
-        JMenu actionMenu = new JMenu("Filters");
-        actionMenu.setMnemonic(KeyEvent.VK_F);
-        menuBar.add(actionMenu);
+        JMenu filtersMenu = new JMenu("Filters");
+        filtersMenu.setMnemonic(KeyEvent.VK_F);
+        menuBar.add(filtersMenu);
 
-        JMenuItem actionMenuNext = new JMenuItem("Filter #1");
-        actionMenuNext.setMnemonic(KeyEvent.VK_N);
-        actionMenu.add(actionMenuNext);
+        JMenuItem filtersMenuBlackWhite = new JMenuItem("Black and white");
+        filtersMenuBlackWhite.addActionListener(actionEvent -> filterController.onBlackAndWhiteFilterClicked());
+        filtersMenu.add(filtersMenuBlackWhite);
     }
 
     private void initHelpMenu(JMenuBar menuBar) {
@@ -260,6 +260,25 @@ public class FilterView extends JFrame {
         toolBar.addSeparator();
 
         //filters
+        JButton blackWhiteFilterButton = new JButton();
+        blackWhiteFilterButton.setToolTipText("Black and white");
+        Icon blackWhiteFilterButtonIcon = getButtonIcon("images/two-circles-sign-one-black-other-white.png");
+        if (blackWhiteFilterButtonIcon != null) {
+            blackWhiteFilterButton.setIcon(blackWhiteFilterButtonIcon);
+        }
+        blackWhiteFilterButton.addActionListener(actionEvent -> filterController.onBlackAndWhiteFilterClicked());
+        blackWhiteFilterButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                filterController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                filterController.onExitToolbarButton(mouseEvent);
+            }
+        });
+        toolBar.add(blackWhiteFilterButton);
 
         toolBar.addSeparator();
 
