@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 /**
  * Created by kir55rus on 17.03.17.
@@ -15,7 +16,7 @@ import java.awt.event.MouseEvent;
 public class ImageView extends JComponent {
     private static int componentSize = 350;
     private static Dimension componentDimension = new Dimension(componentSize, componentSize);
-    private static int strokeSize = 10;
+    private static int strokeSize = 30;
     private  Point[] dirs;
 
     private ImageModel imageModel;
@@ -62,13 +63,26 @@ public class ImageView extends JComponent {
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
-        Image image = imageModel.getImage();
-        if (image == null) {
-            return;
+        BufferedImage content = new BufferedImage(350, 350, BufferedImage.TYPE_INT_RGB);
+        Graphics2D contentGraphics = content.createGraphics();
+        contentGraphics.setPaint(Color.WHITE);
+        contentGraphics.fillRect(0, 0, 350, 350);
+
+        if(drawImage(contentGraphics)) {
+            drawSelectedArea(content);
         }
 
-        int width = image.getWidth(null);
-        int height = image.getHeight(null);
+        graphics.drawImage(content, 0, 0, 350, 350, null);
+    }
+
+    private boolean drawImage(Graphics2D contentGraphics) {
+        BufferedImage image = imageModel.getImage();
+        if (image == null) {
+            return false;
+        }
+
+        int width = image.getWidth();
+        int height = image.getHeight();
 
         int maxSize = Math.max(width, height);
         if (maxSize > componentSize) {
@@ -77,30 +91,56 @@ public class ImageView extends JComponent {
             height = (int) (height / ratio);
         }
 
-        graphics.drawImage(image, 0, 0, width, height, null);
-
-        drawSelectedArea(graphics);
+        contentGraphics.drawImage(image, 0, 0, width, height, null);
+        return true;
     }
 
-    private void drawSelectedArea(Graphics graphics) {
+    private void drawSelectedArea(BufferedImage content) {
         if (selectedArea == null) {
             return;
         }
 
-        graphics.drawRect(selectedArea.x, selectedArea.y, selectedArea.width, selectedArea.height);
+//        Graphics2D graphics = content.createGraphics();
+//        graphics.setPaint(Color.BLACK);
+//        graphics.drawRect(selectedArea.x, selectedArea.y, selectedArea.width, selectedArea.height);
 
-//        double ratio = 350. / selectedArea.width;
-//        int stroke = Math.max(1, (int)(strokeSize / ratio));
-//
-//
+
+        double ratio = 350. / selectedArea.width;
+        int stroke = Math.max(1, (int)(strokeSize / ratio));
+        System.out.println(stroke);
+
+        Point pos = new Point(selectedArea.x, selectedArea.y);
+        int currentStrokeSize = 0;
+        for(int dirIndex = 0; dirIndex < 4; ++dirIndex) {
+            for(int i = 0; i < selectedArea.width; ++i) {
+                if (currentStrokeSize == stroke) {
+                    currentStrokeSize -= 2 * stroke;
+                } else if (currentStrokeSize >= 0 && pos.x < content.getWidth() && pos.y < content.getHeight()) {
+                    Color color = new Color(content.getRGB(pos.x, pos.y));
+                    Color strokeColor = new Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue());
+                    content.setRGB(pos.x, pos.y, strokeColor.getRGB());
+                }
+
+                pos.x += dirs[dirIndex].x;
+                pos.y += dirs[dirIndex].y;
+                ++currentStrokeSize;
+            }
+
+            pos.x -= dirs[dirIndex].x;
+            pos.y -= dirs[dirIndex].y;
+        }
+
 //        int dirIndex = 0;
-//        Point pos = new Point(selectedArea.x, selectedArea.y);
-//        int currentStrokeSize = 0;
 //        for(int i = 0, count = selectedArea.height * 2 + selectedArea.width * 2; i < count; ++i) {
-//            if (currentStrokeSize >= stroke) {
+//            if (currentStrokeSize == stroke) {
 //                currentStrokeSize -= 2 * stroke;
-//                continue;
+//            } else if (currentStrokeSize >= 0) {
+//                Color color = new Color(content.getRGB(pos.x, pos.y));
+//                Color strokeColor = new Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue());
+//                content.setRGB(pos.x, pos.y, strokeColor.getRGB());
 //            }
+//
+//
 //        }
     }
 
