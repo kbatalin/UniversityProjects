@@ -29,7 +29,7 @@ public class ImageView extends JComponent {
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
-                filterController.onMouseDragged(mouseEvent);
+                filterController.onMouseDragged(ImageView.this, mouseEvent);
             }
         });
 
@@ -41,7 +41,7 @@ public class ImageView extends JComponent {
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                filterController.onMousePressed(mouseEvent);
+                filterController.onMousePressed(ImageView.this, mouseEvent);
             }
         });
 

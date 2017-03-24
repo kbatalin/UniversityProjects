@@ -137,19 +137,17 @@ public class FilterController {
         bImageModel.setImage(cImageModel.getImage());
     }
 
-    public void onMousePressed(MouseEvent mouseEvent) {
+    public void onMousePressed(ImageView imageView, MouseEvent mouseEvent) {
+        onMouseDragged(imageView, mouseEvent);
+    }
+
+    public void onMouseDragged(ImageView imageView, MouseEvent mouseEvent) {
         boolean isSelectButtonPushed = filterView.getSelectButton().isSelected();
         if (!isSelectButtonPushed) {
             return;
         }
 
-        Point pos = mouseEvent.getPoint();
-        selectImageArea(pos);
-    }
-
-    public void onMouseDragged(MouseEvent mouseEvent) {
-        boolean isSelectButtonPushed = filterView.getSelectButton().isSelected();
-        if (!isSelectButtonPushed) {
+        if (imageView != filterView.getWorkspaceView().getAImage()) {
             return;
         }
 
