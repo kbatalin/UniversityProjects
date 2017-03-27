@@ -1,12 +1,10 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.ImageModel;
-import ru.nsu.fit.g14205.batalin.models.filters.BlackWhiteFilter;
-import ru.nsu.fit.g14205.batalin.models.filters.Filter;
-import ru.nsu.fit.g14205.batalin.models.filters.FilterFactory;
-import ru.nsu.fit.g14205.batalin.models.filters.NegativeFilter;
+import ru.nsu.fit.g14205.batalin.models.filters.*;
 import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.FilterView;
+import ru.nsu.fit.g14205.batalin.views.FloydSteinbergView;
 import ru.nsu.fit.g14205.batalin.views.ImageView;
 
 import javax.imageio.ImageIO;
@@ -17,7 +15,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by kir55rus on 11.03.17.
@@ -62,11 +59,25 @@ public class FilterController {
         filterView = new FilterView(this, aImageModel, bImageModel, cImageModel);
         filterView.setLocationRelativeTo(null);
 
-        try {
-            filterFactory = new FilterFactory();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(filterView,"Can't load filters: " + e.getMessage(),"Loading error", JOptionPane.ERROR_MESSAGE);
-        }
+        initFilterFactory();
+    }
+
+    private void initFilterFactory() {
+        filterFactory = new FilterFactory();
+
+        filterFactory.add("Black and white", BlackWhiteFilter::new);
+        filterFactory.add("Negative", NegativeFilter::new);
+        filterFactory.add("Floyd Steinberg", () -> {
+            FloydSteinbergView dialog = new FloydSteinbergView();
+            dialog.pack();
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new FloydSteinbergFilter(dialog.getRed(), dialog.getGreen(), dialog.getBlue());
+        });
     }
 
     public void onNewButtonClicked() {
@@ -79,13 +90,13 @@ public class FilterController {
             return;
         }
 
-        try {
-            Filter filter = filterFactory.initFilter(filterName);
-            BufferedImage image = filter.process(srcImage);
-            cImageModel.setImage(image);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(filterView,"Can't find filter: " + e.getMessage(),"Filter error", JOptionPane.ERROR_MESSAGE);
+        Filter filter = filterFactory.get(filterName);
+        if (filter == null) {
+            return;
         }
+
+        BufferedImage image = filter.process(srcImage);
+        cImageModel.setImage(image);
     }
 
     public void onExitButtonClicked() {
