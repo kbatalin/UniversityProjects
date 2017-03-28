@@ -78,6 +78,7 @@ public class FilterController {
 
             return new FloydSteinbergFilter(dialog.getRed(), dialog.getGreen(), dialog.getBlue());
         });
+        filterFactory.add("Ordered dither", OrderedDitherFilter::new);
     }
 
     public void onNewButtonClicked() {
