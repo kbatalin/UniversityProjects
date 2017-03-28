@@ -130,6 +130,10 @@ public class FilterView extends JFrame {
         JMenuItem filtersMenuOrdered = new JMenuItem("Ordered dither");
         filtersMenuOrdered.addActionListener(actionEvent -> filterController.onFilterButtonClicked("Ordered dither"));
         filtersMenu.add(filtersMenuOrdered);
+
+        JMenuItem filtersMenuRoberts = new JMenuItem("Roberts");
+        filtersMenuRoberts.addActionListener(actionEvent -> filterController.onFilterButtonClicked("Roberts"));
+        filtersMenu.add(filtersMenuRoberts);
     }
 
     private void initHelpMenu(JMenuBar menuBar) {
@@ -303,6 +307,7 @@ public class FilterView extends JFrame {
         createFilterButton(toolBar, "Negative", "negative-sign.png");
         createFilterButton(toolBar, "Floyd Steinberg", "font.png");
         createFilterButton(toolBar, "Ordered dither", "opera.png");
+        createFilterButton(toolBar, "Roberts", "bones-typography-outline-of-letter-r.png");
     }
 
     private void createFilterButton(JToolBar toolBar, String filterName, String icoName) {

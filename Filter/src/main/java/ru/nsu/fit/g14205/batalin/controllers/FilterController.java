@@ -2,10 +2,7 @@ package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.ImageModel;
 import ru.nsu.fit.g14205.batalin.models.filters.*;
-import ru.nsu.fit.g14205.batalin.views.AboutView;
-import ru.nsu.fit.g14205.batalin.views.FilterView;
-import ru.nsu.fit.g14205.batalin.views.FloydSteinbergView;
-import ru.nsu.fit.g14205.batalin.views.ImageView;
+import ru.nsu.fit.g14205.batalin.views.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -79,6 +76,17 @@ public class FilterController {
             return new FloydSteinbergFilter(dialog.getRed(), dialog.getGreen(), dialog.getBlue());
         });
         filterFactory.add("Ordered dither", OrderedDitherFilter::new);
+        filterFactory.add("Roberts", () -> {
+            RobertsView dialog = new RobertsView();
+            dialog.pack();
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new RobertsFilter(dialog.getLevelValue());
+        });
     }
 
     public void onNewButtonClicked() {
