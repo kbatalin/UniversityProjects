@@ -113,6 +113,17 @@ public class FilterController {
 
             return new RotationFilter(dialog.getAngle());
         });
+        filterFactory.add("Gamma", () -> {
+            GammaView dialog = new GammaView();
+            dialog.pack();
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new GammaFilter(dialog.getGamma());
+        });
     }
 
     public void onNewButtonClicked() {
