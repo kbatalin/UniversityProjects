@@ -1,6 +1,7 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.ImageModel;
+import ru.nsu.fit.g14205.batalin.models.VRLoader;
 import ru.nsu.fit.g14205.batalin.models.filters.*;
 import ru.nsu.fit.g14205.batalin.views.*;
 
@@ -25,6 +26,7 @@ public class FilterController {
 
     private JFileChooser fileOpenChooser;
     private FileFilter imageFileFilter;
+    private FileFilter settingsFileFilter;
     private FileFilter allFilesFilter;
     private JFileChooser fileSaveChooser;
 
@@ -39,6 +41,7 @@ public class FilterController {
         fileOpenChooser.setCurrentDirectory(workingDirectory);
         allFilesFilter = fileOpenChooser.getFileFilter();
         imageFileFilter = new FileNameExtensionFilter("Images (*.bmp, *.jpg, *.png)", "jpg", "bmp", "png");
+        settingsFileFilter = new FileNameExtensionFilter("Text (*.txt)", "txt");
 
         fileSaveChooser = new JFileChooser();
         fileSaveChooser.setCurrentDirectory(workingDirectory);
@@ -128,7 +131,23 @@ public class FilterController {
     }
 
     public void onVRSettingsButtonClicked() {
+        fileOpenChooser.setFileFilter(settingsFileFilter);
 
+        int result = fileOpenChooser.showOpenDialog(filterView);
+
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        try {
+            File file = fileOpenChooser.getSelectedFile();
+            VRLoader loader = new VRLoader();
+            loader.load(file);
+
+            System.out.println();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(filterView,"Can't load config: " + e.getMessage(),"Open error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void onVRStartButtonClicked() {
