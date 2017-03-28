@@ -102,6 +102,17 @@ public class FilterController {
         filterFactory.add("Sharp", SharpFilter::new);
         filterFactory.add("Emboss", EmbossFilter::new);
         filterFactory.add("Watercolor", WatercolorFilter::new);
+        filterFactory.add("Rotation", () -> {
+            RotationView dialog = new RotationView();
+            dialog.pack();
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new RotationFilter(dialog.getAngle());
+        });
     }
 
     public void onNewButtonClicked() {

@@ -154,6 +154,10 @@ public class FilterView extends JFrame {
         JMenuItem filtersMenuWatercolor = new JMenuItem("Watercolor");
         filtersMenuWatercolor.addActionListener(actionEvent -> filterController.onFilterButtonClicked("Watercolor"));
         filtersMenu.add(filtersMenuWatercolor);
+
+        JMenuItem filtersMenuRotation = new JMenuItem("Rotation");
+        filtersMenuRotation.addActionListener(actionEvent -> filterController.onFilterButtonClicked("Rotation"));
+        filtersMenu.add(filtersMenuRotation);
     }
 
     private void initHelpMenu(JMenuBar menuBar) {
@@ -333,6 +337,7 @@ public class FilterView extends JFrame {
         createFilterButton(toolBar, "Sharp", "sharpener.png");
         createFilterButton(toolBar, "Emboss", "emboss.png");
         createFilterButton(toolBar, "Watercolor", "watercolor.png");
+        createFilterButton(toolBar, "Rotation", "refresh-button.png");
     }
 
     private void createFilterButton(JToolBar toolBar, String filterName, String icoName) {
