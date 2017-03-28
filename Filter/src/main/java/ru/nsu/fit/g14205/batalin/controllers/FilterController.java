@@ -22,7 +22,7 @@ public class FilterController {
     private ImageModel bImageModel;
     private ImageModel cImageModel;
 
-    private Filter vrFilter;
+    private VRFilter vrFilter;
 
     private FilterFactory filterFactory;
 
@@ -163,7 +163,13 @@ public class FilterController {
             return;
         }
 
+        BufferedImage srcImage = bImageModel.getImage();
+        if (srcImage == null) {
+            return;
+        }
 
+        BufferedImage image = vrFilter.process(srcImage, filterView.isVRAbsorptionSelected(), filterView.isVREmissionSelected());
+        cImageModel.setImage(image);
     }
 
     public void onNewButtonClicked() {

@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 /**
  * Created by kir55rus on 29.03.17.
  */
-public class VRFilter implements Filter {
+public class VRFilter {
     private AbsorptionModel absorptionModel;
     private EmissionModel emissionModel;
     private ChargeModel chargeModel;
@@ -20,8 +20,9 @@ public class VRFilter implements Filter {
         this.chargeModel = chargeModel;
     }
 
-    @Override
-    public BufferedImage process(BufferedImage srcImage) {
+    public BufferedImage process(BufferedImage srcImage, boolean withAbsorption, boolean withEmission) {
         return null;
     }
+
+
 }
