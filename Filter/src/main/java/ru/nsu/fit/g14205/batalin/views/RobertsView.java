@@ -1,6 +1,8 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.event.*;
 
 public class RobertsView extends JDialog {
@@ -44,11 +46,43 @@ public class RobertsView extends JDialog {
             }
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
+        levelValue.addActionListener(actionEvent -> {
+
+        });
+
+        levelValue.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent documentEvent) {
+                updSlider();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent documentEvent) {
+                updSlider();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent documentEvent) {
+                updSlider();
+            }
+
+            private void updSlider() {
+                try {
+                    int value = Integer.parseInt(levelValue.getText());
+                    if(value >= 1 && value <= 500) {
+                        levelSlider.setValue(value);
+                    }
+                } catch (Exception e) {
+                }
+            }
+        });
+
         levelValue.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent focusEvent) {
                 int value = getLevelValue();
                 levelValue.setText(String.valueOf(value));
+                levelSlider.setValue(value);
             }
         });
 

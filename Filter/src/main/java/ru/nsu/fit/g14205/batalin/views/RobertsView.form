@@ -82,6 +82,8 @@
             <properties>
               <maximum value="500"/>
               <minimum value="1"/>
+              <paintTicks value="true"/>
+              <value value="20"/>
             </properties>
           </component>
         </children>
