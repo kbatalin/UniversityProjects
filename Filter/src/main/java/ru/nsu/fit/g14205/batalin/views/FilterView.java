@@ -19,6 +19,11 @@ public class FilterView extends JFrame {
     private JToggleButton selectButton;
     private JCheckBoxMenuItem editMenuSelect;
 
+    private JCheckBoxMenuItem filtersVREmission;
+    private JCheckBoxMenuItem filtersVRAbsorption;
+    private JToggleButton vrAbsorptionButton;
+    private JToggleButton vrEmissionButton;
+
     public FilterView(FilterController filterController, ImageModel aImageModel, ImageModel bImageModel, ImageModel cImageModel) {
         this.filterController = filterController;
 
@@ -166,6 +171,37 @@ public class FilterView extends JFrame {
         JMenuItem filtersMenuZoom = new JMenuItem("Zoom");
         filtersMenuZoom.addActionListener(actionEvent -> filterController.onFilterButtonClicked("Zoom"));
         filtersMenu.add(filtersMenuZoom);
+
+        JMenu filtersVR = new JMenu("VR");
+        filtersMenu.add(filtersVR);
+
+        JMenuItem filtersVRSettings = new JMenuItem("Settings");
+        filtersVRSettings.addActionListener(actionEvent -> filterController.onVRSettingsButtonClicked());
+        filtersVR.add(filtersVRSettings);
+
+        filtersVREmission = new JCheckBoxMenuItem("Emission");
+        filtersVREmission.addActionListener(actionEvent -> {
+            vrEmissionButton.setSelected(filtersVREmission.isSelected());
+        });
+        filtersVR.add(filtersVREmission);
+
+        filtersVRAbsorption = new JCheckBoxMenuItem("Absorption");
+        filtersVRAbsorption.addActionListener(actionEvent -> {
+            vrAbsorptionButton.setSelected(filtersVRAbsorption.isSelected());
+        });
+        filtersVR.add(filtersVRAbsorption);
+
+        JMenuItem filtersVRStart = new JMenuItem("Start");
+        filtersVRStart.addActionListener(actionEvent -> filterController.onVRStartButtonClicked());
+        filtersVR.add(filtersVRStart);
+    }
+
+    public boolean isVREmissionSelected() {
+        return filtersVREmission.isSelected();
+    }
+
+    public boolean isVRAbsorptionSelected() {
+        return filtersVRAbsorption.isSelected();
     }
 
     private void initHelpMenu(JMenuBar menuBar) {
@@ -348,6 +384,92 @@ public class FilterView extends JFrame {
         createFilterButton(toolBar, "Rotation", "refresh-button.png");
         createFilterButton(toolBar, "Gamma", "letter-g-of-curved-bone-outlined-typography.png");
         createFilterButton(toolBar, "Zoom", "zoom-in.png");
+
+        //VR
+        toolBar.addSeparator();
+        JButton vrSettingsButton = new JButton();
+        vrSettingsButton.setToolTipText("Open config");
+        Icon vrSettingsButtonIcon = getButtonIcon("images/settings.png");
+        if (vrSettingsButtonIcon != null) {
+            vrSettingsButton.setIcon(vrSettingsButtonIcon);
+        }
+        vrSettingsButton.addActionListener(actionEvent -> filterController.onVRSettingsButtonClicked());
+        vrSettingsButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                filterController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                filterController.onExitToolbarButton(mouseEvent);
+            }
+        });
+        toolBar.add(vrSettingsButton);
+
+        vrEmissionButton = new JToggleButton();
+        vrEmissionButton.setToolTipText("Emission");
+        Icon vrEmissionButtonIcon = getButtonIcon("images/letter-e-of-bones-outlined-typography-of-halloween.png");
+        if (vrEmissionButtonIcon != null) {
+            vrEmissionButton.setIcon(vrEmissionButtonIcon);
+        }
+        vrEmissionButton.addActionListener(actionEvent -> {
+            filtersVREmission.setState(vrEmissionButton.isSelected());
+        });
+        vrEmissionButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                filterController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                filterController.onExitToolbarButton(mouseEvent);
+            }
+        });
+        toolBar.add(vrEmissionButton);
+
+        vrAbsorptionButton = new JToggleButton();
+        vrAbsorptionButton.setToolTipText("Absorption");
+        Icon vrAbsorptionButtonIcon = getButtonIcon("images/letter-a-of-halloween-bones-typography-outline.png");
+        if (vrAbsorptionButtonIcon != null) {
+            vrAbsorptionButton.setIcon(vrAbsorptionButtonIcon);
+        }
+        vrAbsorptionButton.addActionListener(actionEvent -> {
+            filtersVRAbsorption.setState(vrAbsorptionButton.isSelected());
+        });
+        vrAbsorptionButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                filterController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                filterController.onExitToolbarButton(mouseEvent);
+            }
+        });
+        toolBar.add(vrAbsorptionButton);
+
+        JButton vrStartButton = new JButton();
+        vrStartButton.setToolTipText("Start");
+        Icon vrStartButtonIcon = getButtonIcon("images/play-button.png");
+        if (vrStartButtonIcon != null) {
+            vrStartButton.setIcon(vrStartButtonIcon);
+        }
+        vrStartButton.addActionListener(actionEvent -> filterController.onVRStartButtonClicked());
+        vrStartButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent mouseEvent) {
+                filterController.onEnterToolbarButton(mouseEvent);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent mouseEvent) {
+                filterController.onExitToolbarButton(mouseEvent);
+            }
+        });
+        toolBar.add(vrStartButton);
     }
 
     private void createFilterButton(JToolBar toolBar, String filterName, String icoName) {

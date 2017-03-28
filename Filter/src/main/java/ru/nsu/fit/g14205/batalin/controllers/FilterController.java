@@ -127,6 +127,14 @@ public class FilterController {
         filterFactory.add("Zoom", ZoomFilter::new);
     }
 
+    public void onVRSettingsButtonClicked() {
+
+    }
+
+    public void onVRStartButtonClicked() {
+
+    }
+
     public void onNewButtonClicked() {
         resetImages();
     }
