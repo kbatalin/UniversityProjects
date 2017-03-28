@@ -24,11 +24,12 @@ public class SobelFilter implements Filter {
 
     @Override
     public BufferedImage process(BufferedImage srcImage) {
-        BufferedImage result = blackWhiteFilter.process(srcImage);
+        BufferedImage bwImage = blackWhiteFilter.process(srcImage);
+        BufferedImage result = new BufferedImage(srcImage.getWidth(), srcImage.getHeight(), srcImage.getType());
 
         for(int y = 0; y < result.getHeight(); ++y) {
             for(int x = 0; x < result.getWidth(); ++x) {
-                Color newColor = calcColor(result, x, y);
+                Color newColor = calcColor(bwImage, x, y);
                 result.setRGB(x, y, newColor.getRGB());
             }
         }
