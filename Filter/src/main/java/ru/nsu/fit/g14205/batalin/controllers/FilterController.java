@@ -100,6 +100,7 @@ public class FilterController {
         });
         filterFactory.add("Blur", BlurFilter::new);
         filterFactory.add("Sharp", SharpFilter::new);
+        filterFactory.add("Emboss", EmbossFilter::new);
     }
 
     public void onNewButtonClicked() {

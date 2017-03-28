@@ -12,11 +12,21 @@ public class MatrixFilter implements Filter {
     private Matrix matrix;
     private Point matrixOffset;
     private double multiplier;
+    private double addendum;
+
+    public MatrixFilter(Matrix matrix, Point matrixOffset) {
+        this(matrix, matrixOffset, 1.);
+    }
 
     public MatrixFilter(Matrix matrix, Point matrixOffset, double multiplier) {
+        this(matrix, matrixOffset, multiplier, 0.);
+    }
+
+    public MatrixFilter(Matrix matrix, Point matrixOffset, double multiplier, double addendum) {
         this.matrix = matrix;
         this.matrixOffset = matrixOffset;
         this.multiplier = multiplier;
+        this.addendum = addendum;
     }
 
     @Override
@@ -46,9 +56,9 @@ public class MatrixFilter implements Filter {
         int[] res = matrix.convolution(image, matrixStartX, matrixStartY);
 
         return new Color(
-                validateChanel((int) (multiplier * res[0])),
-                validateChanel((int) (multiplier * res[1])),
-                validateChanel((int) (multiplier * res[2]))
+                validateChanel((int) (multiplier * res[0] + addendum)),
+                validateChanel((int) (multiplier * res[1] + addendum)),
+                validateChanel((int) (multiplier * res[2] + addendum))
         );
     }
 
