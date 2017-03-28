@@ -77,7 +77,7 @@ public class FilterController {
         });
         filterFactory.add("Ordered dither", OrderedDitherFilter::new);
         filterFactory.add("Roberts", () -> {
-            RobertsView dialog = new RobertsView();
+            RobertsSobelView dialog = new RobertsSobelView();
             dialog.pack();
             dialog.setVisible(true);
 
@@ -86,6 +86,17 @@ public class FilterController {
             }
 
             return new RobertsFilter(dialog.getLevelValue());
+        });
+        filterFactory.add("Sobel", () -> {
+            RobertsSobelView dialog = new RobertsSobelView();
+            dialog.pack();
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new SobelFilter(dialog.getLevelValue());
         });
     }
 

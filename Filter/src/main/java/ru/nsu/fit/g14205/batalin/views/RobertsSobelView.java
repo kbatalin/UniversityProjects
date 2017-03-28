@@ -5,7 +5,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.event.*;
 
-public class RobertsView extends JDialog {
+public class RobertsSobelView extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
@@ -13,7 +13,7 @@ public class RobertsView extends JDialog {
     private JSlider levelSlider;
     private boolean result;
 
-    public RobertsView() {
+    public RobertsSobelView() {
         result = false;
         setContentPane(contentPane);
         setModal(true);
