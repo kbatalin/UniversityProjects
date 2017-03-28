@@ -15,6 +15,9 @@ public class WorkspaceView extends JPanel {
     private ImageView bImage;
     private ImageView cImage;
 
+    private AbsorptionView absorptionView;
+    private EmissionView emissionView;
+
     public WorkspaceView(FilterController filterController, ImageModel aImageModel, ImageModel bImageModel, ImageModel cImageModel) {
         setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
@@ -47,15 +50,23 @@ public class WorkspaceView extends JPanel {
         graphs.setBackground(Color.WHITE);
         add(graphs);
 
-        AbsorptionView absorptionView = new AbsorptionView(filterController, null);
+        absorptionView = new AbsorptionView(filterController);
         absorptionView.setAlignmentY(Component.TOP_ALIGNMENT);
         graphs.add(absorptionView);
 
         graphs.add(Box.createHorizontalStrut(40));
 
-        EmissionView emissionView = new EmissionView(filterController, null);
+        emissionView = new EmissionView(filterController);
         emissionView.setAlignmentY(Component.TOP_ALIGNMENT);
         graphs.add(emissionView);
+    }
+
+    public AbsorptionView getAbsorptionView() {
+        return absorptionView;
+    }
+
+    public EmissionView getEmissionView() {
+        return emissionView;
     }
 
     public ImageView getAImage() {

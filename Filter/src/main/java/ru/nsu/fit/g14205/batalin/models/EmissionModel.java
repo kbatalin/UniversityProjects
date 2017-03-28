@@ -19,6 +19,7 @@ public class EmissionModel extends ObservableBase implements Observable {
 
     public void addValue(Emission emission) {
         values.add(emission);
+        notifyObservers(EmissionModelEvent.VALUES_CHANGED);
     }
 
     public List<Emission> getValues() {

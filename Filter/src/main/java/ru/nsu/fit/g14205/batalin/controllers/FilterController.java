@@ -144,7 +144,11 @@ public class FilterController {
             VRLoader loader = new VRLoader();
             loader.load(file);
 
-            System.out.println();
+            filterView.getWorkspaceView().getAbsorptionView().setAbsorptionModel(loader.getAbsorptionModel());
+            filterView.getWorkspaceView().getAbsorptionView().repaint();
+
+            filterView.getWorkspaceView().getEmissionView().setEmissionModel(loader.getEmissionModel());
+            filterView.getWorkspaceView().getEmissionView().repaint();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(filterView,"Can't load config: " + e.getMessage(),"Open error", JOptionPane.ERROR_MESSAGE);
         }
