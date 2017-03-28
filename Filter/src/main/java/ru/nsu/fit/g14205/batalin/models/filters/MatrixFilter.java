@@ -46,9 +46,13 @@ public class MatrixFilter implements Filter {
         int[] res = matrix.convolution(image, matrixStartX, matrixStartY);
 
         return new Color(
-                (int)(multiplier * res[0]),
-                (int)(multiplier * res[1]),
-                (int)(multiplier * res[2])
+                validateChanel((int) (multiplier * res[0])),
+                validateChanel((int) (multiplier * res[1])),
+                validateChanel((int) (multiplier * res[2]))
         );
+    }
+
+    private int validateChanel(int value) {
+        return Math.max(0, Math.min(255, value));
     }
 }

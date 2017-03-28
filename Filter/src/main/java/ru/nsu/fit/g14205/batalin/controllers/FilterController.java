@@ -99,6 +99,7 @@ public class FilterController {
             return new SobelFilter(dialog.getLevelValue());
         });
         filterFactory.add("Blur", BlurFilter::new);
+        filterFactory.add("Sharp", SharpFilter::new);
     }
 
     public void onNewButtonClicked() {
