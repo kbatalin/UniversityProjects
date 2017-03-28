@@ -8,6 +8,7 @@ public class RobertsView extends JDialog {
     private JButton buttonOK;
     private JButton buttonCancel;
     private JTextField levelValue;
+    private JSlider levelSlider;
     private boolean result;
 
     public RobertsView() {
@@ -46,8 +47,14 @@ public class RobertsView extends JDialog {
         levelValue.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent focusEvent) {
-                levelValue.setText(String.valueOf(getLevelValue()));
+                int value = getLevelValue();
+                levelValue.setText(String.valueOf(value));
             }
+        });
+
+        levelSlider.addChangeListener(changeEvent -> {
+            int value = levelSlider.getValue();
+            levelValue.setText(String.valueOf(value));
         });
     }
 
