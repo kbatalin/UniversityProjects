@@ -22,6 +22,8 @@ public class FilterController {
     private ImageModel bImageModel;
     private ImageModel cImageModel;
 
+    private Filter vrFilter;
+
     private FilterFactory filterFactory;
 
     private JFileChooser fileOpenChooser;
@@ -144,6 +146,8 @@ public class FilterController {
             VRLoader loader = new VRLoader();
             loader.load(file);
 
+            vrFilter = new VRFilter(loader.getAbsorptionModel(), loader.getEmissionModel(), loader.getChargeModel());
+
             filterView.getWorkspaceView().getAbsorptionView().setAbsorptionModel(loader.getAbsorptionModel());
             filterView.getWorkspaceView().getAbsorptionView().repaint();
 
@@ -155,6 +159,10 @@ public class FilterController {
     }
 
     public void onVRStartButtonClicked() {
+        if (vrFilter == null) {
+            return;
+        }
+
 
     }
 
