@@ -9,22 +9,10 @@ import java.util.Collections;
  * Created by kir55rus on 28.03.17.
  */
 public class WatercolorFilter implements Filter {
-    private Point[] offsets;
+    private int filterSize = 5;
     private SharpFilter sharpFilter;
 
     public WatercolorFilter() {
-        offsets = new Point[] {
-                new Point(-1, -1),
-                new Point(0, -1),
-                new Point(1, -1),
-                new Point(-1, 0),
-                new Point(0, 0),
-                new Point(1, 0),
-                new Point(-1, 1),
-                new Point(0, 1),
-                new Point(1, 1),
-        };
-
         sharpFilter = new SharpFilter();
     }
 
@@ -45,7 +33,8 @@ public class WatercolorFilter implements Filter {
     }
 
     private Color calcColor(BufferedImage image, int x, int y) {
-        if (x - 1 < 0 || x + 1 >= image.getWidth() || y - 1 < 0 || y + 1 >= image.getHeight()) {
+        int halfSize = filterSize / 2;
+        if (x - halfSize < 0 || x + halfSize >= image.getWidth() || y - halfSize < 0 || y + halfSize >= image.getHeight()) {
             return new Color(0, 0, 0);
         }
 
@@ -53,21 +42,24 @@ public class WatercolorFilter implements Filter {
         ArrayList<Integer> greens = new ArrayList<>();
         ArrayList<Integer> blues = new ArrayList<>();
 
-        for (Point offset : offsets) {
-            Color color = new Color(image.getRGB(x + offset.x, y + offset.y));
-            reds.add(color.getRed());
-            greens.add(color.getGreen());
-            blues.add(color.getBlue());
+        for(int i = -halfSize; i <= halfSize; ++i) {
+            for(int j = -halfSize; j <= halfSize; ++j) {
+                Color color = new Color(image.getRGB(x + i, y + j));
+                reds.add(color.getRed());
+                greens.add(color.getGreen());
+                blues.add(color.getBlue());
+            }
         }
 
         Collections.sort(reds);
         Collections.sort(greens);
         Collections.sort(blues);
 
+        int middle = filterSize * filterSize / 2;
         return new Color(
-                reds.get(4),
-                greens.get(4),
-                blues.get(4)
+                reds.get(middle),
+                greens.get(middle),
+                blues.get(middle)
         );
     }
 }
