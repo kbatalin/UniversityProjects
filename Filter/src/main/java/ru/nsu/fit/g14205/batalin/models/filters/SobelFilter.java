@@ -11,10 +11,15 @@ import java.awt.image.BufferedImage;
 public class SobelFilter implements Filter {
     private int level;
     private BlackWhiteFilter blackWhiteFilter;
+    private Matrix matrixX;
+    private Matrix matrixY;
 
     public SobelFilter(int level) {
         this.level = level;
         blackWhiteFilter = new BlackWhiteFilter();
+
+        matrixX = new Matrix(3, 3, new int[] {-1, 0, 1, -2, 0, 2, -1, 0, 1});
+        matrixY = new Matrix(3, 3, new int[] {-1, -2, -1, 0, 0, 0, 1, 2, 1});
     }
 
     @Override
@@ -23,7 +28,7 @@ public class SobelFilter implements Filter {
 
         for(int y = 0; y < result.getHeight(); ++y) {
             for(int x = 0; x < result.getWidth(); ++x) {
-                Color newColor = S(result, x, y);
+                Color newColor = calcColor(result, x, y);
                 result.setRGB(x, y, newColor.getRGB());
             }
         }
@@ -31,46 +36,22 @@ public class SobelFilter implements Filter {
         return result;
     }
 
-    private Color S(BufferedImage image, int x, int y) {
-        if (x <= 0 || x + 1 >= image.getWidth() || y <= 0 || y + 1 >= image.getHeight()) {
+    private Color calcColor(BufferedImage image, int x, int y) {
+        if (x - 1 < 0 || x + 1 >= image.getWidth() || y - 1 < 0 || y + 1 >= image.getHeight()) {
             return new Color(0, 0, 0);
         }
 
-        Color a = new Color(image.getRGB(x - 1, y - 1));
-        Color b = new Color(image.getRGB(x, y - 1));
-        Color c = new Color(image.getRGB(x + 1, y - 1));
-        Color d = new Color(image.getRGB(x - 1, y));
-        Color f = new Color(image.getRGB(x + 1, y));
-        Color g = new Color(image.getRGB(x - 1, y + 1));
-        Color h = new Color(image.getRGB(x, y + 1));
-        Color i = new Color(image.getRGB(x + 1, y + 1));
+        int[] sumX = matrixX.convolution(image, x - 1, y - 1);
+        int[] sumY = matrixY.convolution(image, x - 1, y - 1);
 
-        int[] sX = Sx(a, c, d, f, g, i);
-        int[] sY = Sy(a, b, c, g, h, i);
+        int red = Math.abs(sumX[0]) + Math.abs(sumY[0]);
+        int green = Math.abs(sumX[1]) + Math.abs(sumY[1]);
+        int blue = Math.abs(sumX[2]) + Math.abs(sumY[2]);
 
-        int red = Math.abs(sX[0]) + Math.abs(sY[0]);
-        int green = Math.abs(sX[1]) + Math.abs(sY[1]);
-        int blue = Math.abs(sX[2]) + Math.abs(sY[2]);
         return new Color(
                 red > level ? 255 : 0,
                 green > level ? 255 : 0,
                 blue > level ? 255 : 0
         );
-    }
-
-    private int[] Sx(Color a, Color c, Color d, Color f, Color g, Color i) {
-        int red = Math.abs(c.getRed() + 2 * f.getRed() + i.getRed()) - Math.abs(a.getRed() + 2 * d.getRed() + g.getRed());
-        int green = Math.abs(c.getGreen() + 2 * f.getGreen() + i.getGreen()) - Math.abs(a.getGreen() + 2 * d.getGreen() + g.getGreen());
-        int blue = Math.abs(c.getBlue() + 2 * f.getBlue() + i.getBlue()) - Math.abs(a.getBlue() + 2 * d.getBlue() + g.getBlue());
-
-        return new int[]{red, green, blue};
-    }
-
-    private int[] Sy(Color a, Color b, Color c, Color g, Color h, Color i) {
-        int red = Math.abs(g.getRed() + 2 * h.getRed() + i.getRed()) - Math.abs(a.getRed() + 2 * b.getRed() + c.getRed());
-        int green = Math.abs(g.getGreen() + 2 * h.getGreen() + i.getGreen()) - Math.abs(a.getGreen() + 2 * b.getGreen() + c.getGreen());
-        int blue = Math.abs(g.getBlue() + 2 * h.getBlue() + i.getBlue()) - Math.abs(a.getBlue() + 2 * b.getBlue() + c.getBlue());
-
-        return new int[]{red, green, blue};
     }
 }
