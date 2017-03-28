@@ -124,6 +124,7 @@ public class FilterController {
 
             return new GammaFilter(dialog.getGamma());
         });
+        filterFactory.add("Zoom", ZoomFilter::new);
     }
 
     public void onNewButtonClicked() {

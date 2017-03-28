@@ -162,6 +162,10 @@ public class FilterView extends JFrame {
         JMenuItem filtersMenuGamma = new JMenuItem("Gamma");
         filtersMenuGamma.addActionListener(actionEvent -> filterController.onFilterButtonClicked("Gamma"));
         filtersMenu.add(filtersMenuGamma);
+
+        JMenuItem filtersMenuZoom = new JMenuItem("Zoom");
+        filtersMenuZoom.addActionListener(actionEvent -> filterController.onFilterButtonClicked("Zoom"));
+        filtersMenu.add(filtersMenuZoom);
     }
 
     private void initHelpMenu(JMenuBar menuBar) {
@@ -343,6 +347,7 @@ public class FilterView extends JFrame {
         createFilterButton(toolBar, "Watercolor", "watercolor.png");
         createFilterButton(toolBar, "Rotation", "refresh-button.png");
         createFilterButton(toolBar, "Gamma", "letter-g-of-curved-bone-outlined-typography.png");
+        createFilterButton(toolBar, "Zoom", "zoom-in.png");
     }
 
     private void createFilterButton(JToolBar toolBar, String filterName, String icoName) {
