@@ -1,5 +1,7 @@
 package ru.nsu.fit.g14205.batalin.models.filters;
 
+import ru.nsu.fit.g14205.batalin.models.Matrix;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -9,10 +11,15 @@ import java.awt.image.BufferedImage;
 public class RobertsFilter implements Filter{
     private int level;
     private Filter blackWhiteFilter;
+    private Matrix matrix1;
+    private Matrix matrix2;
 
     public RobertsFilter(int level) {
         this.level = level;
         blackWhiteFilter = new BlackWhiteFilter();
+
+        matrix1 = new Matrix(2, 2, new int[] {1, 0, 0, -1});
+        matrix2 = new Matrix(2, 2, new int[] {0, 1, -1, 0});
     }
 
     @Override
@@ -21,7 +28,7 @@ public class RobertsFilter implements Filter{
 
         for(int y = 0; y < result.getHeight(); ++y) {
             for(int x = 0; x < result.getWidth(); ++x) {
-                Color newColor = F(result, x, y);
+                Color newColor = calcColor(result, x, y);
                 result.setRGB(x, y, newColor.getRGB());
             }
         }
@@ -29,23 +36,23 @@ public class RobertsFilter implements Filter{
         return result;
     }
 
-    private Color F(BufferedImage image, int x, int y) {
+    private Color calcColor(BufferedImage image, int x, int y) {
         if (x < 0 || x + 1 >= image.getWidth() || y < 0 || y + 1 >= image.getHeight()) {
-            return new Color(0, 0, 0);
+            return new Color(0,0,0);
         }
 
-        Color color1 = new Color(image.getRGB(x, y));
-        Color color2 = new Color(image.getRGB(x + 1, y + 1));
-        Color color3 = new Color(image.getRGB(x + 1, y));
-        Color color4 = new Color(image.getRGB(x, y + 1));
+        int[] sum1 = matrix1.convolution(image, x, y);
+        int[] sum2 = matrix2.convolution(image, x, y);
 
-        int red = Math.abs(color1.getRed() - color2.getRed()) + Math.abs(color3.getRed() - color4.getRed());
-        int green = Math.abs(color1.getGreen() - color2.getGreen()) + Math.abs(color3.getGreen() - color4.getGreen());
-        int blue = Math.abs(color1.getBlue() - color2.getBlue()) + Math.abs(color3.getBlue() - color4.getBlue());
+        int red = Math.abs(sum1[0]) + Math.abs(sum2[0]);
+        int green = Math.abs(sum1[1]) + Math.abs(sum2[1]);
+        int blue = Math.abs(sum1[2]) + Math.abs(sum2[2]);
+
         return new Color(
                 red > level ? 255 : 0,
                 green > level ? 255 : 0,
                 blue > level ? 255 : 0
         );
+
     }
 }
