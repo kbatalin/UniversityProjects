@@ -31,6 +31,9 @@ public class FilterController {
     private FileFilter settingsFileFilter;
     private FileFilter allFilesFilter;
     private JFileChooser fileSaveChooser;
+    private FileNameExtensionFilter bmpFilter;
+    private FileNameExtensionFilter pngFilter;
+    private FileNameExtensionFilter jpgFilter;
 
     private FilterView filterView;
 
@@ -47,12 +50,15 @@ public class FilterController {
 
         fileSaveChooser = new JFileChooser();
         fileSaveChooser.setCurrentDirectory(workingDirectory);
-        FileNameExtensionFilter bmpFilter = new FileNameExtensionFilter("bmp images (*.bmp)", "bmp");
+        bmpFilter = new FileNameExtensionFilter("bmp images (*.bmp)", "bmp");
         fileSaveChooser.addChoosableFileFilter(bmpFilter);
         fileSaveChooser.setFileFilter(bmpFilter);
-        FileNameExtensionFilter pngFilter = new FileNameExtensionFilter("png images (*.png)", "png");
+        pngFilter = new FileNameExtensionFilter("png images (*.png)", "png");
         fileSaveChooser.addChoosableFileFilter(pngFilter);
         fileSaveChooser.setFileFilter(pngFilter);
+        jpgFilter = new FileNameExtensionFilter("jpg images (*.jpg)", "jpg");
+        fileSaveChooser.addChoosableFileFilter(jpgFilter);
+        fileSaveChooser.setFileFilter(jpgFilter);
 
         aImageModel = new ImageModel();
         bImageModel = new ImageModel();
@@ -234,13 +240,24 @@ public class FilterController {
 
         File file = fileSaveChooser.getSelectedFile();
         try {
-            if (file.getName().endsWith(".jpg")) {
-                return ImageIO.write(image, "jpg", file);
-            } else if (file.getName().endsWith(".png")) {
-                return ImageIO.write(image, "png", file);
+            String extension;
+            FileFilter activeFilter = fileSaveChooser.getFileFilter();
+            if(pngFilter.equals(activeFilter)) {
+                extension = "png";
+            } else if (bmpFilter.equals(activeFilter)) {
+                extension = "bmp";
+            } else if (jpgFilter.equals(activeFilter)) {
+                extension = "jpg";
             } else {
                 throw new IllegalArgumentException("Bad file name");
             }
+
+            if (!file.getName().endsWith("." + extension)) {
+                file = new File(file.getAbsolutePath() + "." + extension);
+            }
+
+            return ImageIO.write(image, extension, file);
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(filterView,"Can't save image: " + e.getMessage(),"Save error", JOptionPane.ERROR_MESSAGE);
             return false;
