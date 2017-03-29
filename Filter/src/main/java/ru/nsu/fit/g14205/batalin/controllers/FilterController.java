@@ -181,6 +181,7 @@ public class FilterController {
 
         VRView dialog = new VRView();
         dialog.pack();
+        dialog.setLocationRelativeTo(filterView);
         dialog.setVisible(true);
 
         if (!dialog.getResult()) {
