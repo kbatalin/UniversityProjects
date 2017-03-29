@@ -72,6 +72,7 @@ public class FilterController {
         filterFactory.add("Floyd Steinberg", () -> {
             FloydSteinbergView dialog = new FloydSteinbergView();
             dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
             dialog.setVisible(true);
 
             if (!dialog.getResult()) {
@@ -84,6 +85,7 @@ public class FilterController {
         filterFactory.add("Roberts", () -> {
             RobertsSobelView dialog = new RobertsSobelView();
             dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
             dialog.setVisible(true);
 
             if (!dialog.getResult()) {
@@ -95,6 +97,7 @@ public class FilterController {
         filterFactory.add("Sobel", () -> {
             RobertsSobelView dialog = new RobertsSobelView();
             dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
             dialog.setVisible(true);
 
             if (!dialog.getResult()) {
@@ -110,6 +113,7 @@ public class FilterController {
         filterFactory.add("Rotation", () -> {
             RotationView dialog = new RotationView();
             dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
             dialog.setVisible(true);
 
             if (!dialog.getResult()) {
@@ -121,6 +125,7 @@ public class FilterController {
         filterFactory.add("Gamma", () -> {
             GammaView dialog = new GammaView();
             dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
             dialog.setVisible(true);
 
             if (!dialog.getResult()) {
