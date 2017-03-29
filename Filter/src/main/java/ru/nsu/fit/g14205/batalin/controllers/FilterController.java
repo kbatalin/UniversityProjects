@@ -168,7 +168,22 @@ public class FilterController {
             return;
         }
 
-        BufferedImage image = vrFilter.process(srcImage, filterView.isVRAbsorptionSelected(), filterView.isVREmissionSelected());
+        VRView dialog = new VRView();
+        dialog.pack();
+        dialog.setVisible(true);
+
+        if (!dialog.getResult()) {
+            return;
+        }
+
+        BufferedImage image = vrFilter.process(
+                srcImage,
+                filterView.isVRAbsorptionSelected(),
+                filterView.isVREmissionSelected(),
+                dialog.getNxValue(),
+                dialog.getNyValue(),
+                dialog.getNzValue()
+        );
         cImageModel.setImage(image);
     }
 

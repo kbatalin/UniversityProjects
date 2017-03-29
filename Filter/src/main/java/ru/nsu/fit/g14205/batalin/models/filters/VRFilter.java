@@ -20,7 +20,7 @@ public class VRFilter {
         this.chargeModel = chargeModel;
     }
 
-    public BufferedImage process(BufferedImage srcImage, boolean withAbsorption, boolean withEmission) {
+    public BufferedImage process(BufferedImage srcImage, boolean withAbsorption, boolean withEmission, int nx, int ny, int nz) {
         return null;
     }
 
