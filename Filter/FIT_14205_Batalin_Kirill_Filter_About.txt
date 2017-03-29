@@ -1,0 +1,18 @@
+Алгоритмы:
+
+Все фильтры в models.filters
+
+BlackWhiteFilter - градации серого
+BlurFilter - размытие
+EmbossFilter - тиснение
+FloydSteinbergFilter - дизеринг Флойда-Стейнберга
+GammaFilter - гамма-фильтр
+NegativeFilter - негатив
+OrderedDitherFilter - алгоритм ordered dither
+RobertsFilter - оператор Робертса
+RotationFilter - поворот изображения
+SharpFilter - резкость
+SobelFilter - оператор Собеля
+WatercolorFilter - акварелизация
+ZoomFilter - удвоение
+VRFilter - визуализация объемной плотности
