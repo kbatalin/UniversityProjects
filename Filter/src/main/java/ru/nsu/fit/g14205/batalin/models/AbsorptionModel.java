@@ -38,6 +38,6 @@ public class AbsorptionModel extends ObservableBase implements ru.nsu.fit.g14205
         int prev = values.get(i - 1).x;
         int next = values.get(i).x;
         double ratio = (double)(x - prev) / (next - prev);
-        return ratio * (values.get(i).y - values.get(i - 1).y) + values.get(i).y;
+        return ratio * (values.get(i).y - values.get(i - 1).y) + values.get(i - 1).y;
     }
 }
