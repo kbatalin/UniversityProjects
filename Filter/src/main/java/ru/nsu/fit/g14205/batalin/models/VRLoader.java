@@ -20,31 +20,37 @@ public class VRLoader {
         chargeModel = new ChargeModel();
 
         try (Scanner scanner = new Scanner(file).useLocale(Locale.US)) {
-            int absorptionCount = scanner.nextInt();
+            String[] strData = nextData(scanner);
+            int absorptionCount = Integer.parseInt(strData[0]);
 
             for(int i = 0; i < absorptionCount; ++i) {
-                int x = scanner.nextInt();
-                double y = scanner.nextDouble();
+                strData = nextData(scanner);
+                int x = Integer.parseInt(strData[0]);
+                double y = Double.parseDouble(strData[1]);
                 absorptionModel.addValue(new Absorption(x, y));
             }
 
-            int emissionCount = scanner.nextInt();
+            strData = nextData(scanner);
+            int emissionCount = Integer.parseInt(strData[0]);
 
             for(int i = 0; i < emissionCount; ++i) {
-                int x = scanner.nextInt();
-                int red = scanner.nextInt();
-                int green = scanner.nextInt();
-                int blue = scanner.nextInt();
+                strData = nextData(scanner);
+                int x = Integer.parseInt(strData[0]);
+                int red = Integer.parseInt(strData[1]);
+                int green = Integer.parseInt(strData[2]);
+                int blue = Integer.parseInt(strData[3]);
                 emissionModel.addValue(new Emission(x, new Color(red, green, blue)));
             }
 
-            int chargesCount = scanner.nextInt();
+            strData = nextData(scanner);
+            int chargesCount = Integer.parseInt(strData[0]);
 
             for(int i = 0; i < chargesCount; ++i) {
-                double x = scanner.nextDouble();
-                double y = scanner.nextDouble();
-                double z = scanner.nextDouble();
-                double power = scanner.nextDouble();
+                strData = nextData(scanner);
+                double x = Double.parseDouble(strData[0]);
+                double y = Double.parseDouble(strData[1]);
+                double z = Double.parseDouble(strData[2]);
+                double power = Double.parseDouble(strData[3]);
 
                 chargeModel.addCharge(new Charge(x, y, z, power));
             }
@@ -52,6 +58,24 @@ public class VRLoader {
         } catch (Exception e) {
             throw new IOException(e.getMessage());
         }
+    }
+
+    private static String removeComment(String line) {
+        int index = line.indexOf("//");
+        if (index == -1) {
+            return line;
+        }
+
+        return line.substring(0, index);
+    }
+
+    private static String[] nextData(Scanner scanner) {
+        String line = "";
+        while (line.isEmpty()) {
+            line = removeComment(scanner.nextLine()).trim();
+        }
+
+        return line.split(" ");
     }
 
     public EmissionModel getEmissionModel() {
