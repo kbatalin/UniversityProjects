@@ -29,7 +29,7 @@ public class ImageView extends JComponent {
         addMouseMotionListener(new MouseAdapter() {
             @Override
             public void mouseDragged(MouseEvent mouseEvent) {
-                filterController.onMouseDragged(mouseEvent);
+                filterController.onMouseDragged(ImageView.this, mouseEvent);
             }
         });
 
@@ -41,7 +41,7 @@ public class ImageView extends JComponent {
 
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                filterController.onMousePressed(mouseEvent);
+                filterController.onMousePressed(ImageView.this, mouseEvent);
             }
         });
 
@@ -100,48 +100,12 @@ public class ImageView extends JComponent {
             return;
         }
 
-//        Graphics2D graphics = content.createGraphics();
-//        graphics.setPaint(Color.BLACK);
-//        graphics.drawRect(selectedArea.x, selectedArea.y, selectedArea.width, selectedArea.height);
-
-
-        double ratio = 350. / selectedArea.width;
-        int stroke = Math.max(1, (int)(strokeSize / ratio));
-        System.out.println(stroke);
-
-        Point pos = new Point(selectedArea.x, selectedArea.y);
-        int currentStrokeSize = 0;
-        for(int dirIndex = 0; dirIndex < 4; ++dirIndex) {
-            for(int i = 0; i < selectedArea.width; ++i) {
-                if (currentStrokeSize == stroke) {
-                    currentStrokeSize -= 2 * stroke;
-                } else if (currentStrokeSize >= 0 && pos.x < content.getWidth() && pos.y < content.getHeight()) {
-                    Color color = new Color(content.getRGB(pos.x, pos.y));
-                    Color strokeColor = new Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue());
-                    content.setRGB(pos.x, pos.y, strokeColor.getRGB());
-                }
-
-                pos.x += dirs[dirIndex].x;
-                pos.y += dirs[dirIndex].y;
-                ++currentStrokeSize;
-            }
-
-            pos.x -= dirs[dirIndex].x;
-            pos.y -= dirs[dirIndex].y;
-        }
-
-//        int dirIndex = 0;
-//        for(int i = 0, count = selectedArea.height * 2 + selectedArea.width * 2; i < count; ++i) {
-//            if (currentStrokeSize == stroke) {
-//                currentStrokeSize -= 2 * stroke;
-//            } else if (currentStrokeSize >= 0) {
-//                Color color = new Color(content.getRGB(pos.x, pos.y));
-//                Color strokeColor = new Color(255 - color.getRed(), 255 - color.getGreen(), 255 - color.getBlue());
-//                content.setRGB(pos.x, pos.y, strokeColor.getRGB());
-//            }
-//
-//
-//        }
+        Graphics2D graphics = content.createGraphics();
+        graphics.setPaint(Color.BLACK);
+        graphics.setXORMode(Color.WHITE);
+        Stroke dotted = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[] {10,15}, 0);
+        graphics.setStroke(dotted);
+        graphics.drawRect(selectedArea.x, selectedArea.y, selectedArea.width, selectedArea.height);
     }
 
     @Override

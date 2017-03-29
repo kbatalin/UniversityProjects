@@ -15,26 +15,58 @@ public class WorkspaceView extends JPanel {
     private ImageView bImage;
     private ImageView cImage;
 
+    private AbsorptionView absorptionView;
+    private EmissionView emissionView;
+
     public WorkspaceView(FilterController filterController, ImageModel aImageModel, ImageModel bImageModel, ImageModel cImageModel) {
         setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
 
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        JPanel images = new JPanel();
+        images.setBackground(Color.WHITE);
+        images.setLayout(new BoxLayout(images, BoxLayout.X_AXIS));
+        add(images);
 
         aImage = new ImageView(filterController, aImageModel);
         aImage.setAlignmentY(Component.TOP_ALIGNMENT);
-        add(aImage);
+        images.add(aImage);
 
-        add(Box.createHorizontalStrut(10));
+        images.add(Box.createHorizontalStrut(10));
 
         bImage = new ImageView(filterController, bImageModel);
         bImage.setAlignmentY(Component.TOP_ALIGNMENT);
-        add(bImage);
+        images.add(bImage);
 
-        add(Box.createHorizontalStrut(10));
+        images.add(Box.createHorizontalStrut(10));
 
         cImage = new ImageView(filterController, cImageModel);
         cImage.setAlignmentY(Component.TOP_ALIGNMENT);
-        add(cImage);
+        images.add(cImage);
+
+        add(Box.createVerticalStrut(20));
+
+        JPanel graphs = new JPanel();
+        graphs.setBackground(Color.WHITE);
+        add(graphs);
+
+        absorptionView = new AbsorptionView(filterController);
+        absorptionView.setAlignmentY(Component.TOP_ALIGNMENT);
+        graphs.add(absorptionView);
+
+        graphs.add(Box.createHorizontalStrut(40));
+
+        emissionView = new EmissionView(filterController);
+        emissionView.setAlignmentY(Component.TOP_ALIGNMENT);
+        graphs.add(emissionView);
+    }
+
+    public AbsorptionView getAbsorptionView() {
+        return absorptionView;
+    }
+
+    public EmissionView getEmissionView() {
+        return emissionView;
     }
 
     public ImageView getAImage() {

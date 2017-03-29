@@ -1,13 +1,9 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.ImageModel;
-import ru.nsu.fit.g14205.batalin.models.filters.BlackWhiteFilter;
-import ru.nsu.fit.g14205.batalin.models.filters.Filter;
-import ru.nsu.fit.g14205.batalin.models.filters.FilterFactory;
-import ru.nsu.fit.g14205.batalin.models.filters.NegativeFilter;
-import ru.nsu.fit.g14205.batalin.views.AboutView;
-import ru.nsu.fit.g14205.batalin.views.FilterView;
-import ru.nsu.fit.g14205.batalin.views.ImageView;
+import ru.nsu.fit.g14205.batalin.models.VRLoader;
+import ru.nsu.fit.g14205.batalin.models.filters.*;
+import ru.nsu.fit.g14205.batalin.views.*;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -17,7 +13,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 /**
  * Created by kir55rus on 11.03.17.
@@ -27,12 +22,18 @@ public class FilterController {
     private ImageModel bImageModel;
     private ImageModel cImageModel;
 
+    private VRFilter vrFilter;
+
     private FilterFactory filterFactory;
 
     private JFileChooser fileOpenChooser;
     private FileFilter imageFileFilter;
+    private FileFilter settingsFileFilter;
     private FileFilter allFilesFilter;
     private JFileChooser fileSaveChooser;
+    private FileNameExtensionFilter bmpFilter;
+    private FileNameExtensionFilter pngFilter;
+    private FileNameExtensionFilter jpgFilter;
 
     private FilterView filterView;
 
@@ -45,15 +46,19 @@ public class FilterController {
         fileOpenChooser.setCurrentDirectory(workingDirectory);
         allFilesFilter = fileOpenChooser.getFileFilter();
         imageFileFilter = new FileNameExtensionFilter("Images (*.bmp, *.jpg, *.png)", "jpg", "bmp", "png");
+        settingsFileFilter = new FileNameExtensionFilter("Text (*.txt)", "txt");
 
         fileSaveChooser = new JFileChooser();
         fileSaveChooser.setCurrentDirectory(workingDirectory);
-        FileNameExtensionFilter bmpFilter = new FileNameExtensionFilter("bmp images (*.bmp)", "bmp");
+        bmpFilter = new FileNameExtensionFilter("bmp images (*.bmp)", "bmp");
         fileSaveChooser.addChoosableFileFilter(bmpFilter);
         fileSaveChooser.setFileFilter(bmpFilter);
-        FileNameExtensionFilter pngFilter = new FileNameExtensionFilter("png images (*.png)", "png");
+        pngFilter = new FileNameExtensionFilter("png images (*.png)", "png");
         fileSaveChooser.addChoosableFileFilter(pngFilter);
         fileSaveChooser.setFileFilter(pngFilter);
+        jpgFilter = new FileNameExtensionFilter("jpg images (*.jpg)", "jpg");
+        fileSaveChooser.addChoosableFileFilter(jpgFilter);
+        fileSaveChooser.setFileFilter(jpgFilter);
 
         aImageModel = new ImageModel();
         bImageModel = new ImageModel();
@@ -62,11 +67,136 @@ public class FilterController {
         filterView = new FilterView(this, aImageModel, bImageModel, cImageModel);
         filterView.setLocationRelativeTo(null);
 
-        try {
-            filterFactory = new FilterFactory();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(filterView,"Can't load filters: " + e.getMessage(),"Loading error", JOptionPane.ERROR_MESSAGE);
+        initFilterFactory();
+    }
+
+    private void initFilterFactory() {
+        filterFactory = new FilterFactory();
+
+        filterFactory.add("Black and white", BlackWhiteFilter::new);
+        filterFactory.add("Negative", NegativeFilter::new);
+        filterFactory.add("Floyd Steinberg", () -> {
+            FloydSteinbergView dialog = new FloydSteinbergView();
+            dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new FloydSteinbergFilter(dialog.getRed(), dialog.getGreen(), dialog.getBlue());
+        });
+        filterFactory.add("Ordered dither", OrderedDitherFilter::new);
+        filterFactory.add("Roberts", () -> {
+            RobertsSobelView dialog = new RobertsSobelView();
+            dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new RobertsFilter(dialog.getLevelValue());
+        });
+        filterFactory.add("Sobel", () -> {
+            RobertsSobelView dialog = new RobertsSobelView();
+            dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new SobelFilter(dialog.getLevelValue());
+        });
+        filterFactory.add("Blur", BlurFilter::new);
+        filterFactory.add("Sharp", SharpFilter::new);
+        filterFactory.add("Emboss", EmbossFilter::new);
+        filterFactory.add("Watercolor", WatercolorFilter::new);
+        filterFactory.add("Rotation", () -> {
+            RotationView dialog = new RotationView();
+            dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new RotationFilter(dialog.getAngle());
+        });
+        filterFactory.add("Gamma", () -> {
+            GammaView dialog = new GammaView();
+            dialog.pack();
+            dialog.setLocationRelativeTo(filterView);
+            dialog.setVisible(true);
+
+            if (!dialog.getResult()) {
+                return null;
+            }
+
+            return new GammaFilter(dialog.getGamma());
+        });
+        filterFactory.add("Zoom", ZoomFilter::new);
+    }
+
+    public void onVRSettingsButtonClicked() {
+        fileOpenChooser.setFileFilter(settingsFileFilter);
+
+        int result = fileOpenChooser.showOpenDialog(filterView);
+
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return;
         }
+
+        try {
+            File file = fileOpenChooser.getSelectedFile();
+            VRLoader loader = new VRLoader();
+            loader.load(file);
+
+            vrFilter = new VRFilter(loader.getAbsorptionModel(), loader.getEmissionModel(), loader.getChargeModel());
+
+            filterView.getWorkspaceView().getAbsorptionView().setAbsorptionModel(loader.getAbsorptionModel());
+            filterView.getWorkspaceView().getAbsorptionView().repaint();
+
+            filterView.getWorkspaceView().getEmissionView().setEmissionModel(loader.getEmissionModel());
+            filterView.getWorkspaceView().getEmissionView().repaint();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(filterView,"Can't load config: " + e.getMessage(),"Open error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void onVRStartButtonClicked() {
+        if (vrFilter == null) {
+            return;
+        }
+
+        BufferedImage srcImage = bImageModel.getImage();
+        if (srcImage == null) {
+            return;
+        }
+
+        VRView dialog = new VRView();
+        dialog.pack();
+        dialog.setLocationRelativeTo(filterView);
+        dialog.setVisible(true);
+
+        if (!dialog.getResult()) {
+            return;
+        }
+
+        BufferedImage image = vrFilter.process(
+                srcImage,
+                filterView.isVRAbsorptionSelected(),
+                filterView.isVREmissionSelected(),
+                dialog.getNxValue(),
+                dialog.getNyValue(),
+                dialog.getNzValue()
+        );
+        cImageModel.setImage(image);
     }
 
     public void onNewButtonClicked() {
@@ -79,13 +209,13 @@ public class FilterController {
             return;
         }
 
-        try {
-            Filter filter = filterFactory.initFilter(filterName);
-            BufferedImage image = filter.process(srcImage);
-            cImageModel.setImage(image);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(filterView,"Can't find filter: " + e.getMessage(),"Filter error", JOptionPane.ERROR_MESSAGE);
+        Filter filter = filterFactory.get(filterName);
+        if (filter == null) {
+            return;
         }
+
+        BufferedImage image = filter.process(srcImage);
+        cImageModel.setImage(image);
     }
 
     public void onExitButtonClicked() {
@@ -111,13 +241,24 @@ public class FilterController {
 
         File file = fileSaveChooser.getSelectedFile();
         try {
-            if (file.getName().endsWith(".jpg")) {
-                return ImageIO.write(image, "jpg", file);
-            } else if (file.getName().endsWith(".png")) {
-                return ImageIO.write(image, "png", file);
+            String extension;
+            FileFilter activeFilter = fileSaveChooser.getFileFilter();
+            if(pngFilter.equals(activeFilter)) {
+                extension = "png";
+            } else if (bmpFilter.equals(activeFilter)) {
+                extension = "bmp";
+            } else if (jpgFilter.equals(activeFilter)) {
+                extension = "jpg";
             } else {
                 throw new IllegalArgumentException("Bad file name");
             }
+
+            if (!file.getName().endsWith("." + extension)) {
+                file = new File(file.getAbsolutePath() + "." + extension);
+            }
+
+            return ImageIO.write(image, extension, file);
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(filterView,"Can't save image: " + e.getMessage(),"Save error", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -137,19 +278,17 @@ public class FilterController {
         bImageModel.setImage(cImageModel.getImage());
     }
 
-    public void onMousePressed(MouseEvent mouseEvent) {
+    public void onMousePressed(ImageView imageView, MouseEvent mouseEvent) {
+        onMouseDragged(imageView, mouseEvent);
+    }
+
+    public void onMouseDragged(ImageView imageView, MouseEvent mouseEvent) {
         boolean isSelectButtonPushed = filterView.getSelectButton().isSelected();
         if (!isSelectButtonPushed) {
             return;
         }
 
-        Point pos = mouseEvent.getPoint();
-        selectImageArea(pos);
-    }
-
-    public void onMouseDragged(MouseEvent mouseEvent) {
-        boolean isSelectButtonPushed = filterView.getSelectButton().isSelected();
-        if (!isSelectButtonPushed) {
+        if (imageView != filterView.getWorkspaceView().getAImage()) {
             return;
         }
 
