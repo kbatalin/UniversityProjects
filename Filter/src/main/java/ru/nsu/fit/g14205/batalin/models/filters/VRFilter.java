@@ -48,35 +48,43 @@ public class VRFilter {
                 null
         );
 
-        for(int zArea = 0; zArea < nz; ++zArea) {
-            for(int y = 0; y < result.getHeight(); ++y) {
-                for(int x = 0; x < result.getWidth(); ++x) {
-                    int xArea = (int)(x / xSize / 350);
-                    int yArea = (int)(y / xSize / 350);
+        for(int y = 0; y < result.getHeight(); ++y) {
+            for(int x = 0; x < result.getWidth(); ++x) {
+                int xArea = (int)(x / xSize / 350);
+                int yArea = (int)(y / xSize / 350);
+
+                Color oldColor = new Color(result.getRGB(x, y));
+                double newRed = oldColor.getRed() / 255.;
+                double newGreen = oldColor.getGreen() / 255.;
+                double newBlue = oldColor.getBlue() / 255.;
+
+                for(int zArea = 0; zArea < nz; ++zArea) {
                     double f = chargeModel.calcChargePower(xArea, yArea, zArea, xSize, ySize, zSize);
                     int abscissa = getX(f, fmin, fmax);
-
                     double red = 0.;
                     double green = 0.;
                     double blue = 0.;
                     if(withEmission) {
                         Color color = emissionModel.calc(abscissa);
-                        red = color.getRed();
-                        green = color.getGreen();
-                        blue = color.getBlue();
+                        red = color.getRed() / 255.;
+                        green = color.getGreen()/ 255.;
+                        blue = color.getBlue()/ 255.;
                     }
 
                     double absorption = withAbsorption ? absorptionModel.calc(abscissa) : 0.;
 
-                    Color color = new Color(result.getRGB(x, y));
-                    Color newColor = new Color(
-                            ColorUtils.validate((color.getRed() / 255. * Math.exp(-absorption / nz) + red / nz)),
-                            ColorUtils.validate((color.getGreen() / 255. * Math.exp(-absorption / nz) + green / nz)),
-                            ColorUtils.validate((color.getBlue() / 255. * Math.exp(-absorption / nz) + blue / nz))
-                    );
-
-                    result.setRGB(x, y, newColor.getRGB());
+                    newRed = (newRed * Math.exp(-absorption / nz) + red / nz);
+                    newGreen = (newGreen * Math.exp(-absorption / nz) + green / nz);
+                    newBlue = (newBlue * Math.exp(-absorption / nz) + blue / nz);
                 }
+
+                Color newColor = new Color(
+                        ColorUtils.validate(newRed),
+                        ColorUtils.validate(newGreen),
+                        ColorUtils.validate(newBlue)
+                );
+
+                result.setRGB(x, y, newColor.getRGB());
             }
         }
 
