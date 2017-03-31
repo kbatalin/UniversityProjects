@@ -23,10 +23,16 @@ public interface PropertiesModel extends Observable {
 
     double[] getValues();
 
+    double getScale();
+    void setScale(double scale);
+
+    int getLegendWidth();
+
     enum Event implements ObserveEvent {
         FUNCTION_CHANGED,
         AREA_CHANGED,
         VALUES_CHANGED,
         COLORS_CHANGED,
+        SCALE_CHANGED,
     }
 }

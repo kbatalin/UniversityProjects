@@ -17,4 +17,11 @@ public class Area {
         first = new Point(x0, y0);
         second = new Point(x1, y1);
     }
+
+    public Dimension toDimension(double multiplier) {
+        int width = second.x - first.x;
+        int height = second.y - first.y;
+
+        return new Dimension((int) (multiplier * width), (int) (multiplier * height));
+    }
 }

@@ -12,6 +12,7 @@ public class Properties extends ObservableBase implements PropertiesModel {
     private Area area;
     private double[] values;
     private Color[] colors;
+    private double scale;
 
     @Override
     public int getValuesCount() {
@@ -76,7 +77,9 @@ public class Properties extends ObservableBase implements PropertiesModel {
     @Override
     public void setFunction(Function function) {
         this.function = function;
-        calcValues(values.length);
+        if(values != null) {
+            calcValues(values.length);
+        }
 
         notifyObservers(Event.FUNCTION_CHANGED);
     }
@@ -91,5 +94,22 @@ public class Properties extends ObservableBase implements PropertiesModel {
         this.area = area;
 
         notifyObservers(Event.AREA_CHANGED);
+    }
+
+    @Override
+    public double getScale() {
+        return scale;
+    }
+
+    @Override
+    public void setScale(double scale) {
+        this.scale = scale;
+
+        notifyObservers(Event.SCALE_CHANGED);
+    }
+
+    @Override
+    public int getLegendWidth() {
+        return 100;
     }
 }
