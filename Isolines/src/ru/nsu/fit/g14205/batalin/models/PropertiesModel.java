@@ -18,13 +18,11 @@ public interface PropertiesModel extends Observable {
     int getValuesCount();
     void setValuesCount(int count);
 
+    Color getValueColor(double value);
     Color[] getValuesColors();
     void setValuesColors(Color[] colors);
 
     double[] getValues();
-
-    double getScale();
-    void setScale(double scale);
 
     int getLegendWidth();
 

@@ -18,10 +18,10 @@ public class Area {
         second = new Point(x1, y1);
     }
 
-    public Dimension toDimension(double multiplier) {
+    public Dimension toDimension() {
         int width = second.x - first.x;
         int height = second.y - first.y;
 
-        return new Dimension((int) (multiplier * width), (int) (multiplier * height));
+        return new Dimension(width, height);
     }
 }

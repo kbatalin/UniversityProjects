@@ -12,7 +12,6 @@ public class Properties extends ObservableBase implements PropertiesModel {
     private Area area;
     private double[] values;
     private Color[] colors;
-    private double scale;
 
     @Override
     public int getValuesCount() {
@@ -31,7 +30,7 @@ public class Properties extends ObservableBase implements PropertiesModel {
             return;
         }
 
-        double min = function.calc(area.first);
+        double min = function.calc(area.first.x, area.first.y);
         double max = min;
         for(int x = area.first.x; x < area.second.x; ++x) {
             for(int y = area.first.y; y < area.second.y; ++y) {
@@ -50,6 +49,38 @@ public class Properties extends ObservableBase implements PropertiesModel {
         for(int i = 0; i < valuesCount; ++i) {
             values[i] = min + i * len;
         }
+    }
+
+    @Override
+    public Color getValueColor(double value) {
+        if (values == null || colors == null) {
+            return Color.BLACK;
+        }
+
+        for(int i = 0; i < values.length; ++i) {
+            if (Double.compare(value, values[i]) < 0) {
+                return colors[i];
+            }
+        }
+
+        return colors[colors.length - 1];
+
+//        if (values == null || values.length == 0 || colors == null || colors.length == 0) {
+//            return new Color(0, 0, 0);
+//        }
+//
+//        if (Double.compare(value, values[0]) < 0) {
+//            return colors[0];
+//        }
+//
+//        int i = 0;
+//        for(i = 0; i < values.length; ++i) {
+//            if (Double.compare(value, values[i]) >= 0) {
+//                return colors[i + 1];
+//            }
+//        }
+//
+//        return colors[colors.length - 1];
     }
 
     @Override
@@ -94,18 +125,6 @@ public class Properties extends ObservableBase implements PropertiesModel {
         this.area = area;
 
         notifyObservers(Event.AREA_CHANGED);
-    }
-
-    @Override
-    public double getScale() {
-        return scale;
-    }
-
-    @Override
-    public void setScale(double scale) {
-        this.scale = scale;
-
-        notifyObservers(Event.SCALE_CHANGED);
     }
 
     @Override

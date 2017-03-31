@@ -7,12 +7,7 @@ import java.awt.*;
  */
 public class ParaboloidFunction implements Function {
     @Override
-    public double calc(int x, int y) {
+    public double calc(double x, double y) {
         return x * x + y * y;
-    }
-
-    @Override
-    public double calc(Point point) {
-        return calc(point.x, point.y);
     }
 }

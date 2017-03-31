@@ -22,7 +22,6 @@ public class IsolinesController {
         propertiesModel = new Properties();
         propertiesModel.setFunction(new ParaboloidFunction());
         propertiesModel.setArea(new Area(-5, -5, 5, 5));
-        propertiesModel.setScale(100.);
         propertiesModel.setValuesCount(5);
         propertiesModel.setValuesColors(new Color[]{
                 new Color(221, 211, 0),
@@ -32,6 +31,11 @@ public class IsolinesController {
                 new Color(30, 96, 178),
                 new Color(211, 112, 36)
         });
+
+//        System.out.println(propertiesModel.getValueColor(-5));
+//        System.out.println(propertiesModel.getValueColor(0));
+//        System.out.println(propertiesModel.getValueColor(2));
+//        System.out.println(propertiesModel.getValueColor(120));
 
         isolinesView = new IsolinesView(this);
     }
