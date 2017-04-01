@@ -32,30 +32,6 @@ public class IsolinesController {
 
         legendProperties = new LegendProperties(mapProperties);
 
-//        Function function = legendProperties.getFunction();
-//        double prev = 0;
-//        for(int i = -1000; i < 1000; ++i) {
-//            double val = function.calc(i, 0);
-//            if (Double.compare(val, prev) == 0) {
-//                continue;
-//            }
-//
-//            System.out.println(i + " " + val);
-//            prev = val;
-//        }
-
-//        System.out.println(legendProperties.getValueColor(-5));
-//        System.out.println(legendProperties.getValueColor(0));
-//        System.out.println(legendProperties.getValueColor(2));
-//        System.out.println(legendProperties.getValueColor(120));
-//
-//        System.out.println("---");
-//
-//        System.out.println(mapProperties.getValueColor(-5));
-//        System.out.println(mapProperties.getValueColor(0));
-//        System.out.println(mapProperties.getValueColor(2));
-//        System.out.println(mapProperties.getValueColor(120));
-
         isolinesView = new IsolinesView(this);
     }
 

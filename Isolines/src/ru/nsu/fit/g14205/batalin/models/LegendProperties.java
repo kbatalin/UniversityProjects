@@ -4,13 +4,14 @@ import ru.nsu.fit.g14205.batalin.utils.observe.ObservableBase;
 
 import java.awt.*;
 import java.util.Arrays;
+import java.util.function.DoubleBinaryOperator;
 
 /**
  * Created by kir55rus on 01.04.17.
  */
 public class LegendProperties extends PropertiesBase {
     private PropertiesModel mapProperties;
-    private Function function;
+    private DoubleBinaryOperator function;
 
     public LegendProperties(PropertiesModel mapProperties) {
         this.mapProperties = mapProperties;
@@ -24,12 +25,12 @@ public class LegendProperties extends PropertiesBase {
     }
 
     @Override
-    public Function getFunction() {
+    public DoubleBinaryOperator getFunction() {
         return function;
     }
 
     @Override
-    public void setFunction(Function function) {
+    public void setFunction(DoubleBinaryOperator function) {
     }
 
     @Override

@@ -3,12 +3,13 @@ package ru.nsu.fit.g14205.batalin.models;
 import ru.nsu.fit.g14205.batalin.utils.observe.ObservableBase;
 
 import java.awt.*;
+import java.util.function.DoubleBinaryOperator;
 
 /**
  * Created by kir55rus on 01.04.17.
  */
 public class MapProperties extends PropertiesBase {
-    private Function function;
+    private DoubleBinaryOperator function;
     private Area area;
     private double[] values;
     private Color[] colors;
@@ -32,11 +33,11 @@ public class MapProperties extends PropertiesBase {
             return;
         }
 
-        minValue = function.calc(area.first.x, area.first.y);
+        minValue = function.applyAsDouble(area.first.x, area.first.y);
         maxValue = minValue;
         for(int x = area.first.x; x < area.second.x; ++x) {
             for(int y = area.first.y; y < area.second.y; ++y) {
-                double value = function.calc(x, y);
+                double value = function.applyAsDouble(x, y);
                 if (Double.compare(value, minValue) < 0) {
                     minValue = value;
                 }
@@ -81,12 +82,12 @@ public class MapProperties extends PropertiesBase {
     }
 
     @Override
-    public Function getFunction() {
+    public DoubleBinaryOperator getFunction() {
         return function;
     }
 
     @Override
-    public void setFunction(Function function) {
+    public void setFunction(DoubleBinaryOperator function) {
         this.function = function;
         if(values != null) {
             calcValues(values.length);
