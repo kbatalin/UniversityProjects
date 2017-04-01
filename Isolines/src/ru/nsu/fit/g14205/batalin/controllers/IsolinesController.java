@@ -1,9 +1,6 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
-import ru.nsu.fit.g14205.batalin.models.Area;
-import ru.nsu.fit.g14205.batalin.models.ParaboloidFunction;
-import ru.nsu.fit.g14205.batalin.models.Properties;
-import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
+import ru.nsu.fit.g14205.batalin.models.*;
 import ru.nsu.fit.g14205.batalin.views.IsolinesView;
 
 import javax.swing.*;
@@ -14,16 +11,17 @@ import java.awt.event.MouseEvent;
  * Created by kir55rus on 29.03.17.
  */
 public class IsolinesController {
-    private PropertiesModel propertiesModel;
+    private PropertiesModel mapProperties;
+    private PropertiesModel legendProperties;
 
     private IsolinesView isolinesView;
 
     public void run() {
-        propertiesModel = new Properties();
-        propertiesModel.setFunction(new ParaboloidFunction());
-        propertiesModel.setArea(new Area(-5, -5, 5, 5));
-        propertiesModel.setValuesCount(5);
-        propertiesModel.setValuesColors(new Color[]{
+        mapProperties = new MapProperties();
+        mapProperties.setFunction(new ParaboloidFunction());
+        mapProperties.setArea(new Area(-5, -5, 5, 5));
+        mapProperties.setValuesCount(5);
+        mapProperties.setValuesColors(new Color[]{
                 new Color(221, 211, 0),
                 new Color(94, 98, 63),
                 new Color(144, 148, 100),
@@ -32,16 +30,41 @@ public class IsolinesController {
                 new Color(211, 112, 36)
         });
 
-//        System.out.println(propertiesModel.getValueColor(-5));
-//        System.out.println(propertiesModel.getValueColor(0));
-//        System.out.println(propertiesModel.getValueColor(2));
-//        System.out.println(propertiesModel.getValueColor(120));
+        legendProperties = new LegendProperties(mapProperties);
+
+//        Function function = legendProperties.getFunction();
+//        double prev = 0;
+//        for(int i = -1000; i < 1000; ++i) {
+//            double val = function.calc(i, 0);
+//            if (Double.compare(val, prev) == 0) {
+//                continue;
+//            }
+//
+//            System.out.println(i + " " + val);
+//            prev = val;
+//        }
+
+//        System.out.println(legendProperties.getValueColor(-5));
+//        System.out.println(legendProperties.getValueColor(0));
+//        System.out.println(legendProperties.getValueColor(2));
+//        System.out.println(legendProperties.getValueColor(120));
+//
+//        System.out.println("---");
+//
+//        System.out.println(mapProperties.getValueColor(-5));
+//        System.out.println(mapProperties.getValueColor(0));
+//        System.out.println(mapProperties.getValueColor(2));
+//        System.out.println(mapProperties.getValueColor(120));
 
         isolinesView = new IsolinesView(this);
     }
 
-    public PropertiesModel getPropertiesModel() {
-        return propertiesModel;
+    public PropertiesModel getMapProperties() {
+        return mapProperties;
+    }
+
+    public PropertiesModel getLegendProperties() {
+        return legendProperties;
     }
 
     public void onEnterToolbarButton(MouseEvent event) {

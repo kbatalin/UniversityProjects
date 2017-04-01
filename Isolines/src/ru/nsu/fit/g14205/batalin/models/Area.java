@@ -5,7 +5,7 @@ import java.awt.*;
 /**
  * Created by kir55rus on 01.04.17.
  */
-public class Area {
+public class Area implements Cloneable {
     public Point first;
     public Point second;
 
@@ -23,5 +23,10 @@ public class Area {
         int height = second.y - first.y;
 
         return new Dimension(width, height);
+    }
+
+    @Override
+    protected Area clone() {
+        return new Area(first.x, first.y, second.x, second.y);
     }
 }

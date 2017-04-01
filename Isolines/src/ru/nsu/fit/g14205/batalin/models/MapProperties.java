@@ -7,11 +7,13 @@ import java.awt.*;
 /**
  * Created by kir55rus on 01.04.17.
  */
-public class Properties extends ObservableBase implements PropertiesModel {
+public class MapProperties extends PropertiesBase {
     private Function function;
     private Area area;
     private double[] values;
     private Color[] colors;
+    private double minValue;
+    private double maxValue;
 
     @Override
     public int getValuesCount() {
@@ -30,57 +32,35 @@ public class Properties extends ObservableBase implements PropertiesModel {
             return;
         }
 
-        double min = function.calc(area.first.x, area.first.y);
-        double max = min;
+        minValue = function.calc(area.first.x, area.first.y);
+        maxValue = minValue;
         for(int x = area.first.x; x < area.second.x; ++x) {
             for(int y = area.first.y; y < area.second.y; ++y) {
                 double value = function.calc(x, y);
-                if (Double.compare(value, min) < 0) {
-                    min = value;
+                if (Double.compare(value, minValue) < 0) {
+                    minValue = value;
                 }
-                if (Double.compare(max, value) < 0) {
-                    max = value;
+                if (Double.compare(maxValue, value) < 0) {
+                    maxValue = value;
                 }
             }
         }
 
         values = new double[valuesCount];
-        double len = (max - min) / valuesCount;
+        double len = (maxValue - minValue) / (valuesCount + 1);
         for(int i = 0; i < valuesCount; ++i) {
-            values[i] = min + i * len;
+            values[i] = minValue + (i + 1) * len;
         }
     }
 
     @Override
-    public Color getValueColor(double value) {
-        if (values == null || colors == null) {
-            return Color.BLACK;
-        }
+    public double getMinValue() {
+        return minValue;
+    }
 
-        for(int i = 0; i < values.length; ++i) {
-            if (Double.compare(value, values[i]) < 0) {
-                return colors[i];
-            }
-        }
-
-        return colors[colors.length - 1];
-
-//        if (values == null || values.length == 0 || colors == null || colors.length == 0) {
-//            return new Color(0, 0, 0);
-//        }
-//
-//        if (Double.compare(value, values[0]) < 0) {
-//            return colors[0];
-//        }
-//
-//        int i = 0;
-//        for(i = 0; i < values.length; ++i) {
-//            if (Double.compare(value, values[i]) >= 0) {
-//                return colors[i + 1];
-//            }
-//        }
-//
-//        return colors[colors.length - 1];
+    @Override
+    public double getMaxValue() {
+        return maxValue;
     }
 
     @Override
@@ -125,10 +105,5 @@ public class Properties extends ObservableBase implements PropertiesModel {
         this.area = area;
 
         notifyObservers(Event.AREA_CHANGED);
-    }
-
-    @Override
-    public int getLegendWidth() {
-        return 100;
     }
 }

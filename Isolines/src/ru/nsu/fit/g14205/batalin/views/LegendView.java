@@ -10,16 +10,20 @@ import java.awt.*;
  * Created by kir55rus on 01.04.17.
  */
 public class LegendView extends JComponent {
+    private IsolinesController isolinesController;
 
     public LegendView(IsolinesController isolinesController) {
+        this.isolinesController = isolinesController;
     }
 
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
-        graphics.setColor(Color.BLUE);
-        graphics.fillRect(0, 0, graphics.getClipBounds().width, graphics.getClipBounds().height);
+        Dimension legendSize = graphics.getClip().getBounds().getSize();
+        Image legend = Painter.draw(isolinesController.getLegendProperties(), legendSize);
+
+        graphics.drawImage(legend, 0, 0, null);
     }
 
 }

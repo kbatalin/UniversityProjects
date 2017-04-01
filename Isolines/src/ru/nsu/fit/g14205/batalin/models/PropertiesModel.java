@@ -23,14 +23,13 @@ public interface PropertiesModel extends Observable {
     void setValuesColors(Color[] colors);
 
     double[] getValues();
-
-    int getLegendWidth();
+    double getMinValue();
+    double getMaxValue();
 
     enum Event implements ObserveEvent {
         FUNCTION_CHANGED,
         AREA_CHANGED,
         VALUES_CHANGED,
         COLORS_CHANGED,
-        SCALE_CHANGED,
     }
 }
