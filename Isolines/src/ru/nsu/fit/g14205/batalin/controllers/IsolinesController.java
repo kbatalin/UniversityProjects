@@ -1,10 +1,12 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.*;
-import ru.nsu.fit.g14205.batalin.views.IsolinesView;
+import ru.nsu.fit.g14205.batalin.views.*;
+import ru.nsu.fit.g14205.batalin.views.Painter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 
 /**
@@ -14,6 +16,7 @@ public class IsolinesController {
     private PropertiesModel mapProperties;
     private PropertiesModel legendProperties;
 
+    private Painter painter;
     private IsolinesView isolinesView;
 
     public void run() {
@@ -32,7 +35,29 @@ public class IsolinesController {
 
         legendProperties = new LegendProperties(mapProperties);
 
+        painter = new StrictPainter();
         isolinesView = new IsolinesView(this);
+    }
+
+    public void onGradientButtonClicked(ActionEvent actionEvent) {
+        Object source = actionEvent.getSource();
+        if (!(source instanceof AbstractButton)) {
+            return;
+        }
+        AbstractButton button = ((AbstractButton) source);
+        boolean isSelected = button.isSelected();
+
+        if (isSelected) {
+            painter = new GradientPainter();
+        } else {
+            painter = new StrictPainter();
+        }
+
+        isolinesView.repaint();
+    }
+
+    public Painter getPainter() {
+        return painter;
     }
 
     public PropertiesModel getMapProperties() {

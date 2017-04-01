@@ -20,7 +20,7 @@ public class FunctionMapView extends JComponent {
         super.paintComponent(graphics);
 
         Dimension mapSize = graphics.getClip().getBounds().getSize();
-        Image map = Painter.draw(isolinesController.getMapProperties(), mapSize);
+        Image map = isolinesController.getPainter().draw(isolinesController.getMapProperties(), mapSize);
 
         graphics.drawImage(map, 0, 0, null);
     }

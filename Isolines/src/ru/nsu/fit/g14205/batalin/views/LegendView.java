@@ -1,7 +1,6 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.IsolinesController;
-import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +39,7 @@ public class LegendView extends JComponent {
         }
 
 
-        Image legend = Painter.draw(isolinesController.getLegendProperties(), legendSize);
+        Image legend = isolinesController.getPainter().draw(isolinesController.getLegendProperties(), legendSize);
         graphics.drawImage(legend, 0, fontSize, null);
     }
 

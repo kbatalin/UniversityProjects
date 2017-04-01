@@ -78,6 +78,7 @@ public class IsolinesView extends JFrame {
     private void initViewMenu() {
         JMenu viewMenu = buttonsManager.addMenu(null, "View");
 
+        buttonsManager.addToggleItem(viewMenu, "Gradient", "Gradient", "windows.png", false, actionEvent -> isolinesController.onGradientButtonClicked(actionEvent));
         buttonsManager.addToggleItem(viewMenu, "Black/white", "Black/white", "map.png", false, null);
         buttonsManager.addSeparator(viewMenu);
         buttonsManager.addToggleItem(viewMenu, "Build type", "Build type", "picture.png", false, null);
