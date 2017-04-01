@@ -25,12 +25,12 @@ public class IsolinesController {
         mapProperties.setArea(new Area(-5, -5, 5, 5));
         mapProperties.setValuesCount(5);
         mapProperties.setValuesColors(new Color[]{
-                new Color(221, 211, 0),
-                new Color(94, 98, 63),
-                new Color(144, 148, 100),
-                new Color(67, 178, 71),
-                new Color(30, 96, 178),
-                new Color(211, 112, 36)
+                new Color(255, 0, 0),
+                new Color(255, 0, 255),
+                new Color(0, 0, 255),
+                new Color(0, 255, 255),
+                new Color(0, 255, 0),
+                new Color(255, 255, 0)
         });
 
         legendProperties = new LegendProperties(mapProperties);

@@ -67,9 +67,6 @@ public class GradientPainter implements Painter {
         double red = color.getRed() / 255. * (nextVal - value) / len + nextColor.getRed() / 255. * (value - currentVal) / len;
         double green = color.getGreen() / 255. * (nextVal - value) / len + nextColor.getGreen() / 255. * (value - currentVal) / len;
         double blue = color.getBlue() / 255. * (nextVal - value) / len + nextColor.getBlue() / 255. * (value - currentVal) / len;
-//        double red = color.getRed() / 255. * (value - nextVal + len) / len + nextColor.getRed() / 255. * (nextVal - value) / len;
-//        double green = color.getGreen() / 255. * (value - nextVal + len) / len + nextColor.getGreen() / 255. * (nextVal - value) / len;
-//        double blue = color.getBlue() / 255. * (value - nextVal + len) / len + nextColor.getBlue() / 255. * (nextVal - value) / len;
 
         return new Color(
                 ColorUtils.validate(red),
@@ -78,20 +75,4 @@ public class GradientPainter implements Painter {
         );
     }
 
-//    private Color getNextColor(Color color, PropertiesModel propertiesModel) {
-//        Color[] colors = propertiesModel.getValuesColors();
-//        int i = 0;
-//        for(; i < colors.length; ++i) {
-//            if (color.equals(colors[i])) {
-//                break;
-//            }
-//        }
-//
-//        int next = Math.min(colors.length - 1, i + 1);
-//        return colors[next];
-//    }
-//
-//    private Color getTone(Color from, Color to) {
-//
-//    }
 }
