@@ -38,4 +38,12 @@ public class WorkspaceView extends JComponent {
         gbc.insets = new Insets(5, 0, 0, 0);
         add(legendView, gbc);
     }
+
+    public FunctionMapView getFunctionMapView() {
+        return functionMapView;
+    }
+
+    public LegendView getLegendView() {
+        return legendView;
+    }
 }

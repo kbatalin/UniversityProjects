@@ -116,6 +116,10 @@ public class IsolinesView extends JFrame {
         add(statusBarView, BorderLayout.PAGE_END);
     }
 
+    public WorkspaceView getWorkspaceView() {
+        return workspaceView;
+    }
+
     public StatusBarView getStatusBarView() {
         return statusBarView;
     }

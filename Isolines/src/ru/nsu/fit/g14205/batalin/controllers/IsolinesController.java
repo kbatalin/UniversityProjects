@@ -39,6 +39,17 @@ public class IsolinesController {
         isolinesView = new IsolinesView(this);
     }
 
+    public void onMouseMoved(MouseEvent mouseEvent) {
+        Dimension mapSize = isolinesView.getWorkspaceView().getFunctionMapView().getSize();
+        Point pos = mouseEvent.getPoint();
+        Area area = mapProperties.getArea();
+        Dimension areaSize = area.toDimension();
+        double x = pos.x / mapSize.getWidth() * areaSize.width + area.first.x;
+        double y = pos.y / mapSize.getHeight() * areaSize.height + area.first.y;
+        double f = mapProperties.getFunction().applyAsDouble(x, y);
+        isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", x, y, f));
+    }
+
     public void onGradientButtonClicked(ActionEvent actionEvent) {
         Object source = actionEvent.getSource();
         if (!(source instanceof AbstractButton)) {
