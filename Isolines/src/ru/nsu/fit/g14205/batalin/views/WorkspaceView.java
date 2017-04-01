@@ -35,7 +35,7 @@ public class WorkspaceView extends JComponent {
         gbc.gridwidth = 1;
         gbc.gridheight = 1;
         gbc.weighty = 10;
-        gbc.insets = new Insets(20, 0, 0, 0);
+        gbc.insets = new Insets(5, 0, 0, 0);
         add(legendView, gbc);
     }
 }

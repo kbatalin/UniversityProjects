@@ -51,13 +51,6 @@ public class LegendProperties extends PropertiesBase {
     }
 
     private void updFunction() {
-//        function = (a, b) -> {
-//            double[] values = mapProperties.getValues();
-//            double len = (values[values.length - 1] - values[0]) / values.length;
-//            double dx = mapProperties.getArea().toDimension().width / values.length;
-//            return values[0] + ((int) (a / dx)) * len;
-//        };
-
         Area area = mapProperties.getArea();
         double x0 = area.first.x;
         double y0 = mapProperties.getMinValue();
@@ -66,9 +59,7 @@ public class LegendProperties extends PropertiesBase {
         double k = (y1 - y0) / (x1 - x0);
         double b = y0 - k * x0;
 
-        function = (x, y) -> {
-            return x * k + b;
-        };
+        function = (x, y) -> x * k + b;
     }
 
     @Override
