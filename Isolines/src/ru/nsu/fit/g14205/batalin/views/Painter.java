@@ -22,8 +22,8 @@ public class Painter {
 
         for(int y = 0; y < size.height; ++y) {
             for(int x = 0; x < size.width; ++x) {
-                double funcX =  (x / widthRatio - areaSize.width / 2);
-                double funcY =  (y / heightRatio - areaSize.height / 2);
+                double funcX =  (x / widthRatio + area.first.x);
+                double funcY =  (y / heightRatio + area.first.y);
                 funcX = Math.max(area.first.x, Math.min(area.second.x, funcX));
                 funcY = Math.max(area.first.y, Math.min(area.second.y, funcY));
 
