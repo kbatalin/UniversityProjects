@@ -4,9 +4,6 @@ import ru.nsu.fit.g14205.batalin.controllers.IsolinesController;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.io.File;
-import java.net.URL;
 
 /**
  * Created by kir55rus on 29.03.17.
@@ -78,7 +75,14 @@ public class IsolinesView extends JFrame {
     private void initViewMenu() {
         JMenu viewMenu = buttonsManager.addMenu(null, "View");
 
-        buttonsManager.addToggleItem(viewMenu, "Gradient", "Gradient", "windows.png", false, actionEvent -> isolinesController.onGradientButtonClicked(actionEvent));
+        ButtonGroup viewModeMenuGroup = new ButtonGroup();
+        ButtonGroup viewModeToolbarGroup = new ButtonGroup();
+        buttonsManager.addRadioItem(viewMenu, "Color map", viewModeMenuGroup, "Color map",
+                "color_map.png", viewModeToolbarGroup, true, actionEvent -> isolinesController.onColorMapButtonClicked(actionEvent));
+        buttonsManager.addRadioItem(viewMenu, "Interpolation", viewModeMenuGroup, "Interpolation",
+                "interpolation.png", viewModeToolbarGroup, false, actionEvent -> isolinesController.onInterpolationButtonClicked(actionEvent));
+        buttonsManager.addSeparator(viewMenu);
+
         buttonsManager.addToggleItem(viewMenu, "Black/white", "Black/white", "map.png", false, null);
         buttonsManager.addSeparator(viewMenu);
         buttonsManager.addToggleItem(viewMenu, "Build type", "Build type", "picture.png", false, null);

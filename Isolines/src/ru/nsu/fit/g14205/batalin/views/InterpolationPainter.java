@@ -11,7 +11,7 @@ import java.util.function.DoubleBinaryOperator;
 /**
  * Created by kir55rus on 01.04.17.
  */
-public class GradientPainter implements Painter {
+public class InterpolationPainter implements Painter {
     @Override
     public Image draw(PropertiesModel propertiesModel, Dimension size) {
         DoubleBinaryOperator function = propertiesModel.getFunction();

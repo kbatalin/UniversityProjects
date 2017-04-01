@@ -35,7 +35,7 @@ public class IsolinesController {
 
         legendProperties = new LegendProperties(mapProperties);
 
-        painter = new StrictPainter();
+        painter = new ColorMapPainter();
         isolinesView = new IsolinesView(this);
     }
 
@@ -50,20 +50,13 @@ public class IsolinesController {
         isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", x, y, f));
     }
 
-    public void onGradientButtonClicked(ActionEvent actionEvent) {
-        Object source = actionEvent.getSource();
-        if (!(source instanceof AbstractButton)) {
-            return;
-        }
-        AbstractButton button = ((AbstractButton) source);
-        boolean isSelected = button.isSelected();
+    public void onInterpolationButtonClicked(ActionEvent actionEvent) {
+        painter = new InterpolationPainter();
+        isolinesView.repaint();
+    }
 
-        if (isSelected) {
-            painter = new GradientPainter();
-        } else {
-            painter = new StrictPainter();
-        }
-
+    public void onColorMapButtonClicked(ActionEvent actionEvent) {
+        painter = new ColorMapPainter();
         isolinesView.repaint();
     }
 

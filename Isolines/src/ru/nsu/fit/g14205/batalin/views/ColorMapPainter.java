@@ -10,7 +10,7 @@ import java.util.function.DoubleBinaryOperator;
 /**
  * Created by kir55rus on 01.04.17.
  */
-public class StrictPainter implements Painter {
+public class ColorMapPainter implements Painter {
     public Image draw(PropertiesModel propertiesModel, Dimension size) {
         DoubleBinaryOperator function = propertiesModel.getFunction();
         Area area = propertiesModel.getArea();
