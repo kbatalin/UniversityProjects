@@ -31,7 +31,7 @@ public class LegendView extends JComponent {
 
         PropertiesModel properties = isolinesController.getApplicationProperties();
 
-        Dimension componentSize = graphics.getClip().getBounds().getSize();
+        Dimension componentSize = getSize();
         int fontSize = 30;
         Dimension legendSize = new Dimension(componentSize.width, Math.max(10, componentSize.height - fontSize));
 

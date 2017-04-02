@@ -41,7 +41,7 @@ public class FunctionMapView extends JComponent {
         super.paintComponent(graphics);
 
         PropertiesModel properties = isolinesController.getApplicationProperties();
-        Dimension mapSize = graphics.getClip().getBounds().getSize();
+        Dimension mapSize = getSize();
         Painter painter = properties.getPainter();
         BufferedImage map = painter.draw(properties.getMainFunction(), properties, mapSize);
 
