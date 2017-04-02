@@ -13,7 +13,7 @@ import java.util.function.DoubleBinaryOperator;
  */
 public class InterpolationPainter implements Painter {
     @Override
-    public Image draw(FunctionProperties functionProperties, Dimension size) {
+    public BufferedImage draw(FunctionProperties functionProperties, Dimension size) {
         DoubleBinaryOperator function = functionProperties.getFunction();
         Area area = functionProperties.getArea();
         Dimension areaSize = area.toDimension();

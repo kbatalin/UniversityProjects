@@ -11,7 +11,7 @@ import java.util.function.DoubleBinaryOperator;
  * Created by kir55rus on 01.04.17.
  */
 public class ColorMapPainter implements Painter {
-    public Image draw(FunctionProperties functionProperties, Dimension size) {
+    public BufferedImage draw(FunctionProperties functionProperties, Dimension size) {
         DoubleBinaryOperator function = functionProperties.getFunction();
         Area area = functionProperties.getArea();
         Dimension areaSize = area.toDimension();
