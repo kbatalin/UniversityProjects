@@ -7,7 +7,7 @@ import java.awt.*;
 /**
  * Created by kir55rus on 01.04.17.
  */
-public abstract class PropertiesBase extends ObservableBase implements PropertiesModel {
+public abstract class FunctionPropertiesBase extends ObservableBase implements FunctionProperties {
     @Override
     public Color getValueColor(double value) {
         double[] values = getValues();

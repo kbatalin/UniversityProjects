@@ -2,7 +2,7 @@ package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.models.Area;
 import ru.nsu.fit.g14205.batalin.models.ColorUtils;
-import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
+import ru.nsu.fit.g14205.batalin.models.FunctionProperties;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -13,13 +13,13 @@ import java.util.function.DoubleBinaryOperator;
  */
 public class InterpolationPainter implements Painter {
     @Override
-    public Image draw(PropertiesModel propertiesModel, Dimension size) {
-        DoubleBinaryOperator function = propertiesModel.getFunction();
-        Area area = propertiesModel.getArea();
+    public Image draw(FunctionProperties functionProperties, Dimension size) {
+        DoubleBinaryOperator function = functionProperties.getFunction();
+        Area area = functionProperties.getArea();
         Dimension areaSize = area.toDimension();
         double widthRatio = size.getWidth() / areaSize.width;
         double heightRatio = size.getHeight() / areaSize.height;
-        double[] values = propertiesModel.getValues();
+        double[] values = functionProperties.getValues();
         double dif = values.length > 1 ? values[1] - values[0] : 0;
 
         BufferedImage canvas = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
@@ -32,7 +32,7 @@ public class InterpolationPainter implements Painter {
                 funcY = Math.max(area.first.y, Math.min(area.second.y, funcY));
 
                 double value = function.applyAsDouble(funcX, funcY);
-                Color color = getColor(value, propertiesModel);
+                Color color = getColor(value, functionProperties);
 
                 canvas.setRGB(x, y, color.getRGB());
             }
@@ -41,14 +41,14 @@ public class InterpolationPainter implements Painter {
         return canvas;
     }
 
-    private Color getColor(double value, PropertiesModel propertiesModel) {
-        double[] values = propertiesModel.getValues();
-        Color[] colors = propertiesModel.getValuesColors();
+    private Color getColor(double value, FunctionProperties functionProperties) {
+        double[] values = functionProperties.getValues();
+        Color[] colors = functionProperties.getValuesColors();
         if (values == null || colors == null) {
             return Color.BLACK;
         }
 
-        double len = (propertiesModel.getMaxValue() - propertiesModel.getMinValue()) / (values.length + 1);
+        double len = (functionProperties.getMaxValue() - functionProperties.getMinValue()) / (values.length + 1);
 
         int i = 0;
         for(; i < values.length; ++i) {
@@ -58,8 +58,8 @@ public class InterpolationPainter implements Painter {
         }
 
 
-        double currentVal = (i > 0 ? values[i - 1] : propertiesModel.getMinValue()) + len / 2;
-        double nextVal = (i < values.length ? values[i] : propertiesModel.getMaxValue()) + len / 2;
+        double currentVal = (i > 0 ? values[i - 1] : functionProperties.getMinValue()) + len / 2;
+        double nextVal = (i < values.length ? values[i] : functionProperties.getMaxValue()) + len / 2;
 
         Color color = colors[i];
         Color nextColor = colors[Math.min(colors.length - 1, i + 1)];

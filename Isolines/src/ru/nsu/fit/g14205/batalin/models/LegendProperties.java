@@ -1,19 +1,16 @@
 package ru.nsu.fit.g14205.batalin.models;
 
-import ru.nsu.fit.g14205.batalin.utils.observe.ObservableBase;
-
 import java.awt.*;
-import java.util.Arrays;
 import java.util.function.DoubleBinaryOperator;
 
 /**
  * Created by kir55rus on 01.04.17.
  */
-public class LegendProperties extends PropertiesBase {
-    private PropertiesModel mapProperties;
+public class LegendProperties extends FunctionPropertiesBase {
+    private FunctionProperties mapProperties;
     private DoubleBinaryOperator function;
 
-    public LegendProperties(PropertiesModel mapProperties) {
+    public LegendProperties(FunctionProperties mapProperties) {
         this.mapProperties = mapProperties;
 
         updFunction();

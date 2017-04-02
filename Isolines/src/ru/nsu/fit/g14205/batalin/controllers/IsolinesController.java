@@ -13,8 +13,8 @@ import java.awt.event.MouseEvent;
  * Created by kir55rus on 29.03.17.
  */
 public class IsolinesController {
-    private PropertiesModel mapProperties;
-    private PropertiesModel legendProperties;
+    private FunctionProperties mapProperties;
+    private FunctionProperties legendProperties;
 
     private Painter painter;
     private IsolinesView isolinesView;
@@ -64,11 +64,11 @@ public class IsolinesController {
         return painter;
     }
 
-    public PropertiesModel getMapProperties() {
+    public FunctionProperties getMapProperties() {
         return mapProperties;
     }
 
-    public PropertiesModel getLegendProperties() {
+    public FunctionProperties getLegendProperties() {
         return legendProperties;
     }
 

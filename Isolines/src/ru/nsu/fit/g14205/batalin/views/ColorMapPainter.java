@@ -1,7 +1,7 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.models.Area;
-import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
+import ru.nsu.fit.g14205.batalin.models.FunctionProperties;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -11,9 +11,9 @@ import java.util.function.DoubleBinaryOperator;
  * Created by kir55rus on 01.04.17.
  */
 public class ColorMapPainter implements Painter {
-    public Image draw(PropertiesModel propertiesModel, Dimension size) {
-        DoubleBinaryOperator function = propertiesModel.getFunction();
-        Area area = propertiesModel.getArea();
+    public Image draw(FunctionProperties functionProperties, Dimension size) {
+        DoubleBinaryOperator function = functionProperties.getFunction();
+        Area area = functionProperties.getArea();
         Dimension areaSize = area.toDimension();
         double widthRatio = size.getWidth() / areaSize.width;
         double heightRatio = size.getHeight() / areaSize.height;
@@ -28,7 +28,7 @@ public class ColorMapPainter implements Painter {
                 funcY = Math.max(area.first.y, Math.min(area.second.y, funcY));
 
                 double value = function.applyAsDouble(funcX, funcY);
-                Color color = propertiesModel.getValueColor(value);
+                Color color = functionProperties.getValueColor(value);
                 canvas.setRGB(x, y, color.getRGB());
             }
         }

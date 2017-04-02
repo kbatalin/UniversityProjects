@@ -1,14 +1,12 @@
 package ru.nsu.fit.g14205.batalin.models;
 
-import ru.nsu.fit.g14205.batalin.utils.observe.ObservableBase;
-
 import java.awt.*;
 import java.util.function.DoubleBinaryOperator;
 
 /**
  * Created by kir55rus on 01.04.17.
  */
-public class MapProperties extends PropertiesBase {
+public class MapProperties extends FunctionPropertiesBase {
     private DoubleBinaryOperator function;
     private Area area;
     private double[] values;
