@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 
 /**
  * Created by kir55rus on 01.04.17.
@@ -38,9 +39,31 @@ public class FunctionMapView extends JComponent {
 
         Dimension mapSize = graphics.getClip().getBounds().getSize();
         Painter painter = isolinesController.getApplicationProperties().getPainter();
-        Image map = painter.draw(isolinesController.getMapProperties(), mapSize);
+        BufferedImage map = painter.draw(isolinesController.getMapProperties(), mapSize);
+
+        if (isolinesController.getApplicationProperties().isGridShown()) {
+            paintGrid(map);
+        }
 
         graphics.drawImage(map, 0, 0, null);
     }
 
+    private void paintGrid(BufferedImage map) {
+        PropertiesModel applicationProperties = isolinesController.getApplicationProperties();
+
+        Graphics2D graphics = map.createGraphics();
+        graphics.setPaint(Color.BLACK);
+        Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
+        graphics.setStroke(dashed);
+
+        for(int i = 1, count = applicationProperties.getHorizontalCellsCount(), delta = map.getHeight() / count; i < count; ++i) {
+            int crd = i * delta;
+            graphics.drawLine(0, crd, map.getWidth() - 1, crd);
+        }
+
+        for(int i = 1, count = applicationProperties.getVerticalCellsCount(), delta = map.getWidth() / count; i < count; ++i) {
+            int crd = i * delta;
+            graphics.drawLine(crd, 0, crd, map.getWidth() - 1);
+        }
+    }
 }

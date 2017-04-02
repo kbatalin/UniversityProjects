@@ -83,6 +83,10 @@ public class IsolinesView extends JFrame {
                 "interpolation.png", viewModeToolbarGroup, false, actionEvent -> isolinesController.onInterpolationButtonClicked(actionEvent));
         buttonsManager.addSeparator(viewMenu);
 
+        buttonsManager.addToggleItem(viewMenu, "Show grid", "Show grid",
+                "grid.png", false, actionEvent -> isolinesController.onGridButtonClicked(actionEvent));
+        buttonsManager.addSeparator(viewMenu);
+
         buttonsManager.addToggleItem(viewMenu, "Black/white", "Black/white", "map.png", false, null);
         buttonsManager.addSeparator(viewMenu);
         buttonsManager.addToggleItem(viewMenu, "Build type", "Build type", "picture.png", false, null);

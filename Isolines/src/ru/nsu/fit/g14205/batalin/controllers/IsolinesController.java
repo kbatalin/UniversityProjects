@@ -59,6 +59,16 @@ public class IsolinesController {
         isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", x, y, f));
     }
 
+    public void onGridButtonClicked(ActionEvent actionEvent) {
+        Object sourceObj = actionEvent.getSource();
+        if (!(sourceObj instanceof AbstractButton)) {
+            return;
+        }
+
+        AbstractButton button = ((AbstractButton) sourceObj);
+        applicationProperties.setGridShown(button.isSelected());
+    }
+
     public void onInterpolationButtonClicked(ActionEvent actionEvent) {
         applicationProperties.setPainter(new InterpolationPainter());
     }
