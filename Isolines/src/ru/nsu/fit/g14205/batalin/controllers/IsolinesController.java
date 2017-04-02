@@ -15,8 +15,6 @@ import java.awt.event.MouseEvent;
  * Created by kir55rus on 29.03.17.
  */
 public class IsolinesController {
-    private FunctionProperties mapProperties;
-    private FunctionProperties legendProperties;
     private PropertiesModel applicationProperties;
 
     private IsolinesView isolinesView;
@@ -30,11 +28,9 @@ public class IsolinesController {
         applicationProperties.setIsolinesShown(true);
         applicationProperties.setPainter(new ColorMapPainter());
 
-        mapProperties = new MapProperties();
-        mapProperties.setFunction(new ParaboloidFunction());
-        mapProperties.setArea(new Area(-5, -5, 5, 5));
-        mapProperties.setValuesCount(5);
-        mapProperties.setValuesColors(new Color[]{
+        applicationProperties.setMainFunction(new ParaboloidFunction());
+        applicationProperties.setArea(new Area(-5, -5, 5, 5));
+        applicationProperties.setValuesColors(new Color[]{
                 new Color(255, 0, 0),
                 new Color(255, 0, 255),
                 new Color(0, 0, 255),
@@ -43,19 +39,17 @@ public class IsolinesController {
                 new Color(255, 255, 0)
         });
 
-        legendProperties = new LegendProperties(mapProperties);
-
         isolinesView = new IsolinesView(this);
     }
 
     public void onMouseMoved(MouseEvent mouseEvent) {
         Dimension mapSize = isolinesView.getWorkspaceView().getFunctionMapView().getSize();
         Point pos = mouseEvent.getPoint();
-        Area area = mapProperties.getArea();
+        Area area = applicationProperties.getArea();
         Dimension areaSize = area.toDimension();
         double x = pos.x / mapSize.getWidth() * areaSize.width + area.first.getX();
         double y = pos.y / mapSize.getHeight() * areaSize.height + area.first.getY();
-        double f = mapProperties.getFunction().applyAsDouble(x, y);
+        double f = applicationProperties.getMainFunction().applyAsDouble(x, y);
         isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", x, y, f));
     }
 
@@ -79,14 +73,6 @@ public class IsolinesController {
 
     public PropertiesModel getApplicationProperties() {
         return applicationProperties;
-    }
-
-    public FunctionProperties getMapProperties() {
-        return mapProperties;
-    }
-
-    public FunctionProperties getLegendProperties() {
-        return legendProperties;
     }
 
     public void onEnterToolbarButton(MouseEvent event) {

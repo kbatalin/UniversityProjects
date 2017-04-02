@@ -3,6 +3,9 @@ package ru.nsu.fit.g14205.batalin.models;
 import ru.nsu.fit.g14205.batalin.models.observe.ObservableBase;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
+import java.awt.*;
+import java.util.function.DoubleBinaryOperator;
+
 /**
  * Created by kir55rus on 02.04.17.
  */
@@ -13,6 +16,12 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     private Painter painter;
     private boolean isIsolinesShown;
     private boolean isGridShown;
+    private DoubleBinaryOperator mainFunction;
+    private DoubleBinaryOperator legendFunction;
+    private double minValue;
+    private double maxValue;
+    private double[] values;
+    private Color[] valuesColors;
 
     @Override
     public int getHorizontalCellsCount() {
@@ -52,6 +61,7 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     @Override
     public void setArea(Area area) {
         this.area = area;
+        updFunctionInfo();
         notifyObservers(Event.AREA_CHANGED);
     }
 
@@ -86,5 +96,113 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     public void setGridShown(boolean gridShown) {
         isGridShown = gridShown;
         notifyObservers(Event.GRID_SHOWN_CHANGED);
+    }
+
+    @Override
+    public DoubleBinaryOperator getMainFunction() {
+        return mainFunction;
+    }
+
+    @Override
+    public DoubleBinaryOperator getLegendFunction() {
+        return legendFunction;
+    }
+
+    @Override
+    public void setMainFunction(DoubleBinaryOperator function) {
+        this.mainFunction = function;
+
+        updFunctionInfo();
+        notifyObservers(Event.FUNCTION_CHANGED);
+    }
+
+    private void updFunctionInfo() {
+        if (mainFunction == null || area == null || valuesColors == null) {
+            return;
+        }
+
+        double delta = 0.1;
+        minValue = mainFunction.applyAsDouble(area.first.getX(), area.first.getY());
+        maxValue = minValue;
+        for(double x = area.first.getX(); Double.compare(x, area.second.getX()) < 0; x += delta) {
+            for(double y = area.first.getY(); Double.compare(y, area.second.getY()) < 0; y += delta) {
+                double value = mainFunction.applyAsDouble(x, y);
+                if (Double.compare(value, minValue) < 0) {
+                    minValue = value;
+                }
+                if (Double.compare(maxValue, value) < 0) {
+                    maxValue = value;
+                }
+            }
+        }
+
+        values = new double[valuesColors.length - 1];
+        double len = (maxValue - minValue) / (valuesColors.length);
+        for(int i = 0; i < valuesColors.length - 1; ++i) {
+            values[i] = minValue + (i + 1) * len;
+        }
+
+        updLegendFunction();
+    }
+
+    private void updLegendFunction() {
+        Area area = getArea();
+        double x0 = area.first.getX();
+        double y0 = getMinValue();
+        double x1 = area.second.getX();
+        double y1 = getMaxValue();
+        double k = (y1 - y0) / (x1 - x0);
+        double b = y0 - k * x0;
+
+        legendFunction = (x, y) -> x * k + b;
+    }
+
+    @Override
+    public double[] getValues() {
+        return values;
+    }
+
+    @Override
+    public double getMinValue() {
+        return minValue;
+    }
+
+    @Override
+    public double getMaxValue() {
+        return maxValue;
+    }
+
+    @Override
+    public Color getValueColor(double value) {
+        double[] values = getValues();
+        Color[] colors = getValuesColors();
+        if (values == null || colors == null) {
+            return Color.BLACK;
+        }
+
+        for(int i = 0; i < values.length; ++i) {
+            if (Double.compare(value, values[i]) < 0) {
+                return colors[i];
+            }
+        }
+
+        return colors[colors.length - 1];
+
+    }
+
+    @Override
+    public Color[] getValuesColors() {
+        return valuesColors;
+    }
+
+    @Override
+    public void setValuesColors(Color[] colors) {
+        if (colors.length < 2) {
+            throw new IllegalArgumentException("Count of colors must be grater than 1");
+        }
+
+        valuesColors = colors;
+        updFunctionInfo();
+        notifyObservers(Event.COLORS_CHANGED);
     }
 }

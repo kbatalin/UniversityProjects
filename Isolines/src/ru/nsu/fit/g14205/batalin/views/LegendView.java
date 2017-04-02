@@ -18,16 +18,18 @@ public class LegendView extends JComponent {
 
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.BLACK));
 
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.PAINTER_CHANGED, this::repaint);
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.GRID_SHOWN_CHANGED, this::repaint);
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.ISOLINES_SHOWN_CHANGED, this::repaint);
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.AREA_CHANGED, this::repaint);
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.CELLS_COUNT_CHANGED, this::repaint);
+        PropertiesModel properties = isolinesController.getApplicationProperties();
+        properties.addObserver(PropertiesModel.Event.AREA_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.PAINTER_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.FUNCTION_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.COLORS_CHANGED, this::repaint);
     }
 
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
+
+        PropertiesModel properties = isolinesController.getApplicationProperties();
 
         Dimension componentSize = graphics.getClip().getBounds().getSize();
         int fontSize = 30;
@@ -37,7 +39,7 @@ public class LegendView extends JComponent {
         graphics.setColor(Color.BLACK);
         FontMetrics fontMetrics = graphics.getFontMetrics();
         int verticalOffset = fontSize * 2 / 3;
-        double[] values = isolinesController.getLegendProperties().getValues();
+        double[] values = properties.getValues();
         double len = componentSize.getWidth() / (values.length + 1);
         for(int i = 0; i < values.length; ++i) {
             String valueStr = String.format("%.1f", values[i]);
@@ -46,8 +48,8 @@ public class LegendView extends JComponent {
             graphics.drawString(valueStr, horizontalOffset, verticalOffset);
         }
 
-        Painter painter = isolinesController.getApplicationProperties().getPainter();
-        Image legend = painter.draw(isolinesController.getLegendProperties(), legendSize);
+        Painter painter = properties.getPainter();
+        Image legend = painter.draw(properties.getLegendFunction(), properties, legendSize);
         graphics.drawImage(legend, 0, fontSize, null);
     }
 

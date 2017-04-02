@@ -26,20 +26,24 @@ public class FunctionMapView extends JComponent {
             }
         });
 
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.PAINTER_CHANGED, this::repaint);
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.GRID_SHOWN_CHANGED, this::repaint);
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.ISOLINES_SHOWN_CHANGED, this::repaint);
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.AREA_CHANGED, this::repaint);
-        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.CELLS_COUNT_CHANGED, this::repaint);
+        PropertiesModel properties = isolinesController.getApplicationProperties();
+        properties.addObserver(PropertiesModel.Event.CELLS_COUNT_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.AREA_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.PAINTER_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.ISOLINES_SHOWN_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.GRID_SHOWN_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.FUNCTION_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.COLORS_CHANGED, this::repaint);
     }
 
     @Override
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
+        PropertiesModel properties = isolinesController.getApplicationProperties();
         Dimension mapSize = graphics.getClip().getBounds().getSize();
-        Painter painter = isolinesController.getApplicationProperties().getPainter();
-        BufferedImage map = painter.draw(isolinesController.getMapProperties(), mapSize);
+        Painter painter = properties.getPainter();
+        BufferedImage map = painter.draw(properties.getMainFunction(), properties, mapSize);
 
         if (isolinesController.getApplicationProperties().isGridShown()) {
             paintGrid(map);
