@@ -1,4 +1,4 @@
-package ru.nsu.fit.g14205.batalin.views;
+package ru.nsu.fit.g14205.batalin.models.painters;
 
 import ru.nsu.fit.g14205.batalin.models.Area;
 import ru.nsu.fit.g14205.batalin.models.FunctionProperties;

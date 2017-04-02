@@ -1,8 +1,10 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.*;
+import ru.nsu.fit.g14205.batalin.models.painters.ColorMapPainter;
+import ru.nsu.fit.g14205.batalin.models.painters.InterpolationPainter;
 import ru.nsu.fit.g14205.batalin.views.*;
-import ru.nsu.fit.g14205.batalin.views.Painter;
+import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
 import javax.swing.*;
 import java.awt.*;
