@@ -17,11 +17,19 @@ import java.awt.event.MouseEvent;
 public class IsolinesController {
     private FunctionProperties mapProperties;
     private FunctionProperties legendProperties;
+    private PropertiesModel applicationProperties;
 
-    private Painter painter;
     private IsolinesView isolinesView;
 
     public void run() {
+        applicationProperties = new ApplicationProperties();
+        applicationProperties.setArea(new Area(-5, -5, 5, 5));
+        applicationProperties.setHorizontalCellsCount(5);
+        applicationProperties.setVerticalCellsCount(5);
+        applicationProperties.setGridShown(false);
+        applicationProperties.setIsolinesShown(true);
+        applicationProperties.setPainter(new ColorMapPainter());
+
         mapProperties = new MapProperties();
         mapProperties.setFunction(new ParaboloidFunction());
         mapProperties.setArea(new Area(-5, -5, 5, 5));
@@ -37,7 +45,6 @@ public class IsolinesController {
 
         legendProperties = new LegendProperties(mapProperties);
 
-        painter = new ColorMapPainter();
         isolinesView = new IsolinesView(this);
     }
 
@@ -53,17 +60,15 @@ public class IsolinesController {
     }
 
     public void onInterpolationButtonClicked(ActionEvent actionEvent) {
-        painter = new InterpolationPainter();
-        isolinesView.repaint();
+        applicationProperties.setPainter(new InterpolationPainter());
     }
 
     public void onColorMapButtonClicked(ActionEvent actionEvent) {
-        painter = new ColorMapPainter();
-        isolinesView.repaint();
+        applicationProperties.setPainter(new ColorMapPainter());
     }
 
-    public Painter getPainter() {
-        return painter;
+    public PropertiesModel getApplicationProperties() {
+        return applicationProperties;
     }
 
     public FunctionProperties getMapProperties() {

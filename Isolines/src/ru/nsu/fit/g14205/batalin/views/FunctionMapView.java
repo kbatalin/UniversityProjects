@@ -1,6 +1,8 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.IsolinesController;
+import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
+import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,6 +24,12 @@ public class FunctionMapView extends JComponent {
                 isolinesController.onMouseMoved(mouseEvent);
             }
         });
+
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.PAINTER_CHANGED, this::repaint);
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.GRID_SHOWN_CHANGED, this::repaint);
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.ISOLINES_SHOWN_CHANGED, this::repaint);
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.AREA_CHANGED, this::repaint);
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.CELLS_COUNT_CHANGED, this::repaint);
     }
 
     @Override
@@ -29,7 +37,8 @@ public class FunctionMapView extends JComponent {
         super.paintComponent(graphics);
 
         Dimension mapSize = graphics.getClip().getBounds().getSize();
-        Image map = isolinesController.getPainter().draw(isolinesController.getMapProperties(), mapSize);
+        Painter painter = isolinesController.getApplicationProperties().getPainter();
+        Image map = painter.draw(isolinesController.getMapProperties(), mapSize);
 
         graphics.drawImage(map, 0, 0, null);
     }

@@ -1,6 +1,8 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.IsolinesController;
+import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
+import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,6 +17,12 @@ public class LegendView extends JComponent {
         this.isolinesController = isolinesController;
 
         setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.BLACK));
+
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.PAINTER_CHANGED, this::repaint);
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.GRID_SHOWN_CHANGED, this::repaint);
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.ISOLINES_SHOWN_CHANGED, this::repaint);
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.AREA_CHANGED, this::repaint);
+        isolinesController.getApplicationProperties().addObserver(PropertiesModel.Event.CELLS_COUNT_CHANGED, this::repaint);
     }
 
     @Override
@@ -38,8 +46,8 @@ public class LegendView extends JComponent {
             graphics.drawString(valueStr, horizontalOffset, verticalOffset);
         }
 
-
-        Image legend = isolinesController.getPainter().draw(isolinesController.getLegendProperties(), legendSize);
+        Painter painter = isolinesController.getApplicationProperties().getPainter();
+        Image legend = painter.draw(isolinesController.getLegendProperties(), legendSize);
         graphics.drawImage(legend, 0, fontSize, null);
     }
 
