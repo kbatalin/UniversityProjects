@@ -53,8 +53,8 @@ public class IsolinesController {
         Point pos = mouseEvent.getPoint();
         Area area = mapProperties.getArea();
         Dimension areaSize = area.toDimension();
-        double x = pos.x / mapSize.getWidth() * areaSize.width + area.first.x;
-        double y = pos.y / mapSize.getHeight() * areaSize.height + area.first.y;
+        double x = pos.x / mapSize.getWidth() * areaSize.width + area.first.getX();
+        double y = pos.y / mapSize.getHeight() * areaSize.height + area.first.getY();
         double f = mapProperties.getFunction().applyAsDouble(x, y);
         isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", x, y, f));
     }

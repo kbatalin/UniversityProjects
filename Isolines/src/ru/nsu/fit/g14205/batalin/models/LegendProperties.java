@@ -50,9 +50,9 @@ public class LegendProperties extends FunctionPropertiesBase {
 
     private void updFunction() {
         Area area = mapProperties.getArea();
-        double x0 = area.first.x;
+        double x0 = area.first.getX();
         double y0 = mapProperties.getMinValue();
-        double x1 = area.second.x;
+        double x1 = area.second.getX();
         double y1 = mapProperties.getMaxValue();
         double k = (y1 - y0) / (x1 - x0);
         double b = y0 - k * x0;

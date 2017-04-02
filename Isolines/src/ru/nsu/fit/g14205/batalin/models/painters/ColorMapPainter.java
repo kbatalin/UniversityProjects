@@ -22,10 +22,10 @@ public class ColorMapPainter implements Painter {
 
         for(int y = 0; y < size.height; ++y) {
             for(int x = 0; x < size.width; ++x) {
-                double funcX =  (x / widthRatio + area.first.x);
-                double funcY =  (y / heightRatio + area.first.y);
-                funcX = Math.max(area.first.x, Math.min(area.second.x, funcX));
-                funcY = Math.max(area.first.y, Math.min(area.second.y, funcY));
+                double funcX =  (x / widthRatio + area.first.getX());
+                double funcY =  (y / heightRatio + area.first.getY());
+                funcX = Math.max(area.first.getX(), Math.min(area.second.getX(), funcX));
+                funcY = Math.max(area.first.getY(), Math.min(area.second.getY(), funcY));
 
                 double value = function.applyAsDouble(funcX, funcY);
                 Color color = functionProperties.getValueColor(value);

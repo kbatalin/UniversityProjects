@@ -31,10 +31,10 @@ public class MapProperties extends FunctionPropertiesBase {
             return;
         }
 
-        minValue = function.applyAsDouble(area.first.x, area.first.y);
+        minValue = function.applyAsDouble(area.first.getX(), area.first.getY());
         maxValue = minValue;
-        for(int x = area.first.x; x < area.second.x; ++x) {
-            for(int y = area.first.y; y < area.second.y; ++y) {
+        for(int x = (int)area.first.getX(); x < area.second.getX(); ++x) {
+            for(int y = (int)area.first.getY(); y < area.second.getY(); ++y) {
                 double value = function.applyAsDouble(x, y);
                 if (Double.compare(value, minValue) < 0) {
                     minValue = value;

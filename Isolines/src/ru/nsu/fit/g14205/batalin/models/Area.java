@@ -1,32 +1,33 @@
 package ru.nsu.fit.g14205.batalin.models;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * Created by kir55rus on 01.04.17.
  */
 public class Area implements Cloneable {
-    public Point first;
-    public Point second;
+    public Point2D first;
+    public Point2D second;
 
-    public Area(Point first, Point second) {
-        this(first.x, first.y, second.x, second.y);
+    public Area(Point2D first, Point2D second) {
+        this(first.getX(), first.getY(), second.getX(), second.getY());
     }
 
-    public Area(int x0, int y0, int x1, int y1) {
-        first = new Point(x0, y0);
-        second = new Point(x1, y1);
+    public Area(double x0, double y0, double x1, double y1) {
+        first = new Point2D.Double(x0, y0);
+        second = new Point2D.Double(x1, y1);
     }
 
     public Dimension toDimension() {
-        int width = second.x - first.x;
-        int height = second.y - first.y;
+        double width = second.getX() - first.getX();
+        double height = second.getY() - first.getY();
 
-        return new Dimension(width, height);
+        return new Dimension((int)width, (int)height);
     }
 
     @Override
     protected Area clone() {
-        return new Area(first.x, first.y, second.x, second.y);
+        return new Area(first.getX(), first.getY(), second.getX(), second.getY());
     }
 }
