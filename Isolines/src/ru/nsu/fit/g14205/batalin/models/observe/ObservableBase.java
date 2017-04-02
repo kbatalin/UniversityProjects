@@ -1,4 +1,4 @@
-package ru.nsu.fit.g14205.batalin.utils.observe;
+package ru.nsu.fit.g14205.batalin.models.observe;
 
 import java.util.HashMap;
 import java.util.Map;

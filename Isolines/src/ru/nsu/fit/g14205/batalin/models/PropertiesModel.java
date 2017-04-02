@@ -1,7 +1,7 @@
 package ru.nsu.fit.g14205.batalin.models;
 
-import ru.nsu.fit.g14205.batalin.utils.observe.Observable;
-import ru.nsu.fit.g14205.batalin.utils.observe.ObserveEvent;
+import ru.nsu.fit.g14205.batalin.models.observe.Observable;
+import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
 /**

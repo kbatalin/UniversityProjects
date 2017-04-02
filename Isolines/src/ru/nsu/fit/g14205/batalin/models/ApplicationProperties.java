@@ -1,6 +1,6 @@
 package ru.nsu.fit.g14205.batalin.models;
 
-import ru.nsu.fit.g14205.batalin.utils.observe.ObservableBase;
+import ru.nsu.fit.g14205.batalin.models.observe.ObservableBase;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
 /**
