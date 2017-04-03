@@ -117,7 +117,7 @@ public class FunctionMapView extends JComponent {
                 double f3 = function.applyAsDouble(realPos.getX() + realCellWidth, realPos.getY() + realCellHeight);
                 double f4 = function.applyAsDouble(realPos.getX(), realPos.getY() + realCellHeight);
 
-                System.out.println(x + " " + y +"("+realPos+")" + ": " + f1 + "; " + f2 + "; " + f3 + "; " + f4);
+//                System.out.println(x + " " + y +"("+realPos+")" + ": " + f1 + "; " + f2 + "; " + f3 + "; " + f4);
 //                System.out.println(x + " " + y);
                 for(double isolineValue : isolinesValues) {
                     paintIsoline(map.getSubimage(displayPos.x, displayPos.y, (int) displayCellWidth, (int) displayCellHeight),
@@ -156,25 +156,25 @@ public class FunctionMapView extends JComponent {
 
             case 1:
             case 14:
-                a = new Point(0, (int) (image.getHeight() * (f[0] - value) / (f[0] - f[3])));
+                a = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
                 b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
                 break;
 
             case 2:
             case 13:
-            a = new Point(image.getWidth(), (int) (image.getHeight() * (f[1] - value) / (f[1] - f[2])));
-            b = new Point((int) (image.getWidth() * (f[3] - value) / (f[3] - f[2])), image.getHeight());
+            a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
+            b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
                 break;
 
             case 3:
             case 12:
-                a = new Point(0, (int) (image.getHeight() * (f[0] - value) / (f[0] - f[3])));
-                b = new Point(image.getWidth(), (int) (image.getHeight() * (f[1] - value) / (f[1] - f[2])));
+                a = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                b = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 break;
 
             case 4:
             case 11:
-                a = new Point((int) (image.getWidth() * (f[0] - value) / (f[0] - f[1])), 0);
+                a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
                 b = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 break;
 
@@ -182,13 +182,13 @@ public class FunctionMapView extends JComponent {
             case 10: {
                 double center = (f[0] + f[1] + f[2] + f[3]) / 4;
                 if(Double.compare(value, center) == Double.compare(value, f[0])) {
-                    a = new Point(0, (int) (image.getHeight() * (value - f[3]) / (f[0] - f[3])));
+                    a = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
                     b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
-                    c = new Point((int) (image.getWidth() * (value - f[1]) / (f[0] - f[1])), 0);
+                    c = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
                     d = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 } else {
-                    a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[2]) / (f[1] - f[2])));
-                    b = new Point((int) (image.getWidth() * (value - f[2]) / (f[3] - f[2])), image.getHeight());
+                    a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                    b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
                     c = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
                     d = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
                 }
