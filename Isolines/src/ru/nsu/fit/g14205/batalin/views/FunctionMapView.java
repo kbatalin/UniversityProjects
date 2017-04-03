@@ -202,12 +202,13 @@ public class FunctionMapView extends JComponent {
                 break;
         }
 
+        Graphics2D graphics = image.createGraphics();
+        graphics.setPaint(isolinesController.getApplicationProperties().getIsolinesColor());
         if (a != null && b != null) {
-            image.createGraphics().drawLine(a.x, a.y, b.x, b.y);
+            graphics.drawLine(a.x, a.y, b.x, b.y);
         }
         if (c != null && d != null) {
-            image.createGraphics().drawLine(c.x, c.y, d.x, d.y);
-
+            graphics.drawLine(c.x, c.y, d.x, d.y);
         }
     }
 }
