@@ -21,9 +21,9 @@ public class IsolinesController {
 
     public void run() {
         applicationProperties = new ApplicationProperties();
-        applicationProperties.setArea(new Area(-10, -10, 10, 10));
-        applicationProperties.setHorizontalCellsCount(30);
-        applicationProperties.setVerticalCellsCount(30);
+        applicationProperties.setArea(new Area(-5, -5, 5, 5));
+        applicationProperties.setHorizontalCellsCount(50);
+        applicationProperties.setVerticalCellsCount(50);
         applicationProperties.setGridShown(false);
         applicationProperties.setIsolinesShown(false);
         applicationProperties.setPainter(new ColorMapPainter());
@@ -51,6 +51,14 @@ public class IsolinesController {
         double y = pos.y / mapSize.getHeight() * areaSize.height + area.first.getY();
         double f = applicationProperties.getMainFunction().applyAsDouble(x, y);
         isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", x, y, f));
+    }
+
+    public void onSinleIsolineButtonClicked(ActionEvent actionEvent) {
+
+    }
+
+    public void onSeveralIsolinesButtonClicked(ActionEvent actionEvent) {
+
     }
 
     public void onIsolinesShowButtonClicked(ActionEvent actionEvent) {
