@@ -104,8 +104,8 @@ public class FunctionMapView extends JComponent {
                 );
 
                 Point2D.Double realPos = new Point2D.Double(
-                        displayPos.getX() / widthRatio +area.first.getX(),
-                        displayPos.getY() / heightRatio+ area.first.getY()
+                        displayPos.getX() / widthRatio + area.first.getX(),
+                        displayPos.getY() / heightRatio + area.first.getY()
                 );
 
                 double f1 = function.applyAsDouble(realPos.getX(), realPos.getY());
@@ -114,6 +114,7 @@ public class FunctionMapView extends JComponent {
                 double f4 = function.applyAsDouble(realPos.getX(), realPos.getY() + realCellHeight);
 
                 System.out.println(x + " " + y +"("+realPos+")" + ": " + f1 + "; " + f2 + "; " + f3 + "; " + f4);
+//                System.out.println(x + " " + y);
                 for(double isolineValue : isolinesValues) {
                     paintIsoline(map.getSubimage(displayPos.x, displayPos.y, (int) displayCellWidth, (int) displayCellHeight),
                             new double[]{f1, f2, f3, f4}, isolineValue);
@@ -134,9 +135,11 @@ public class FunctionMapView extends JComponent {
         int res = 0;
         for(int i = 0; i < f.length; ++i) {
             if (Double.compare(f[i], value) > 0) {
-                res += (1 << i);
+                res += (1 << (3 - i));
             }
         }
+
+        System.out.println(res);
 
         Point a = null;
         Point b = null;
@@ -149,25 +152,25 @@ public class FunctionMapView extends JComponent {
 
             case 1:
             case 14:
-                a = new Point(0, (int) (image.getHeight() * (value - f[3]) / (f[0] - f[3])));
+                a = new Point(0, (int) (image.getHeight() * (f[0] - value) / (f[0] - f[3])));
                 b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
                 break;
 
             case 2:
             case 13:
-            a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[2]) / (f[1] - f[2])));
-            b = new Point((int) (image.getWidth() * (value - f[2]) / (f[3] - f[2])), image.getHeight());
+            a = new Point(image.getWidth(), (int) (image.getHeight() * (f[1] - value) / (f[1] - f[2])));
+            b = new Point((int) (image.getWidth() * (f[3] - value) / (f[3] - f[2])), image.getHeight());
                 break;
 
             case 3:
             case 12:
-                a = new Point(0, (int) (image.getHeight() * (value - f[3]) / (f[0] - f[3])));
-                b = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[2]) / (f[1] - f[2])));
+                a = new Point(0, (int) (image.getHeight() * (f[0] - value) / (f[0] - f[3])));
+                b = new Point(image.getWidth(), (int) (image.getHeight() * (f[1] - value) / (f[1] - f[2])));
                 break;
 
             case 4:
             case 11:
-                a = new Point((int) (image.getWidth() * (value - f[1]) / (f[0] - f[1])), 0);
+                a = new Point((int) (image.getWidth() * (f[0] - value) / (f[0] - f[1])), 0);
                 b = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 break;
 

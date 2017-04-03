@@ -27,7 +27,8 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
 
     @Override
     public double[] getIsolinesValues() {
-        return new double[] {-1.3};
+        return values;
+//        return new double[] {-1.3};
 //        return isolinesValues;
     }
 

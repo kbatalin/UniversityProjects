@@ -21,15 +21,14 @@ public class IsolinesController {
 
     public void run() {
         applicationProperties = new ApplicationProperties();
-        applicationProperties.setArea(new Area(-5, -5, 5, 5));
-        applicationProperties.setHorizontalCellsCount(10);
-        applicationProperties.setVerticalCellsCount(10);
+        applicationProperties.setArea(new Area(-10, -10, 10, 10));
+        applicationProperties.setHorizontalCellsCount(30);
+        applicationProperties.setVerticalCellsCount(30);
         applicationProperties.setGridShown(false);
         applicationProperties.setIsolinesShown(true);
         applicationProperties.setPainter(new ColorMapPainter());
 
         applicationProperties.setMainFunction(new SinCosFunction());
-        applicationProperties.setArea(new Area(-5, -5, 5, 5));
         applicationProperties.setValuesColors(new Color[]{
                 new Color(255, 0, 0),
                 new Color(255, 0, 255),
