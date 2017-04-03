@@ -22,8 +22,8 @@ public class IsolinesController {
     public void run() {
         applicationProperties = new ApplicationProperties();
         applicationProperties.setArea(new Area(-5, -5, 5, 5));
-        applicationProperties.setHorizontalCellsCount(5);
-        applicationProperties.setVerticalCellsCount(5);
+        applicationProperties.setHorizontalCellsCount(100);
+        applicationProperties.setVerticalCellsCount(100);
         applicationProperties.setGridShown(false);
         applicationProperties.setIsolinesShown(true);
         applicationProperties.setPainter(new ColorMapPainter());

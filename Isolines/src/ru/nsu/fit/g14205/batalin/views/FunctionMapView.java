@@ -1,6 +1,7 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.IsolinesController;
+import ru.nsu.fit.g14205.batalin.models.Area;
 import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
@@ -8,7 +9,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.function.DoubleBinaryOperator;
 
 /**
  * Created by kir55rus on 01.04.17.
@@ -49,6 +52,8 @@ public class FunctionMapView extends JComponent {
             paintGrid(map);
         }
 
+        paintIsolines(map);
+
         graphics.drawImage(map, 0, 0, null);
     }
 
@@ -68,6 +73,133 @@ public class FunctionMapView extends JComponent {
         for(int i = 1, count = applicationProperties.getVerticalCellsCount(), delta = map.getWidth() / count; i < count; ++i) {
             int crd = i * delta;
             graphics.drawLine(crd, 0, crd, map.getWidth() - 1);
+        }
+    }
+
+    private void paintIsolines(BufferedImage map) {
+        PropertiesModel applicationProperties = isolinesController.getApplicationProperties();
+        double[] isolinesValues = applicationProperties.getIsolinesValues();
+        Area area = applicationProperties.getArea();
+        Dimension areaSize = area.toDimension();
+        double widthRatio = map.getWidth() / areaSize.width;
+        double heightRatio = map.getHeight() / areaSize.height;
+        DoubleBinaryOperator function = applicationProperties.getMainFunction();
+        int displayCellWidth = map.getWidth() / applicationProperties.getVerticalCellsCount();
+        int displayCellHeight = map.getHeight() / applicationProperties.getHorizontalCellsCount();
+        double realCellWidth = displayCellWidth / widthRatio;
+        double realCellHeight = displayCellHeight / heightRatio;
+
+        Graphics2D graphics = map.createGraphics();
+        graphics.setPaint(applicationProperties.getIsolinesColor());
+        Stroke solid = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9, 0}, 0);
+        graphics.setStroke(solid);
+
+        for(int y = 0; y < applicationProperties.getHorizontalCellsCount(); ++y) {
+            for(int x = 0; x < applicationProperties.getVerticalCellsCount(); ++x) {
+                Point displayPos = new Point(
+                        x * displayCellWidth,
+                        y * displayCellHeight
+                );
+
+                Point2D.Double realPos = new Point2D.Double(displayPos.getX() / widthRatio, displayPos.getY() / heightRatio);
+
+                double f1 = function.applyAsDouble(realPos.getX(), realPos.getY());
+                double f2 = function.applyAsDouble(realPos.getX() + realCellWidth, realPos.getY());
+                double f3 = function.applyAsDouble(realPos.getX() + realCellWidth, realPos.getY() + realCellHeight);
+                double f4 = function.applyAsDouble(realPos.getX(), realPos.getY() + realCellHeight);
+
+                for(double isolineValue : isolinesValues) {
+                    paintIsoline(map.getSubimage(displayPos.x, displayPos.y, displayCellWidth, displayCellHeight),
+                            new double[]{f1, f2, f3, f4}, isolineValue);
+                }
+            }
+        }
+    }
+
+    private void paintIsoline(BufferedImage image, double[] f, double value) {
+        double eps = 1e-6;
+        for(int i = 0; i < f.length; ++i) {
+            if (Double.compare(f[i], value) == 0) {
+                value += Double.compare(f[i], f[(i + 1) % f.length]) < 0 ? eps : -eps;
+            }
+
+        }
+
+        int res = 0;
+        for(int i = 0; i < f.length; ++i) {
+            if (Double.compare(f[i], value) > 0) {
+                res += (1 << i);
+            }
+        }
+
+        Point a = null;
+        Point b = null;
+        Point c = null;
+        Point d = null;
+        switch (res) {
+            case 0:
+            case 15:
+                break;
+
+            case 1:
+            case 14:
+                a = new Point(0, (int) (image.getHeight() * (value - f[3]) / (f[0] - f[3])));
+                b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
+                break;
+
+            case 2:
+            case 13:
+            a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[2]) / (f[1] - f[2])));
+            b = new Point((int) (image.getWidth() * (value - f[2]) / (f[3] - f[2])), image.getHeight());
+                break;
+
+            case 3:
+            case 12:
+                a = new Point(0, (int) (image.getHeight() * (value - f[3]) / (f[0] - f[3])));
+                b = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[2]) / (f[1] - f[2])));
+                break;
+
+            case 4:
+            case 11:
+                a = new Point((int) (image.getWidth() * (value - f[1]) / (f[0] - f[1])), 0);
+                b = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                break;
+
+            case 5:
+            case 10: {
+                double center = (f[0] + f[1] + f[2] + f[3]) / 4;
+                if(Double.compare(value, center) == Double.compare(value, f[0])) {
+                    a = new Point(0, (int) (image.getHeight() * (value - f[3]) / (f[0] - f[3])));
+                    b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
+                    c = new Point((int) (image.getWidth() * (value - f[1]) / (f[0] - f[1])), 0);
+                    d = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                } else {
+                    a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[2]) / (f[1] - f[2])));
+                    b = new Point((int) (image.getWidth() * (value - f[2]) / (f[3] - f[2])), image.getHeight());
+                    c = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+                    d = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                }
+            }
+
+            case 6:
+            case 9:
+            a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+            b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
+            break;
+
+            case 7:
+            case 8:
+            a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+            b = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                break;
+        }
+
+        if (a != null && b != null) {
+            image.createGraphics().drawLine(a.x, a.y, b.x, b.y);
+        }
+        if (c != null && d != null) {
+            image.createGraphics().drawLine(c.x, c.y, d.x, d.y);
+
         }
     }
 }

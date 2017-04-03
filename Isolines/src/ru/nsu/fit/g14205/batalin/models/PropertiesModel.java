@@ -29,6 +29,12 @@ public interface PropertiesModel extends Observable {
     boolean isGridShown();
     void setGridShown(boolean val);
 
+    Color getIsolinesColor();
+    void setIsolinesColor(Color color);
+
+    double[] getIsolinesValues();
+    void setIsolinesValues(double[] isolinesValues);
+
     DoubleBinaryOperator getMainFunction();
     DoubleBinaryOperator getLegendFunction();
     void setMainFunction(DoubleBinaryOperator function);

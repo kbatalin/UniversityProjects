@@ -22,6 +22,19 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     private double maxValue;
     private double[] values;
     private Color[] valuesColors;
+    private Color isolinesColor;
+    private double[] isolinesValues;
+
+    @Override
+    public double[] getIsolinesValues() {
+        return values;
+//        return isolinesValues;
+    }
+
+    @Override
+    public void setIsolinesValues(double[] isolinesValues) {
+        this.isolinesValues = isolinesValues;
+    }
 
     @Override
     public int getHorizontalCellsCount() {
@@ -204,5 +217,15 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
         valuesColors = colors;
         updFunctionInfo();
         notifyObservers(Event.COLORS_CHANGED);
+    }
+
+    @Override
+    public Color getIsolinesColor() {
+        return isolinesColor;
+    }
+
+    @Override
+    public void setIsolinesColor(Color isolinesColor) {
+        this.isolinesColor = isolinesColor;
     }
 }
