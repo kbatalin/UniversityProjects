@@ -100,9 +100,9 @@ public class FunctionMapView extends JComponent {
 
         for(int y = 0; y < applicationProperties.getHorizontalCellsCount(); ++y) {
             for(int x = 0; x < applicationProperties.getVerticalCellsCount(); ++x) {
-                Point displayPos = new Point(
-                        (int) (x * displayCellWidth),
-                        (int) (y * displayCellHeight)
+                Point2D.Double displayPos = new Point2D.Double(
+                        x * displayCellWidth,
+                        y * displayCellHeight
                 );
 
                 Point2D.Double realPos = new Point2D.Double(
@@ -116,7 +116,9 @@ public class FunctionMapView extends JComponent {
                 double f4 = function.applyAsDouble(realPos.getX(), realPos.getY() + realCellHeight);
 
                 for(double isolineValue : isolinesValues) {
-                    paintIsoline(map.getSubimage(displayPos.x, displayPos.y, (int) displayCellWidth, (int) displayCellHeight),
+                    int subImgWidth = Math.min(map.getWidth() - (int)displayPos.x, (int)(((x + 1) * displayCellWidth) - displayPos.x + 1));
+                    int subImgHeight = Math.min(map.getHeight() - (int)displayPos.y, (int)(((y + 1) * displayCellHeight) - displayPos.y + 1));
+                    paintIsoline(map.getSubimage((int)displayPos.x, (int)displayPos.y, subImgWidth, subImgHeight),
                             new double[]{f1, f2, f3, f4}, isolineValue);
                 }
             }
