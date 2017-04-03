@@ -37,6 +37,7 @@ public class FunctionMapView extends JComponent {
         properties.addObserver(PropertiesModel.Event.GRID_SHOWN_CHANGED, this::repaint);
         properties.addObserver(PropertiesModel.Event.FUNCTION_CHANGED, this::repaint);
         properties.addObserver(PropertiesModel.Event.COLORS_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.ISOLINES_VALUES_CHANGED, this::repaint);
     }
 
     @Override

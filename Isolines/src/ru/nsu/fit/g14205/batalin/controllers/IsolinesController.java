@@ -27,7 +27,7 @@ public class IsolinesController {
         applicationProperties.setGridShown(false);
         applicationProperties.setIsolinesShown(false);
         applicationProperties.setPainter(new ColorMapPainter());
-
+        applicationProperties.setIsolinesCreatingMode(PropertiesModel.IsolinesCreatingMode.SINGLE);
         applicationProperties.setMainFunction(new SinCosFunction());
         applicationProperties.setValuesColors(new Color[]{
                 new Color(255, 0, 0),
@@ -54,11 +54,11 @@ public class IsolinesController {
     }
 
     public void onSinleIsolineButtonClicked(ActionEvent actionEvent) {
-
+        applicationProperties.setIsolinesCreatingMode(PropertiesModel.IsolinesCreatingMode.SINGLE);
     }
 
     public void onSeveralIsolinesButtonClicked(ActionEvent actionEvent) {
-
+        applicationProperties.setIsolinesCreatingMode(PropertiesModel.IsolinesCreatingMode.SEVERAL);
     }
 
     public void onIsolinesShowButtonClicked(ActionEvent actionEvent) {

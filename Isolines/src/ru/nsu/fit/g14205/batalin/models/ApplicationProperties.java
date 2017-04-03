@@ -24,6 +24,17 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     private Color[] valuesColors;
     private Color isolinesColor;
     private double[] isolinesValues;
+    private IsolinesCreatingMode isolinesCreatingMode;
+
+    @Override
+    public IsolinesCreatingMode getIsolinesCreatingMode() {
+        return isolinesCreatingMode;
+    }
+
+    @Override
+    public void setIsolinesCreatingMode(IsolinesCreatingMode isolinesCreatingMode) {
+        this.isolinesCreatingMode = isolinesCreatingMode;
+    }
 
     @Override
     public double[] getIsolinesValues() {
@@ -35,6 +46,7 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     @Override
     public void setIsolinesValues(double[] isolinesValues) {
         this.isolinesValues = isolinesValues;
+        notifyObservers(Event.ISOLINES_VALUES_CHANGED);
     }
 
     @Override

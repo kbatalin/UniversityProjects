@@ -69,10 +69,13 @@ public class IsolinesView extends JFrame {
 
     private void initEditMenu() {
         JMenu editMenu = buttonsManager.addMenu(null, "Edit");
-        buttonsManager.addToggleItem(editMenu, "Create single isoline", "Create single isoline",
-                "create_single_isoline.png", false, actionEvent -> isolinesController.onSinleIsolineButtonClicked(actionEvent));
-        buttonsManager.addToggleItem(editMenu, "Create several isolines", "Create several isolines",
-                "create_several_isolines.png", false, actionEvent -> isolinesController.onSeveralIsolinesButtonClicked(actionEvent));
+
+        ButtonGroup isolinesCreatingModeMenu = new ButtonGroup();
+        ButtonGroup isolinesCreatingModeButtons = new ButtonGroup();
+        buttonsManager.addRadioItem(editMenu, "Create single isoline", isolinesCreatingModeMenu, "Create single isoline",
+                "create_single_isoline.png", isolinesCreatingModeButtons, true, actionEvent -> isolinesController.onSinleIsolineButtonClicked(actionEvent));
+        buttonsManager.addRadioItem(editMenu, "Create several isolines", isolinesCreatingModeMenu, "Create several isolines",
+                "create_several_isolines.png", isolinesCreatingModeButtons, false, actionEvent -> isolinesController.onSeveralIsolinesButtonClicked(actionEvent));
         buttonsManager.addItem(editMenu, "Clear isolines", "Clear isolines", "trash.png", null);
     }
 
