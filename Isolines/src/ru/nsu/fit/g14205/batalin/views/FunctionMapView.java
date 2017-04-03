@@ -48,11 +48,13 @@ public class FunctionMapView extends JComponent {
         Painter painter = properties.getPainter();
         BufferedImage map = painter.draw(properties.getMainFunction(), properties, mapSize);
 
-        if (isolinesController.getApplicationProperties().isGridShown()) {
+        if (properties.isGridShown()) {
             paintGrid(map);
         }
 
-        paintIsolines(map);
+        if(properties.isIsolinesShown()) {
+            paintIsolines(map);
+        }
 
         graphics.drawImage(map, 0, 0, null);
     }
@@ -69,14 +71,12 @@ public class FunctionMapView extends JComponent {
         for(int i = 1, count = applicationProperties.getHorizontalCellsCount(); i < count; ++i) {
             int crd = (int) (i * heightRatio);
             graphics.drawLine(0, crd, map.getWidth(), crd);
-            System.out.println("y: " + crd);
         }
 
         double widthRatio = (double) map.getWidth() / applicationProperties.getVerticalCellsCount();
         for(int i = 1, count = applicationProperties.getVerticalCellsCount(); i < count; ++i) {
             int crd = (int) (i * widthRatio);
             graphics.drawLine(crd, 0, crd, map.getWidth());
-            System.out.println("x: " + crd);
         }
     }
 

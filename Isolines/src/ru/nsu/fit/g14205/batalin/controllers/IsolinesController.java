@@ -25,7 +25,7 @@ public class IsolinesController {
         applicationProperties.setHorizontalCellsCount(30);
         applicationProperties.setVerticalCellsCount(30);
         applicationProperties.setGridShown(false);
-        applicationProperties.setIsolinesShown(true);
+        applicationProperties.setIsolinesShown(false);
         applicationProperties.setPainter(new ColorMapPainter());
 
         applicationProperties.setMainFunction(new SinCosFunction());
@@ -51,6 +51,16 @@ public class IsolinesController {
         double y = pos.y / mapSize.getHeight() * areaSize.height + area.first.getY();
         double f = applicationProperties.getMainFunction().applyAsDouble(x, y);
         isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", x, y, f));
+    }
+
+    public void onIsolinesShowButtonClicked(ActionEvent actionEvent) {
+        Object sourceObj = actionEvent.getSource();
+        if (!(sourceObj instanceof AbstractButton)) {
+            return;
+        }
+
+        AbstractButton button = ((AbstractButton) sourceObj);
+        applicationProperties.setIsolinesShown(button.isSelected());
     }
 
     public void onGridButtonClicked(ActionEvent actionEvent) {

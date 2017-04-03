@@ -85,6 +85,8 @@ public class IsolinesView extends JFrame {
 
         buttonsManager.addToggleItem(viewMenu, "Show grid", "Show grid",
                 "grid.png", false, actionEvent -> isolinesController.onGridButtonClicked(actionEvent));
+        buttonsManager.addToggleItem(viewMenu, "Show isolines", "Show isolines",
+                "isolines.png", false, actionEvent -> isolinesController.onIsolinesShowButtonClicked(actionEvent));
         buttonsManager.addSeparator(viewMenu);
 
         buttonsManager.addToggleItem(viewMenu, "Black/white", "Black/white", "map.png", false, null);
