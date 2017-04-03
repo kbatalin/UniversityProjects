@@ -28,7 +28,7 @@ public class IsolinesController {
         applicationProperties.setIsolinesShown(true);
         applicationProperties.setPainter(new ColorMapPainter());
 
-        applicationProperties.setMainFunction(new ParaboloidFunction());
+        applicationProperties.setMainFunction(new SinCosFunction());
         applicationProperties.setArea(new Area(-5, -5, 5, 5));
         applicationProperties.setValuesColors(new Color[]{
                 new Color(255, 0, 0),
@@ -38,6 +38,7 @@ public class IsolinesController {
                 new Color(0, 255, 0),
                 new Color(255, 255, 0)
         });
+        applicationProperties.setIsolinesColor(Color.BLUE);
 
         isolinesView = new IsolinesView(this);
     }
