@@ -68,13 +68,15 @@ public class FunctionMapView extends JComponent {
         double heightRatio = (double) map.getHeight() / applicationProperties.getHorizontalCellsCount();
         for(int i = 1, count = applicationProperties.getHorizontalCellsCount(); i < count; ++i) {
             int crd = (int) (i * heightRatio);
-            graphics.drawLine(0, crd, map.getWidth() - 1, crd);
+            graphics.drawLine(0, crd, map.getWidth(), crd);
+            System.out.println("y: " + crd);
         }
 
         double widthRatio = (double) map.getWidth() / applicationProperties.getVerticalCellsCount();
         for(int i = 1, count = applicationProperties.getVerticalCellsCount(); i < count; ++i) {
             int crd = (int) (i * widthRatio);
-            graphics.drawLine(crd, 0, crd, map.getWidth() - 1);
+            graphics.drawLine(crd, 0, crd, map.getWidth());
+            System.out.println("x: " + crd);
         }
     }
 
@@ -83,8 +85,8 @@ public class FunctionMapView extends JComponent {
         double[] isolinesValues = applicationProperties.getIsolinesValues();
         Area area = applicationProperties.getArea();
         Dimension areaSize = area.toDimension();
-        double widthRatio = map.getWidth() / areaSize.width;
-        double heightRatio = map.getHeight() / areaSize.height;
+        double widthRatio = map.getWidth() / areaSize.getWidth();
+        double heightRatio = map.getHeight() / areaSize.getHeight();
         DoubleBinaryOperator function = applicationProperties.getMainFunction();
         double displayCellWidth = (double) map.getWidth() / applicationProperties.getVerticalCellsCount();
         double displayCellHeight = (double) map.getHeight() / applicationProperties.getHorizontalCellsCount();
@@ -107,6 +109,8 @@ public class FunctionMapView extends JComponent {
                         displayPos.getX() / widthRatio + area.first.getX(),
                         displayPos.getY() / heightRatio + area.first.getY()
                 );
+
+//                System.out.println(x + " " +y +": " + displayPos);
 
                 double f1 = function.applyAsDouble(realPos.getX(), realPos.getY());
                 double f2 = function.applyAsDouble(realPos.getX() + realCellWidth, realPos.getY());
@@ -139,7 +143,7 @@ public class FunctionMapView extends JComponent {
             }
         }
 
-        System.out.println(res);
+//        System.out.println(res);
 
         Point a = null;
         Point b = null;
@@ -205,7 +209,7 @@ public class FunctionMapView extends JComponent {
         }
 
         if (a != null && b != null) {
-            System.out.println("Yes!");
+//            System.out.println("Yes!");
             image.createGraphics().drawLine(a.x, a.y, b.x, b.y);
         }
         if (c != null && d != null) {
