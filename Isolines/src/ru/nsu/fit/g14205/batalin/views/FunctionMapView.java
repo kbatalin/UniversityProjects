@@ -110,15 +110,11 @@ public class FunctionMapView extends JComponent {
                         displayPos.getY() / heightRatio + area.first.getY()
                 );
 
-//                System.out.println(x + " " +y +": " + displayPos);
-
                 double f1 = function.applyAsDouble(realPos.getX(), realPos.getY());
                 double f2 = function.applyAsDouble(realPos.getX() + realCellWidth, realPos.getY());
                 double f3 = function.applyAsDouble(realPos.getX() + realCellWidth, realPos.getY() + realCellHeight);
                 double f4 = function.applyAsDouble(realPos.getX(), realPos.getY() + realCellHeight);
 
-//                System.out.println(x + " " + y +"("+realPos+")" + ": " + f1 + "; " + f2 + "; " + f3 + "; " + f4);
-//                System.out.println(x + " " + y);
                 for(double isolineValue : isolinesValues) {
                     paintIsoline(map.getSubimage(displayPos.x, displayPos.y, (int) displayCellWidth, (int) displayCellHeight),
                             new double[]{f1, f2, f3, f4}, isolineValue);
@@ -142,8 +138,6 @@ public class FunctionMapView extends JComponent {
                 res += (1 << (3 - i));
             }
         }
-
-//        System.out.println(res);
 
         Point a = null;
         Point b = null;
@@ -209,7 +203,6 @@ public class FunctionMapView extends JComponent {
         }
 
         if (a != null && b != null) {
-//            System.out.println("Yes!");
             image.createGraphics().drawLine(a.x, a.y, b.x, b.y);
         }
         if (c != null && d != null) {
