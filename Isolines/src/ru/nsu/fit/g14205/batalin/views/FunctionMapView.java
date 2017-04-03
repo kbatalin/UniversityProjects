@@ -27,6 +27,23 @@ public class FunctionMapView extends JComponent {
             public void mouseMoved(MouseEvent mouseEvent) {
                 isolinesController.onMouseMoved(mouseEvent);
             }
+
+            @Override
+            public void mouseDragged(MouseEvent mouseEvent) {
+                isolinesController.onMouseDragged(mouseEvent);
+            }
+        });
+
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                isolinesController.onMousePressed(mouseEvent);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent mouseEvent) {
+                isolinesController.onMouseReleased(mouseEvent);
+            }
         });
 
         PropertiesModel properties = isolinesController.getApplicationProperties();

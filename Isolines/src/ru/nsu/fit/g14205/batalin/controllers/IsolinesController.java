@@ -27,7 +27,8 @@ public class IsolinesController {
         applicationProperties.setGridShown(false);
         applicationProperties.setIsolinesShown(false);
         applicationProperties.setPainter(new ColorMapPainter());
-        applicationProperties.setIsolinesCreatingMode(PropertiesModel.IsolinesCreatingMode.SINGLE);
+        applicationProperties.setDynamicIsolines(false);
+        applicationProperties.setCreatingIsolines(false);
         applicationProperties.setMainFunction(new SinCosFunction());
         applicationProperties.setValuesColors(new Color[]{
                 new Color(255, 0, 0),
@@ -53,12 +54,36 @@ public class IsolinesController {
         isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", x, y, f));
     }
 
-    public void onSinleIsolineButtonClicked(ActionEvent actionEvent) {
-        applicationProperties.setIsolinesCreatingMode(PropertiesModel.IsolinesCreatingMode.SINGLE);
+    public void onMouseDragged(MouseEvent mouseEvent) {
+
     }
 
-    public void onSeveralIsolinesButtonClicked(ActionEvent actionEvent) {
-        applicationProperties.setIsolinesCreatingMode(PropertiesModel.IsolinesCreatingMode.SEVERAL);
+    public void onMousePressed(MouseEvent mouseEvent) {
+
+    }
+
+    public void onMouseReleased(MouseEvent mouseEvent) {
+
+    }
+
+    public void onCreateIsolineButtonClicked(ActionEvent actionEvent) {
+        Object sourceObj = actionEvent.getSource();
+        if (!(sourceObj instanceof AbstractButton)) {
+            return;
+        }
+
+        AbstractButton button = ((AbstractButton) sourceObj);
+        applicationProperties.setCreatingIsolines(button.isSelected());
+    }
+
+    public void onDynamicIsolineButtonClicked(ActionEvent actionEvent) {
+        Object sourceObj = actionEvent.getSource();
+        if (!(sourceObj instanceof AbstractButton)) {
+            return;
+        }
+
+        AbstractButton button = ((AbstractButton) sourceObj);
+        applicationProperties.setDynamicIsolines(button.isSelected());
     }
 
     public void onIsolinesShowButtonClicked(ActionEvent actionEvent) {

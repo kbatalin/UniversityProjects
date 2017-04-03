@@ -24,16 +24,27 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     private Color[] valuesColors;
     private Color isolinesColor;
     private double[] isolinesValues;
-    private IsolinesCreatingMode isolinesCreatingMode;
+    private boolean creatingIsolines;
+    private boolean dynamicIsolines;
 
     @Override
-    public IsolinesCreatingMode getIsolinesCreatingMode() {
-        return isolinesCreatingMode;
+    public boolean isCreatingIsolines() {
+        return creatingIsolines;
     }
 
     @Override
-    public void setIsolinesCreatingMode(IsolinesCreatingMode isolinesCreatingMode) {
-        this.isolinesCreatingMode = isolinesCreatingMode;
+    public void setCreatingIsolines(boolean creatingIsolines) {
+        this.creatingIsolines = creatingIsolines;
+    }
+
+    @Override
+    public boolean isDynamicIsolines() {
+        return dynamicIsolines;
+    }
+
+    @Override
+    public void setDynamicIsolines(boolean dynamicIsolines) {
+        this.dynamicIsolines = dynamicIsolines;
     }
 
     @Override

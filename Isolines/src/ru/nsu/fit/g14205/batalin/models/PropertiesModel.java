@@ -29,8 +29,11 @@ public interface PropertiesModel extends Observable {
     boolean isGridShown();
     void setGridShown(boolean val);
 
-    IsolinesCreatingMode getIsolinesCreatingMode();
-    void setIsolinesCreatingMode(IsolinesCreatingMode mode);
+    boolean isCreatingIsolines();
+    void setCreatingIsolines(boolean val);
+
+    boolean isDynamicIsolines();
+    void setDynamicIsolines(boolean val);
 
     Color getIsolinesColor();
     void setIsolinesColor(Color color);
@@ -59,10 +62,5 @@ public interface PropertiesModel extends Observable {
         FUNCTION_CHANGED,
         COLORS_CHANGED,
         ISOLINES_VALUES_CHANGED,
-    }
-
-    enum IsolinesCreatingMode {
-        SINGLE,
-        SEVERAL,
     }
 }
