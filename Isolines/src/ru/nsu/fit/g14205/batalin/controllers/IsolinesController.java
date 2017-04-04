@@ -61,8 +61,18 @@ public class IsolinesController {
         return new Point2D.Double(x, y);
     }
 
-    public void onClickClearIsolinesButtons(ActionEvent actionEvent) {
+    public void onClearIsolinesButtonClicked(ActionEvent actionEvent) {
         applicationProperties.setIsolinesValues(new ArrayList<>());
+    }
+
+    public void onShowEntryPointsButtonClicked(ActionEvent actionEvent) {
+        Object sourceObj = actionEvent.getSource();
+        if (!(sourceObj instanceof AbstractButton)) {
+            return;
+        }
+
+        AbstractButton button = ((AbstractButton) sourceObj);
+        applicationProperties.setEntryPointsShown(button.isSelected());
     }
 
     public void onMouseDragged(MouseEvent mouseEvent) {

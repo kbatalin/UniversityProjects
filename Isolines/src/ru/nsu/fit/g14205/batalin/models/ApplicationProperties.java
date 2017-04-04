@@ -29,6 +29,18 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     private ArrayList<Double> isolinesValues = new ArrayList<>();
     private boolean creatingIsolines;
     private boolean dynamicIsolines;
+    private boolean entryPointsShown;
+
+    @Override
+    public boolean isEntryPointsShown() {
+        return entryPointsShown;
+    }
+
+    @Override
+    public void setEntryPointsShown(boolean entryPointsShown) {
+        this.entryPointsShown = entryPointsShown;
+        notifyObservers(Event.ENTRY_POINTS_SHOWN_CHANGED);
+    }
 
     @Override
     public boolean isCreatingIsolines() {

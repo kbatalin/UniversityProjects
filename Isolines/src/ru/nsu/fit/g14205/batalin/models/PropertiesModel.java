@@ -43,6 +43,9 @@ public interface PropertiesModel extends Observable {
     ArrayList<Double> getIsolinesValues();
     void setIsolinesValues(ArrayList<Double> isolinesValues);
 
+    boolean isEntryPointsShown();
+    void setEntryPointsShown(boolean val);
+
     DoubleBinaryOperator getMainFunction();
     DoubleBinaryOperator getLegendFunction();
     void setMainFunction(DoubleBinaryOperator function);
@@ -64,5 +67,6 @@ public interface PropertiesModel extends Observable {
         FUNCTION_CHANGED,
         COLORS_CHANGED,
         ISOLINES_VALUES_CHANGED,
+        ENTRY_POINTS_SHOWN_CHANGED,
     }
 }

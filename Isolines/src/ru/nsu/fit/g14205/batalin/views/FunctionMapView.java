@@ -59,6 +59,7 @@ public class FunctionMapView extends JComponent {
         properties.addObserver(PropertiesModel.Event.FUNCTION_CHANGED, this::repaint);
         properties.addObserver(PropertiesModel.Event.COLORS_CHANGED, this::repaint);
         properties.addObserver(PropertiesModel.Event.ISOLINES_VALUES_CHANGED, this::repaint);
+        properties.addObserver(PropertiesModel.Event.ENTRY_POINTS_SHOWN_CHANGED, this::repaint);
     }
 
     @Override
@@ -235,5 +236,20 @@ public class FunctionMapView extends JComponent {
         if (c != null && d != null) {
             graphics.drawLine(c.x, c.y, d.x, d.y);
         }
+
+        if (isolinesController.getApplicationProperties().isEntryPointsShown()) {
+            paintEntryPoint(graphics, a);
+            paintEntryPoint(graphics, b);
+            paintEntryPoint(graphics, c);
+            paintEntryPoint(graphics, d);
+        }
+    }
+
+    private void paintEntryPoint(Graphics2D graphics, Point pos) {
+        if (pos == null) {
+            return;
+        }
+//        graphics.setPaint(Color.RED);
+        graphics.fillOval(pos.x - 5, pos.y - 5, 10, 10);
     }
 }

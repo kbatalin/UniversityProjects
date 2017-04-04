@@ -75,7 +75,7 @@ public class IsolinesView extends JFrame {
         buttonsManager.addToggleItem(editMenu, "Create several isolines", "Create several isolines",
                 "dynamic_isoline.png", false, actionEvent -> isolinesController.onDynamicIsolineButtonClicked(actionEvent));
         buttonsManager.addItem(editMenu, "Clear isolines", "Clear isolines",
-                "trash.png", actionEvent -> isolinesController.onClickClearIsolinesButtons(actionEvent));
+                "trash.png", actionEvent -> isolinesController.onClearIsolinesButtonClicked(actionEvent));
     }
 
     private void initViewMenu() {
@@ -93,6 +93,8 @@ public class IsolinesView extends JFrame {
                 "grid.png", false, actionEvent -> isolinesController.onGridButtonClicked(actionEvent));
         buttonsManager.addToggleItem(viewMenu, "Show isolines", "Show isolines",
                 "isolines.png", false, actionEvent -> isolinesController.onIsolinesShowButtonClicked(actionEvent));
+        buttonsManager.addToggleItem(viewMenu, "Show entry points", "Show entry points",
+                "target.png", false, actionEvent -> isolinesController.onShowEntryPointsButtonClicked(actionEvent));
         buttonsManager.addSeparator(viewMenu);
 
         buttonsManager.addToggleItem(viewMenu, "Black/white", "Black/white", "map.png", false, null);
