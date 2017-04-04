@@ -5,6 +5,9 @@ import ru.nsu.fit.g14205.batalin.models.Area;
 import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -12,6 +15,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.function.DoubleBinaryOperator;
+import java.util.stream.Collectors;
 
 /**
  * Created by kir55rus on 01.04.17.
@@ -100,7 +104,8 @@ public class FunctionMapView extends JComponent {
 
     private void paintIsolines(BufferedImage map) {
         PropertiesModel applicationProperties = isolinesController.getApplicationProperties();
-        double[] isolinesValues = applicationProperties.getIsolinesValues();
+        List<Double> isolinesValues = new ArrayList<>(applicationProperties.getIsolinesValues());
+        isolinesValues.addAll(Arrays.stream(applicationProperties.getValues()).boxed().collect(Collectors.toList()));
         Area area = applicationProperties.getArea();
         Dimension areaSize = area.toDimension();
         double widthRatio = map.getWidth() / areaSize.getWidth();

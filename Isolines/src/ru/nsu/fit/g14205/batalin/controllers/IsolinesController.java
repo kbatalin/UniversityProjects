@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
 
 /**
  * Created by kir55rus on 29.03.17.
@@ -21,9 +23,9 @@ public class IsolinesController {
 
     public void run() {
         applicationProperties = new ApplicationProperties();
-        applicationProperties.setArea(new Area(-5, -5, 5, 5));
-        applicationProperties.setHorizontalCellsCount(50);
-        applicationProperties.setVerticalCellsCount(50);
+        applicationProperties.setArea(new Area(-10, -10, 10, 10));
+        applicationProperties.setHorizontalCellsCount(20);
+        applicationProperties.setVerticalCellsCount(20);
         applicationProperties.setGridShown(false);
         applicationProperties.setIsolinesShown(false);
         applicationProperties.setPainter(new ColorMapPainter());
@@ -38,20 +40,24 @@ public class IsolinesController {
                 new Color(0, 255, 0),
                 new Color(255, 255, 0)
         });
-        applicationProperties.setIsolinesColor(Color.BLUE);
+        applicationProperties.setIsolinesColor(Color.GRAY);
 
         isolinesView = new IsolinesView(this);
     }
 
     public void onMouseMoved(MouseEvent mouseEvent) {
+        Point2D pos = pixel2Area(mouseEvent.getPoint());
+        double f = applicationProperties.getMainFunction().applyAsDouble(pos.getX(), pos.getY());
+        isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", pos.getX(), pos.getY(), f));
+    }
+
+    private Point2D pixel2Area(Point pos) {
         Dimension mapSize = isolinesView.getWorkspaceView().getFunctionMapView().getSize();
-        Point pos = mouseEvent.getPoint();
         Area area = applicationProperties.getArea();
         Dimension areaSize = area.toDimension();
         double x = pos.x / mapSize.getWidth() * areaSize.width + area.first.getX();
         double y = pos.y / mapSize.getHeight() * areaSize.height + area.first.getY();
-        double f = applicationProperties.getMainFunction().applyAsDouble(x, y);
-        isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", x, y, f));
+        return new Point2D.Double(x, y);
     }
 
     public void onMouseDragged(MouseEvent mouseEvent) {
@@ -63,7 +69,15 @@ public class IsolinesController {
     }
 
     public void onMouseReleased(MouseEvent mouseEvent) {
+        if (!applicationProperties.isCreatingIsolines()) {
+            return;
+        }
 
+        ArrayList<Double> isolinesValues = applicationProperties.getIsolinesValues();
+        Point2D pos = pixel2Area(mouseEvent.getPoint());
+        double f = applicationProperties.getMainFunction().applyAsDouble(pos.getX(), pos.getY());
+        isolinesValues.add(f);
+        applicationProperties.setIsolinesValues(isolinesValues);
     }
 
     public void onCreateIsolineButtonClicked(ActionEvent actionEvent) {

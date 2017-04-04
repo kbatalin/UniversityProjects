@@ -4,6 +4,8 @@ import ru.nsu.fit.g14205.batalin.models.observe.Observable;
 import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.*;
 import java.util.function.DoubleBinaryOperator;
 
@@ -38,8 +40,8 @@ public interface PropertiesModel extends Observable {
     Color getIsolinesColor();
     void setIsolinesColor(Color color);
 
-    double[] getIsolinesValues();
-    void setIsolinesValues(double[] isolinesValues);
+    ArrayList<Double> getIsolinesValues();
+    void setIsolinesValues(ArrayList<Double> isolinesValues);
 
     DoubleBinaryOperator getMainFunction();
     DoubleBinaryOperator getLegendFunction();

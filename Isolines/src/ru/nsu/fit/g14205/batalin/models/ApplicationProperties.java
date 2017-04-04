@@ -3,6 +3,9 @@ package ru.nsu.fit.g14205.batalin.models;
 import ru.nsu.fit.g14205.batalin.models.observe.ObservableBase;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.awt.*;
 import java.util.function.DoubleBinaryOperator;
 
@@ -23,7 +26,7 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     private double[] values;
     private Color[] valuesColors;
     private Color isolinesColor;
-    private double[] isolinesValues;
+    private ArrayList<Double> isolinesValues = new ArrayList<>();
     private boolean creatingIsolines;
     private boolean dynamicIsolines;
 
@@ -48,14 +51,12 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     }
 
     @Override
-    public double[] getIsolinesValues() {
-        return values;
-//        return new double[] {-1.3};
-//        return isolinesValues;
+    public ArrayList<Double> getIsolinesValues() {
+        return isolinesValues;
     }
 
     @Override
-    public void setIsolinesValues(double[] isolinesValues) {
+    public void setIsolinesValues(ArrayList<Double> isolinesValues) {
         this.isolinesValues = isolinesValues;
         notifyObservers(Event.ISOLINES_VALUES_CHANGED);
     }
