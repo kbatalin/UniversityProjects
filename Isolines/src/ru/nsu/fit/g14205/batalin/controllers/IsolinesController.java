@@ -7,10 +7,13 @@ import ru.nsu.fit.g14205.batalin.views.*;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
+import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
 
 /**
@@ -19,14 +22,21 @@ import java.util.ArrayList;
 public class IsolinesController {
     private PropertiesModel applicationProperties;
     private int dynamicIsolineIndex = -1;
+    private JFileChooser fileOpenChooser;
 
     private IsolinesView isolinesView;
 
     public void run() {
+        fileOpenChooser = new JFileChooser();
+        File workingDirectory = new File(System.getProperty("user.dir") + File.separator + "FIT_14205_Batalin_Kirill_Isolines_Data");
+        fileOpenChooser.setCurrentDirectory(workingDirectory);
+        FileNameExtensionFilter settingsFileFilter = new FileNameExtensionFilter("Text (*.txt)", "txt");
+        fileOpenChooser.setFileFilter(settingsFileFilter);
+
         applicationProperties = new ApplicationProperties();
-        applicationProperties.setArea(new Area(-10, -10, 10, 10));
-        applicationProperties.setHorizontalCellsCount(20);
-        applicationProperties.setVerticalCellsCount(20);
+        applicationProperties.setArea(new Area(-5, -5, 5, 5));
+        applicationProperties.setHorizontalCellsCount(10);
+        applicationProperties.setVerticalCellsCount(10);
         applicationProperties.setGridShown(false);
         applicationProperties.setIsolinesShown(false);
         applicationProperties.setPainter(new ColorMapPainter());
@@ -38,12 +48,27 @@ public class IsolinesController {
                 new Color(255, 0, 255),
                 new Color(0, 0, 255),
                 new Color(0, 255, 255),
-                new Color(0, 255, 0),
-                new Color(255, 255, 0)
+//                new Color(0, 255, 0),
+//                new Color(255, 255, 0)
         });
         applicationProperties.setIsolinesColor(Color.GRAY);
 
         isolinesView = new IsolinesView(this);
+    }
+
+    public void onOpenButtonClicked(ActionEvent actionEvent) {
+        int result = fileOpenChooser.showOpenDialog(isolinesView);
+
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        try {
+            File file = fileOpenChooser.getSelectedFile();
+            applicationProperties.load(file);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(isolinesView,"Can't load config: " + e.getMessage(),"Open error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void onMouseMoved(MouseEvent mouseEvent) {

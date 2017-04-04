@@ -4,6 +4,8 @@ import ru.nsu.fit.g14205.batalin.models.observe.Observable;
 import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
@@ -57,6 +59,8 @@ public interface PropertiesModel extends Observable {
     Color getValueColor(double value);
     Color[] getValuesColors();
     void setValuesColors(Color[] colors);
+
+    public void load(File file) throws IOException;
 
     enum Event implements ObserveEvent {
         CELLS_COUNT_CHANGED,

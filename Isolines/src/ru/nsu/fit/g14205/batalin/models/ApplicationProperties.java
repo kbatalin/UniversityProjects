@@ -3,10 +3,11 @@ package ru.nsu.fit.g14205.batalin.models;
 import ru.nsu.fit.g14205.batalin.models.observe.ObservableBase;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
 import java.awt.*;
+import java.util.List;
 import java.util.function.DoubleBinaryOperator;
 
 /**
@@ -30,6 +31,60 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     private boolean creatingIsolines;
     private boolean dynamicIsolines;
     private boolean entryPointsShown;
+
+    @Override
+    public void load(File file) throws IOException {
+        try (Scanner scanner = new Scanner(file).useLocale(Locale.US)) {
+            String[] strData = nextData(scanner);
+            int k = Integer.parseInt(strData[0]);
+            int m = Integer.parseInt(strData[1]);
+            strData = nextData(scanner);
+
+            int n = Integer.parseInt(strData[0]);
+            strData = nextData(scanner);
+
+            Color[] valuesColors = new Color[n];
+            for(int i = 0; i < n; ++i) {
+                valuesColors[i] = parseColor(strData);
+                strData = nextData(scanner);
+            }
+
+            Color isolinesColor = parseColor(strData);
+
+            setVerticalCellsCount(k);
+            setHorizontalCellsCount(m);
+            setValuesColors(valuesColors);
+            setIsolinesColor(isolinesColor);
+        } catch (Exception e) {
+            throw new IOException(e.getMessage());
+        }
+    }
+
+    private static Color parseColor(String[] data) {
+        int r = Integer.parseInt(data[0]);
+        int g = Integer.parseInt(data[1]);
+        int b = Integer.parseInt(data[2]);
+
+        return new Color(r, g, b);
+    }
+
+    private static String removeComment(String line) {
+        int index = line.indexOf("//");
+        if (index == -1) {
+            return line;
+        }
+
+        return line.substring(0, index);
+    }
+
+    private static String[] nextData(Scanner scanner) {
+        String line = "";
+        while (line.isEmpty()) {
+            line = removeComment(scanner.nextLine()).trim();
+        }
+
+        return line.split(" ");
+    }
 
     @Override
     public boolean isEntryPointsShown() {
