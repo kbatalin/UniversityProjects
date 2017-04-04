@@ -18,6 +18,7 @@ import java.util.ArrayList;
  */
 public class IsolinesController {
     private PropertiesModel applicationProperties;
+    private int dynamicIsolineIndex = -1;
 
     private IsolinesView isolinesView;
 
@@ -61,19 +62,49 @@ public class IsolinesController {
     }
 
     public void onMouseDragged(MouseEvent mouseEvent) {
-
-    }
-
-    public void onMousePressed(MouseEvent mouseEvent) {
-
-    }
-
-    public void onMouseReleased(MouseEvent mouseEvent) {
-        if (!applicationProperties.isCreatingIsolines()) {
+        if (!applicationProperties.isDynamicIsolines()) {
             return;
         }
 
         ArrayList<Double> isolinesValues = applicationProperties.getIsolinesValues();
+        Point2D pos = pixel2Area(mouseEvent.getPoint());
+        double f = applicationProperties.getMainFunction().applyAsDouble(pos.getX(), pos.getY());
+        if(dynamicIsolineIndex != -1) {
+            isolinesValues.remove(dynamicIsolineIndex);
+            dynamicIsolineIndex = -1;
+        }
+        isolinesValues.add(f);
+        dynamicIsolineIndex = isolinesValues.size() - 1;
+        dynamicIsolineIndex = isolinesValues.size() - 1;
+        applicationProperties.setIsolinesValues(isolinesValues);
+    }
+
+    public void onMousePressed(MouseEvent mouseEvent) {
+        if (!applicationProperties.isDynamicIsolines()) {
+            return;
+        }
+
+        ArrayList<Double> isolinesValues = applicationProperties.getIsolinesValues();
+        Point2D pos = pixel2Area(mouseEvent.getPoint());
+        double f = applicationProperties.getMainFunction().applyAsDouble(pos.getX(), pos.getY());
+        isolinesValues.add(f);
+        dynamicIsolineIndex = isolinesValues.size() - 1;
+        applicationProperties.setIsolinesValues(isolinesValues);
+    }
+
+    public void onMouseReleased(MouseEvent mouseEvent) {
+        ArrayList<Double> isolinesValues = applicationProperties.getIsolinesValues();
+
+        if (applicationProperties.isDynamicIsolines() && dynamicIsolineIndex != -1) {
+            isolinesValues.remove(dynamicIsolineIndex);
+            applicationProperties.setIsolinesValues(isolinesValues);
+            dynamicIsolineIndex = -1;
+        }
+
+        if (!applicationProperties.isCreatingIsolines()) {
+            return;
+        }
+
         Point2D pos = pixel2Area(mouseEvent.getPoint());
         double f = applicationProperties.getMainFunction().applyAsDouble(pos.getX(), pos.getY());
         isolinesValues.add(f);
