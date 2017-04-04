@@ -74,7 +74,8 @@ public class IsolinesView extends JFrame {
                 "create_isoline.png", false, actionEvent -> isolinesController.onCreateIsolineButtonClicked(actionEvent));
         buttonsManager.addToggleItem(editMenu, "Create several isolines", "Create several isolines",
                 "dynamic_isoline.png", false, actionEvent -> isolinesController.onDynamicIsolineButtonClicked(actionEvent));
-        buttonsManager.addItem(editMenu, "Clear isolines", "Clear isolines", "trash.png", null);
+        buttonsManager.addItem(editMenu, "Clear isolines", "Clear isolines",
+                "trash.png", actionEvent -> isolinesController.onClickClearIsolinesButtons(actionEvent));
     }
 
     private void initViewMenu() {

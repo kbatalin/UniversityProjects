@@ -61,6 +61,10 @@ public class IsolinesController {
         return new Point2D.Double(x, y);
     }
 
+    public void onClickClearIsolinesButtons(ActionEvent actionEvent) {
+        applicationProperties.setIsolinesValues(new ArrayList<>());
+    }
+
     public void onMouseDragged(MouseEvent mouseEvent) {
         if (!applicationProperties.isDynamicIsolines()) {
             return;
