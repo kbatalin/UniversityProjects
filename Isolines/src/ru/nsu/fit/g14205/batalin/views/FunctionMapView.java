@@ -6,6 +6,7 @@ import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Dimension2D;
 import java.awt.image.AffineTransformOp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,14 +131,14 @@ public class FunctionMapView extends JComponent {
 
         for(int y = 0; y < applicationProperties.getHorizontalCellsCount(); ++y) {
             for(int x = 0; x < applicationProperties.getVerticalCellsCount(); ++x) {
-                Point displayPos = new Point(
-                        (int)(x * displayCellWidth),
-                        (int)(y * displayCellHeight)
+                Point2D displayPos = new Point2D.Double(
+                        x * displayCellWidth,
+                        y * displayCellHeight
                 );
 
                 Point2D.Double realPos = new Point2D.Double(
-                        displayPos.x / widthRatio + area.first.getX(),
-                        displayPos.y / heightRatio + area.first.getY()
+                        displayPos.getX() / widthRatio + area.first.getX(),
+                        displayPos.getY() / heightRatio + area.first.getY()
                 );
 
                 double f1 = function.applyAsDouble(realPos.getX(), realPos.getY());
@@ -146,16 +147,16 @@ public class FunctionMapView extends JComponent {
                 double f4 = function.applyAsDouble(realPos.getX(), realPos.getY() + realCellHeight);
 
                 for(double isolineValue : isolinesValues) {
-                    int subImgWidth = Math.min(map.getWidth() - displayPos.x, (int)(((x + 1) * displayCellWidth)) - displayPos.x);
-                    int subImgHeight = Math.min(map.getHeight() - displayPos.y, (int)(((y + 1) * displayCellHeight)) - displayPos.y);
-                    paintIsoline(map, displayPos, new Dimension(subImgWidth, subImgHeight),
+                    double subImgWidth = Math.min(map.getWidth() - displayPos.getX(), (((x + 1) * displayCellWidth)) - displayPos.getX());
+                    double subImgHeight = Math.min(map.getHeight() - displayPos.getY(), (((y + 1) * displayCellHeight)) - displayPos.getY());
+                    paintIsoline(map, displayPos, subImgWidth, subImgHeight,
                             new double[]{f1, f2, f3, f4}, isolineValue);
                 }
             }
         }
     }
 
-    private void paintIsoline(BufferedImage image, Point startPos, Dimension size, double[] f, double value) {
+    private void paintIsoline(BufferedImage image, Point2D startPos, double width, double height, double[] f, double value) {
         double eps = 1e-6;
         for(int i = 0; i < f.length; ++i) {
             if (Double.compare(f[i], value) == 0) {
@@ -182,72 +183,64 @@ public class FunctionMapView extends JComponent {
 
             case 1:
             case 14:
-                a = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
-                b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)size.getHeight());
+                a = new Point((int)Math.round(startPos.getX()), (int)Math.round(startPos.getY() + height * (value - f[0]) / (f[3] - f[0])));
+                b = new Point((int)Math.round(startPos.getX() + width * (value - f[3]) / (f[2] - f[3])), (int)Math.round(startPos.getY() + height));
                 break;
 
             case 2:
             case 13:
-                a = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
-                b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)(size.getHeight()));
+                a = new Point((int)Math.round(startPos.getX() + width), (int)Math.round(startPos.getY() + height * (value - f[1]) / (f[2] - f[1])));
+                b = new Point((int)Math.round(startPos.getX() + width * (value - f[3]) / (f[2] - f[3])), (int)Math.round(startPos.getY() + height));
                 break;
 
             case 3:
             case 12:
-                a = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
-                b = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                a = new Point((int)Math.round(startPos.getX()), (int)Math.round(startPos.getY() + height * (value - f[0]) / (f[3] - f[0])));
+                b = new Point((int)Math.round(startPos.getX() + width), (int)Math.round(startPos.getY() + height * (value - f[1]) / (f[2] - f[1])));
                 break;
 
             case 4:
             case 11:
-                a = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                b = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                a = new Point((int)Math.round(startPos.getX() + width * (value - f[0]) / (f[1] - f[0])), (int)Math.round(startPos.getY()));
+                b = new Point((int)Math.round(startPos.getX() + width), (int)Math.round(startPos.getY() + height * (value - f[1]) / (f[2] - f[1])));
                 break;
 
             case 5:
             case 10: {
                 double center = (f[0] + f[1] + f[2] + f[3]) / 4;
                 if(Double.compare(value, center) == Double.compare(value, f[0])) {
-                    a = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
-                    b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)(size.getHeight()));
-                    c = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                    d = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                    a = new Point((int)Math.round(startPos.getX()), (int)Math.round(startPos.getY() + height * (value - f[0]) / (f[3] - f[0])));
+                    b = new Point((int)Math.round(startPos.getX() + width * (value - f[3]) / (f[2] - f[3])), (int)Math.round(startPos.getY() + height));
+                    c = new Point((int)Math.round(startPos.getX() + width * (value - f[0]) / (f[1] - f[0])), (int)Math.round(startPos.getY()));
+                    d = new Point((int)Math.round(startPos.getX() + width), (int)Math.round(startPos.getY() + height * (value - f[1]) / (f[2] - f[1])));
                 } else {
-                    a = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
-                    b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)(size.getHeight()));
-                    c = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                    d = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                    a = new Point((int)Math.round(startPos.getX() + width), (int)Math.round(startPos.getY() + height * (value - f[1]) / (f[2] - f[1])));
+                    b = new Point((int)Math.round(startPos.getX() + width * (value - f[3]) / (f[2] - f[3])), (int)Math.round(startPos.getY() + height));
+                    c = new Point((int)Math.round(startPos.getX() + width * (value - f[0]) / (f[1] - f[0])), (int)Math.round(startPos.getY()));
+                    d = new Point((int)Math.round(startPos.getX()), (int)Math.round(startPos.getY() + height * (value - f[0]) / (f[3] - f[0])));
                 }
                 break;
             }
 
             case 6:
             case 9:
-                a = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)(size.getHeight()));
+                a = new Point((int)Math.round(startPos.getX() + width * (value - f[0]) / (f[1] - f[0])), (int)Math.round(startPos.getY()));
+                b = new Point((int)Math.round(startPos.getX() + width * (value - f[3]) / (f[2] - f[3])), (int)Math.round(startPos.getY() + height));
                 break;
 
             case 7:
             case 8:
-                a = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                b = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                a = new Point((int)Math.round(startPos.getX() + width * (value - f[0]) / (f[1] - f[0])), (int)Math.round(startPos.getY()));
+                b = new Point((int)Math.round(startPos.getX()), (int)Math.round(startPos.getY() + height * (value - f[0]) / (f[3] - f[0])));
                 break;
         }
 
         Graphics2D graphics = image.createGraphics();
         graphics.setPaint(isolinesController.getApplicationProperties().getIsolinesColor());
         if (a != null && b != null) {
-            a.x += startPos.x;
-            a.y += startPos.y;
-            b.x += startPos.x;
-            b.y += startPos.y;
             graphics.drawLine(a.x, a.y, b.x, b.y);
         }
         if (c != null && d != null) {
-            c.x += startPos.x;
-            c.y += startPos.y;
-            d.x += startPos.x;
-            d.y += startPos.y;
             graphics.drawLine(c.x, c.y, d.x, d.y);
         }
 
