@@ -148,14 +148,14 @@ public class FunctionMapView extends JComponent {
                 for(double isolineValue : isolinesValues) {
                     int subImgWidth = Math.min(map.getWidth() - (int)displayPos.x, (int)(((x + 1) * displayCellWidth) - displayPos.x + 1));
                     int subImgHeight = Math.min(map.getHeight() - (int)displayPos.y, (int)(((y + 1) * displayCellHeight) - displayPos.y + 1));
-                    paintIsoline(map.getSubimage((int)displayPos.x, (int)displayPos.y, subImgWidth, subImgHeight),
+                    paintIsoline(map, displayPos, new Dimension(subImgWidth, subImgHeight),
                             new double[]{f1, f2, f3, f4}, isolineValue);
                 }
             }
         }
     }
 
-    private void paintIsoline(BufferedImage image, double[] f, double value) {
+    private void paintIsoline(BufferedImage image, Point2D startPos, Dimension size, double[] f, double value) {
         double eps = 1e-6;
         for(int i = 0; i < f.length; ++i) {
             if (Double.compare(f[i], value) == 0) {
@@ -182,55 +182,55 @@ public class FunctionMapView extends JComponent {
 
             case 1:
             case 14:
-                a = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
-                b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
+                a = new Point((int)(int)startPos.getX(), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
                 break;
 
             case 2:
             case 13:
-                a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
-                b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
+                a = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
                 break;
 
             case 3:
             case 12:
-                a = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
-                b = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                a = new Point((int)((int)startPos.getX()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                b = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 break;
 
             case 4:
             case 11:
-                a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                b = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                a = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
+                b = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 break;
 
             case 5:
             case 10: {
                 double center = (f[0] + f[1] + f[2] + f[3]) / 4;
                 if(Double.compare(value, center) == Double.compare(value, f[0])) {
-                    a = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
-                    b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
-                    c = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                    d = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                    a = new Point((int)(int)startPos.getX(), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                    b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
+                    c = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
+                    d = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 } else {
-                    a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
-                    b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
-                    c = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                    d = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                    a = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                    b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
+                    c = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
+                    d = new Point((int)(int)startPos.getX(), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
                 }
                 break;
             }
 
             case 6:
             case 9:
-                a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
+                a = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
+                b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
                 break;
 
             case 7:
             case 8:
-                a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-                b = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                a = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
+                b = new Point((int)(int)startPos.getX(), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
                 break;
         }
 
