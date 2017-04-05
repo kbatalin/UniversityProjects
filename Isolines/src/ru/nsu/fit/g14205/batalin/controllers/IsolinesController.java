@@ -34,7 +34,6 @@ public class IsolinesController {
         fileOpenChooser.setFileFilter(settingsFileFilter);
 
         applicationProperties = ApplicationProperties.createDefault();
-        applicationProperties.setMainFunction(new ParaboloidFunction());
 
         isolinesView = new IsolinesView(this);
     }

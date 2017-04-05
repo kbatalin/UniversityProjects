@@ -42,7 +42,7 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
 
     @Override
     public void initDefault() {
-        setArea(new Area(-5, -5, 5, 5));
+        setArea(new Area(-2, -4, 2, 4));
         setHorizontalCellsCount(10);
         setVerticalCellsCount(10);
         setGridShown(false);
@@ -50,7 +50,7 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
         setPainter(new ColorMapPainter());
         setDynamicIsolines(false);
         setCreatingIsolines(false);
-        setMainFunction(new SinCosFunction());
+        setMainFunction(new IlFunction());
         setValuesColors(new Color[]{
                 new Color(255, 0, 0),
                 new Color(255, 0, 255),
