@@ -5,6 +5,8 @@ import ru.nsu.fit.g14205.batalin.models.Area;
 import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -79,6 +81,10 @@ public class FunctionMapView extends JComponent {
             paintIsolines(map);
         }
 
+        AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+        tx.translate(0, -map.getHeight(null));
+        AffineTransformOp op = new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+        map = op.filter(map, null);
         graphics.drawImage(map, 0, 0, null);
     }
 
@@ -249,7 +255,6 @@ public class FunctionMapView extends JComponent {
         if (pos == null) {
             return;
         }
-//        graphics.setPaint(Color.RED);
         graphics.fillOval(pos.x - 5, pos.y - 5, 10, 10);
     }
 }

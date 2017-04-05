@@ -13,6 +13,6 @@ public class ParaboloidFunction implements DoubleBinaryOperator {
 //        double mod = 10.;
 //        res = res - (int)(res / mod) * mod;
 //        return res;
-        return Math.sqrt(5000 - x * x - y * y);
+        return x * x + y * y;
     }
 }

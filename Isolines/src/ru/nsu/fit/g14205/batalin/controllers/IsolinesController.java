@@ -86,6 +86,10 @@ public class IsolinesController {
 
     public void onMouseMoved(MouseEvent mouseEvent) {
         Point2D pos = pixel2Area(mouseEvent.getPoint());
+        showFunctionOnToolbar(pos);
+    }
+
+    private void showFunctionOnToolbar(Point2D pos) {
         double f = applicationProperties.getMainFunction().applyAsDouble(pos.getX(), pos.getY());
         isolinesView.getStatusBarView().setMessage(String.format("F(%.1f, %.1f) = %.1f", pos.getX(), pos.getY(), f));
     }
@@ -95,7 +99,7 @@ public class IsolinesController {
         Area area = applicationProperties.getArea();
         Dimension areaSize = area.toDimension();
         double x = pos.x / mapSize.getWidth() * areaSize.width + area.first.getX();
-        double y = pos.y / mapSize.getHeight() * areaSize.height + area.first.getY();
+        double y = (mapSize.getHeight() - 1 - pos.y) / mapSize.getHeight() * areaSize.height + area.first.getY();
         return new Point2D.Double(x, y);
     }
 
@@ -114,12 +118,13 @@ public class IsolinesController {
     }
 
     public void onMouseDragged(MouseEvent mouseEvent) {
+        Point2D pos = pixel2Area(mouseEvent.getPoint());
+        showFunctionOnToolbar(pos);
         if (!applicationProperties.isDynamicIsolines()) {
             return;
         }
 
         ArrayList<Double> isolinesValues = applicationProperties.getIsolinesValues();
-        Point2D pos = pixel2Area(mouseEvent.getPoint());
         double f = applicationProperties.getMainFunction().applyAsDouble(pos.getX(), pos.getY());
         if(dynamicIsolineIndex != -1) {
             isolinesValues.remove(dynamicIsolineIndex);
