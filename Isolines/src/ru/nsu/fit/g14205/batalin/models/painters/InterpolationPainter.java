@@ -38,7 +38,7 @@ public class InterpolationPainter implements Painter {
         return canvas;
     }
 
-    private Color getColor(double value, PropertiesModel properties) {
+    public Color getColor(double value, PropertiesModel properties) {
         double[] values = properties.getValues();
         Color[] colors = properties.getValuesColors();
         if (values == null || colors == null) {
@@ -46,24 +46,17 @@ public class InterpolationPainter implements Painter {
         }
 
         double len = (properties.getMaxValue() - properties.getMinValue()) / (values.length + 1);
+        double offsetVal = Math.max(0., Math.min(properties.getMaxValue(), (value - properties.getMinValue() - len / 2)));
+        double part = offsetVal / len;
+        double ratio = part - (int) part;
+        int prevIndex = Math.min(colors.length - 1, Math.max(0, (int)part));
+        int nextIndex = Math.min(colors.length - 1, Math.max(0, prevIndex + 1));
+        Color prevColor = colors[prevIndex];
+        Color nextColor = colors[nextIndex];
 
-        int i = 0;
-        for(; i < values.length; ++i) {
-            if (Double.compare(value, values[i] + len / 2) < 0) {
-                break;
-            }
-        }
-
-
-        double currentVal = (i > 0 ? values[i - 1] : properties.getMinValue()) + len / 2;
-        double nextVal = (i < values.length ? values[i] : properties.getMaxValue()) + len / 2;
-
-        Color color = colors[i];
-        Color nextColor = colors[Math.min(colors.length - 1, i + 1)];
-
-        double red = color.getRed() / 255. * (nextVal - value) / len + nextColor.getRed() / 255. * (value - currentVal) / len;
-        double green = color.getGreen() / 255. * (nextVal - value) / len + nextColor.getGreen() / 255. * (value - currentVal) / len;
-        double blue = color.getBlue() / 255. * (nextVal - value) / len + nextColor.getBlue() / 255. * (value - currentVal) / len;
+        double red = prevColor.getRed()/255. + (nextColor.getRed() - prevColor.getRed()) / 255. * ratio;
+        double green = prevColor.getGreen()/255. + (nextColor.getGreen() - prevColor.getGreen()) / 255. * ratio;
+        double blue = prevColor.getBlue()/255. + (nextColor.getBlue() - prevColor.getBlue()) / 255. * ratio;
 
         return new Color(
                 ColorUtils.validate(red),
