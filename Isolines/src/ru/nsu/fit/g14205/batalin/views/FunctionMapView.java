@@ -130,14 +130,14 @@ public class FunctionMapView extends JComponent {
 
         for(int y = 0; y < applicationProperties.getHorizontalCellsCount(); ++y) {
             for(int x = 0; x < applicationProperties.getVerticalCellsCount(); ++x) {
-                Point2D.Double displayPos = new Point2D.Double(
-                        x * displayCellWidth,
-                        y * displayCellHeight
+                Point displayPos = new Point(
+                        (int)(x * displayCellWidth),
+                        (int)(y * displayCellHeight)
                 );
 
                 Point2D.Double realPos = new Point2D.Double(
-                        displayPos.getX() / widthRatio + area.first.getX(),
-                        displayPos.getY() / heightRatio + area.first.getY()
+                        displayPos.x / widthRatio + area.first.getX(),
+                        displayPos.y / heightRatio + area.first.getY()
                 );
 
                 double f1 = function.applyAsDouble(realPos.getX(), realPos.getY());
@@ -146,8 +146,8 @@ public class FunctionMapView extends JComponent {
                 double f4 = function.applyAsDouble(realPos.getX(), realPos.getY() + realCellHeight);
 
                 for(double isolineValue : isolinesValues) {
-                    int subImgWidth = Math.min(map.getWidth() - (int)displayPos.x, (int)(((x + 1) * displayCellWidth) - displayPos.x + 1));
-                    int subImgHeight = Math.min(map.getHeight() - (int)displayPos.y, (int)(((y + 1) * displayCellHeight) - displayPos.y + 1));
+                    int subImgWidth = Math.min(map.getWidth() - displayPos.x, (int)(((x + 1) * displayCellWidth)) - displayPos.x);
+                    int subImgHeight = Math.min(map.getHeight() - displayPos.y, (int)(((y + 1) * displayCellHeight)) - displayPos.y);
                     paintIsoline(map, displayPos, new Dimension(subImgWidth, subImgHeight),
                             new double[]{f1, f2, f3, f4}, isolineValue);
                 }
@@ -155,7 +155,7 @@ public class FunctionMapView extends JComponent {
         }
     }
 
-    private void paintIsoline(BufferedImage image, Point2D startPos, Dimension size, double[] f, double value) {
+    private void paintIsoline(BufferedImage image, Point startPos, Dimension size, double[] f, double value) {
         double eps = 1e-6;
         for(int i = 0; i < f.length; ++i) {
             if (Double.compare(f[i], value) == 0) {
