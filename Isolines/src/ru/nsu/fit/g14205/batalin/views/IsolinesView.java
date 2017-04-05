@@ -57,7 +57,7 @@ public class IsolinesView extends JFrame {
     private void initFileMenu() {
         JMenu fileMenu = buttonsManager.addMenu(null, "File");
 
-        buttonsManager.addItem(fileMenu, "New", "Create new", "document.png", null);
+        buttonsManager.addItem(fileMenu, "New", "Create new", "document.png", actionEvent -> isolinesController.onNewButtonClicked(actionEvent));
         buttonsManager.addItem(fileMenu, "Open", "Open", "folder.png", actionEvent -> isolinesController.onOpenButtonClicked(actionEvent));
 
         buttonsManager.addMenuSeparator(fileMenu);

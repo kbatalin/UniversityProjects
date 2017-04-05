@@ -1,6 +1,7 @@
 package ru.nsu.fit.g14205.batalin.models;
 
 import ru.nsu.fit.g14205.batalin.models.observe.ObservableBase;
+import ru.nsu.fit.g14205.batalin.models.painters.ColorMapPainter;
 import ru.nsu.fit.g14205.batalin.models.painters.Painter;
 
 import java.io.File;
@@ -31,6 +32,33 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
     private boolean creatingIsolines;
     private boolean dynamicIsolines;
     private boolean entryPointsShown;
+
+    public static ApplicationProperties createDefault() {
+        ApplicationProperties properties = new ApplicationProperties();
+        properties.initDefault();
+
+        return properties;
+    }
+
+    @Override
+    public void initDefault() {
+        setArea(new Area(-5, -5, 5, 5));
+        setHorizontalCellsCount(10);
+        setVerticalCellsCount(10);
+        setGridShown(false);
+        setIsolinesShown(false);
+        setPainter(new ColorMapPainter());
+        setDynamicIsolines(false);
+        setCreatingIsolines(false);
+        setMainFunction(new SinCosFunction());
+        setValuesColors(new Color[]{
+                new Color(255, 0, 0),
+                new Color(255, 0, 255),
+                new Color(0, 0, 255),
+                new Color(0, 255, 255),
+        });
+        setIsolinesColor(Color.WHITE);
+    }
 
     @Override
     public void load(File file) throws IOException {

@@ -33,27 +33,13 @@ public class IsolinesController {
         FileNameExtensionFilter settingsFileFilter = new FileNameExtensionFilter("Text (*.txt)", "txt");
         fileOpenChooser.setFileFilter(settingsFileFilter);
 
-        applicationProperties = new ApplicationProperties();
-        applicationProperties.setArea(new Area(-5, -5, 5, 5));
-        applicationProperties.setHorizontalCellsCount(10);
-        applicationProperties.setVerticalCellsCount(10);
-        applicationProperties.setGridShown(false);
-        applicationProperties.setIsolinesShown(false);
-        applicationProperties.setPainter(new ColorMapPainter());
-        applicationProperties.setDynamicIsolines(false);
-        applicationProperties.setCreatingIsolines(false);
-        applicationProperties.setMainFunction(new SinCosFunction());
-        applicationProperties.setValuesColors(new Color[]{
-                new Color(255, 0, 0),
-                new Color(255, 0, 255),
-                new Color(0, 0, 255),
-                new Color(0, 255, 255),
-//                new Color(0, 255, 0),
-//                new Color(255, 255, 0)
-        });
-        applicationProperties.setIsolinesColor(Color.GRAY);
+        applicationProperties = ApplicationProperties.createDefault();
 
         isolinesView = new IsolinesView(this);
+    }
+
+    public void onNewButtonClicked(ActionEvent actionEvent) {
+        applicationProperties.initDefault();
     }
 
     public void onExitButtonClicked(ActionEvent actionEvent) {

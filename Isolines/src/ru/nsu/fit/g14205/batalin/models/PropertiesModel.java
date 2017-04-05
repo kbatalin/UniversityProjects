@@ -60,7 +60,8 @@ public interface PropertiesModel extends Observable {
     Color[] getValuesColors();
     void setValuesColors(Color[] colors);
 
-    public void load(File file) throws IOException;
+    void load(File file) throws IOException;
+    void initDefault();
 
     enum Event implements ObserveEvent {
         CELLS_COUNT_CHANGED,
