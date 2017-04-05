@@ -59,8 +59,6 @@ public class IsolinesView extends JFrame {
 
         buttonsManager.addItem(fileMenu, "New", "Create new", "document.png", null);
         buttonsManager.addItem(fileMenu, "Open", "Open", "folder.png", actionEvent -> isolinesController.onOpenButtonClicked(actionEvent));
-        buttonsManager.addItem(fileMenu, "Save", "Save", "save.png", null);
-        buttonsManager.addItem(fileMenu, "Save as...", "Save as...", "save_as.png", null);
 
         buttonsManager.addMenuSeparator(fileMenu);
 
@@ -100,26 +98,6 @@ public class IsolinesView extends JFrame {
                 "isolines.png", false, actionEvent -> isolinesController.onIsolinesShowButtonClicked(actionEvent));
         buttonsManager.addToggleItem(viewMenu, "Show entry points", "Show entry points",
                 "target.png", false, actionEvent -> isolinesController.onShowEntryPointsButtonClicked(actionEvent));
-        buttonsManager.addSeparator(viewMenu);
-
-        buttonsManager.addToggleItem(viewMenu, "Black/white", "Black/white", "map.png", false, null);
-        buttonsManager.addSeparator(viewMenu);
-        buttonsManager.addToggleItem(viewMenu, "Build type", "Build type", "picture.png", false, null);
-        buttonsManager.addSeparator(viewMenu);
-        buttonsManager.addToggleItem(viewMenu, "Mesh", "Mesh", "note.png", true, null);
-        buttonsManager.addToggleItem(viewMenu, "Map", "Map", "color.png", true, null);
-        buttonsManager.addToggleItem(viewMenu, "Isolines", "Isolines", "menu.png", true, null);
-
-        buttonsManager.addSeparator(viewMenu);
-        ButtonGroup menuGroup = new ButtonGroup();
-        ButtonGroup toolbarGroup = new ButtonGroup();
-
-        buttonsManager.addRadioItem(viewMenu, "Triangle barycentric", menuGroup,
-                "Triangle barycentric", "number-one-in-a-circle.png", toolbarGroup, true, null);
-        buttonsManager.addRadioItem(viewMenu, "Quad bilinear", menuGroup,
-                "Quad bilinear", "number-two-in-a-circle.png", toolbarGroup, false, null);
-        buttonsManager.addRadioItem(viewMenu, "Triangle bilinear", menuGroup,
-                "Triangle bilinear", "number-three-in-a-circle.png", toolbarGroup, false, null);
     }
 
     private void initHelpMenu() {
