@@ -72,6 +72,13 @@ public class IsolinesController {
         applicationProperties.setHorizontalCellsCount(dialog.getRows());
     }
 
+    public void onAboutDialogClicked() {
+        AboutView dialog = new AboutView();
+        dialog.pack();
+        dialog.setLocationRelativeTo(isolinesView);
+        dialog.setVisible(true);
+    }
+
     public void onOpenButtonClicked(ActionEvent actionEvent) {
         int result = fileOpenChooser.showOpenDialog(isolinesView);
 

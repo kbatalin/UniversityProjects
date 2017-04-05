@@ -102,7 +102,7 @@ public class IsolinesView extends JFrame {
 
     private void initHelpMenu() {
         JMenu helpMenu = buttonsManager.addMenu(null, "Help");
-        buttonsManager.addItem(helpMenu, "About", "About", "info.png", null);
+        buttonsManager.addItem(helpMenu, "About", "About", "info.png", actionEvent -> isolinesController.onAboutDialogClicked());
     }
 
     private void initWorkSpace() {
