@@ -135,8 +135,8 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
 
     @Override
     public void setHorizontalCellsCount(int horizontalCellsCount) {
-        if (horizontalCellsCount < 1) {
-            throw new IllegalArgumentException("count must be > 1");
+        if (horizontalCellsCount < 2) {
+            throw new IllegalArgumentException("count must be > 2");
         }
 
         this.horizontalCellsCount = horizontalCellsCount;
@@ -150,8 +150,8 @@ public class ApplicationProperties extends ObservableBase implements PropertiesM
 
     @Override
     public void setVerticalCellsCount(int verticalCellsCount) {
-        if (verticalCellsCount < 1) {
-            throw new IllegalArgumentException("count must be > 1");
+        if (verticalCellsCount < 2) {
+            throw new IllegalArgumentException("count must be > 2");
         }
 
         this.verticalCellsCount = verticalCellsCount;
