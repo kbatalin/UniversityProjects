@@ -90,14 +90,14 @@ public class FunctionMapView extends JComponent {
         Stroke dashed = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9}, 0);
         graphics.setStroke(dashed);
 
-        double heightRatio = (double) map.getHeight() / (applicationProperties.getHorizontalCellsCount() - 1);
-        for(int i = 1, count = applicationProperties.getHorizontalCellsCount() - 1; i < count; ++i) {
+        double heightRatio = (double) map.getHeight() / applicationProperties.getHorizontalCellsCount();
+        for(int i = 1, count = applicationProperties.getHorizontalCellsCount(); i < count; ++i) {
             int crd = (int) (i * heightRatio);
             graphics.drawLine(0, crd, map.getWidth(), crd);
         }
 
-        double widthRatio = (double) map.getWidth() / (applicationProperties.getVerticalCellsCount() - 1);
-        for(int i = 1, count = applicationProperties.getVerticalCellsCount() - 1; i < count; ++i) {
+        double widthRatio = (double) map.getWidth() / applicationProperties.getVerticalCellsCount();
+        for(int i = 1, count = applicationProperties.getVerticalCellsCount(); i < count; ++i) {
             int crd = (int) (i * widthRatio);
             graphics.drawLine(crd, 0, crd, map.getWidth());
         }
@@ -112,8 +112,8 @@ public class FunctionMapView extends JComponent {
         double widthRatio = map.getWidth() / areaSize.getWidth();
         double heightRatio = map.getHeight() / areaSize.getHeight();
         DoubleBinaryOperator function = applicationProperties.getMainFunction();
-        double displayCellWidth = (double) map.getWidth() / (applicationProperties.getVerticalCellsCount() - 1);
-        double displayCellHeight = (double) map.getHeight() / (applicationProperties.getHorizontalCellsCount() - 1);
+        double displayCellWidth = (double) map.getWidth() / applicationProperties.getVerticalCellsCount();
+        double displayCellHeight = (double) map.getHeight() / applicationProperties.getHorizontalCellsCount();
         double realCellWidth = displayCellWidth / widthRatio;
         double realCellHeight = displayCellHeight / heightRatio;
 
@@ -122,8 +122,8 @@ public class FunctionMapView extends JComponent {
         Stroke solid = new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{9, 0}, 0);
         graphics.setStroke(solid);
 
-        for(int y = 0; y < (applicationProperties.getHorizontalCellsCount() - 1); ++y) {
-            for(int x = 0; x < (applicationProperties.getVerticalCellsCount() - 1); ++x) {
+        for(int y = 0; y < applicationProperties.getHorizontalCellsCount(); ++y) {
+            for(int x = 0; x < applicationProperties.getVerticalCellsCount(); ++x) {
                 Point2D.Double displayPos = new Point2D.Double(
                         x * displayCellWidth,
                         y * displayCellHeight
@@ -182,8 +182,8 @@ public class FunctionMapView extends JComponent {
 
             case 2:
             case 13:
-            a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
-            b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
+                a = new Point(image.getWidth(), (int) (image.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
                 break;
 
             case 3:
@@ -217,14 +217,14 @@ public class FunctionMapView extends JComponent {
 
             case 6:
             case 9:
-            a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-            b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
-            break;
+                a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+                b = new Point((int) (image.getWidth() * (value - f[3]) / (f[2] - f[3])), image.getHeight());
+                break;
 
             case 7:
             case 8:
-            a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
-            b = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                a = new Point((int) (image.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+                b = new Point(0, (int) (image.getHeight() * (value - f[0]) / (f[3] - f[0])));
                 break;
         }
 
