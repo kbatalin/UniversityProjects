@@ -182,64 +182,72 @@ public class FunctionMapView extends JComponent {
 
             case 1:
             case 14:
-                a = new Point((int)(int)startPos.getX(), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
-                b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
+                a = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)size.getHeight());
                 break;
 
             case 2:
             case 13:
-                a = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
-                b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
+                a = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)(size.getHeight()));
                 break;
 
             case 3:
             case 12:
-                a = new Point((int)((int)startPos.getX()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
-                b = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                a = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                b = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 break;
 
             case 4:
             case 11:
-                a = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
-                b = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                a = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+                b = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 break;
 
             case 5:
             case 10: {
                 double center = (f[0] + f[1] + f[2] + f[3]) / 4;
                 if(Double.compare(value, center) == Double.compare(value, f[0])) {
-                    a = new Point((int)(int)startPos.getX(), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
-                    b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
-                    c = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
-                    d = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                    a = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                    b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)(size.getHeight()));
+                    c = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+                    d = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
                 } else {
-                    a = new Point((int)((int)startPos.getX() + size.getWidth()), (int) ((int)startPos.getY() + size.getHeight() * (value - f[1]) / (f[2] - f[1])));
-                    b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
-                    c = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
-                    d = new Point((int)(int)startPos.getX(), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                    a = new Point((int)(size.getWidth()), (int) (size.getHeight() * (value - f[1]) / (f[2] - f[1])));
+                    b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)(size.getHeight()));
+                    c = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+                    d = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
                 }
                 break;
             }
 
             case 6:
             case 9:
-                a = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
-                b = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)((int)startPos.getY() + size.getHeight()));
+                a = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+                b = new Point((int) (size.getWidth() * (value - f[3]) / (f[2] - f[3])), (int)(size.getHeight()));
                 break;
 
             case 7:
             case 8:
-                a = new Point((int) ((int)startPos.getX() + size.getWidth() * (value - f[0]) / (f[1] - f[0])), (int)(int)startPos.getY());
-                b = new Point((int)(int)startPos.getX(), (int) ((int)startPos.getY() + size.getHeight() * (value - f[0]) / (f[3] - f[0])));
+                a = new Point((int) (size.getWidth() * (value - f[0]) / (f[1] - f[0])), 0);
+                b = new Point(0, (int) (size.getHeight() * (value - f[0]) / (f[3] - f[0])));
                 break;
         }
 
         Graphics2D graphics = image.createGraphics();
         graphics.setPaint(isolinesController.getApplicationProperties().getIsolinesColor());
         if (a != null && b != null) {
+            a.x += startPos.x;
+            a.y += startPos.y;
+            b.x += startPos.x;
+            b.y += startPos.y;
             graphics.drawLine(a.x, a.y, b.x, b.y);
         }
         if (c != null && d != null) {
+            c.x += startPos.x;
+            c.y += startPos.y;
+            d.x += startPos.x;
+            d.y += startPos.y;
             graphics.drawLine(c.x, c.y, d.x, d.y);
         }
 
