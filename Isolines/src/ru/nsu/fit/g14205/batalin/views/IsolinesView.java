@@ -1,6 +1,7 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.IsolinesController;
+import ru.nsu.fit.g14205.batalin.models.PropertiesModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,9 +69,10 @@ public class IsolinesView extends JFrame {
     private void initEditMenu() {
         JMenu editMenu = buttonsManager.addMenu(null, "Edit");
 
-        buttonsManager.addToggleItem(editMenu, "Create single isoline", "Create single isoline",
+        buttonsManager.addToggleItem(editMenu, "Create singles", "Create singles",
                 "create_isoline.png", false, actionEvent -> isolinesController.onCreateIsolineButtonClicked(actionEvent));
-        buttonsManager.addToggleItem(editMenu, "Create several isolines", "Create several isolines",
+
+        buttonsManager.addToggleItem(editMenu, "Dynamic isolines", "Dynamic isolines",
                 "dynamic_isoline.png", false, actionEvent -> isolinesController.onDynamicIsolineButtonClicked(actionEvent));
         buttonsManager.addItem(editMenu, "Clear isolines", "Clear isolines",
                 "trash.png", actionEvent -> isolinesController.onClearIsolinesButtonClicked(actionEvent));
