@@ -62,7 +62,7 @@ public class IsolinesView extends JFrame {
 
         buttonsManager.addMenuSeparator(fileMenu);
 
-        buttonsManager.addItem(fileMenu, "Exit", null, null, null);
+        buttonsManager.addItem(fileMenu, "Exit", null, null, actionEvent -> isolinesController.onExitButtonClicked(actionEvent));
     }
 
     private void initEditMenu() {
@@ -102,7 +102,7 @@ public class IsolinesView extends JFrame {
 
     private void initHelpMenu() {
         JMenu helpMenu = buttonsManager.addMenu(null, "Help");
-        buttonsManager.addItem(helpMenu, "About", "About", "info.png", actionEvent -> isolinesController.onAboutDialogClicked());
+        buttonsManager.addItem(helpMenu, "About", "About", "info.png", actionEvent -> isolinesController.onAboutDialogClicked(actionEvent));
     }
 
     private void initWorkSpace() {

@@ -56,6 +56,10 @@ public class IsolinesController {
         isolinesView = new IsolinesView(this);
     }
 
+    public void onExitButtonClicked(ActionEvent actionEvent) {
+        System.exit(0);
+    }
+
     public void onSettingsButtonClicked(ActionEvent actionEvent) {
         SettingsView dialog = new SettingsView(this);
         dialog.pack();
@@ -72,7 +76,7 @@ public class IsolinesController {
         applicationProperties.setHorizontalCellsCount(dialog.getRows());
     }
 
-    public void onAboutDialogClicked() {
+    public void onAboutDialogClicked(ActionEvent actionEvent) {
         AboutView dialog = new AboutView();
         dialog.pack();
         dialog.setLocationRelativeTo(isolinesView);
