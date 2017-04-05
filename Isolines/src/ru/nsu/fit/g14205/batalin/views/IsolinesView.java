@@ -76,6 +76,11 @@ public class IsolinesView extends JFrame {
                 "dynamic_isoline.png", false, actionEvent -> isolinesController.onDynamicIsolineButtonClicked(actionEvent));
         buttonsManager.addItem(editMenu, "Clear isolines", "Clear isolines",
                 "trash.png", actionEvent -> isolinesController.onClearIsolinesButtonClicked(actionEvent));
+
+        buttonsManager.addSeparator(editMenu);
+
+        buttonsManager.addItem(editMenu, "Settings", "Settings",
+                "settings.png", actionEvent -> isolinesController.onSettingsButtonClicked(actionEvent));
     }
 
     private void initViewMenu() {

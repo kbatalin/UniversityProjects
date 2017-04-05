@@ -56,6 +56,22 @@ public class IsolinesController {
         isolinesView = new IsolinesView(this);
     }
 
+    public void onSettingsButtonClicked(ActionEvent actionEvent) {
+        SettingsView dialog = new SettingsView(this);
+        dialog.pack();
+        dialog.setLocationRelativeTo(isolinesView);
+        dialog.setVisible(true);
+
+        if (!dialog.getResult()) {
+            return;
+        }
+
+        Area area = new Area(dialog.getA(), dialog.getC(), dialog.getB(), dialog.getD());
+        applicationProperties.setArea(area);
+        applicationProperties.setVerticalCellsCount(dialog.getCols());
+        applicationProperties.setHorizontalCellsCount(dialog.getRows());
+    }
+
     public void onOpenButtonClicked(ActionEvent actionEvent) {
         int result = fileOpenChooser.showOpenDialog(isolinesView);
 
