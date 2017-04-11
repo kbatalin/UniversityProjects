@@ -13,7 +13,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     private ArrayList<LineProperties> lineProperties;
 
     public SimpleApplicationProperties() {
-        controlPointRadius = .2;
+        controlPointRadius = .4;
         lineProperties = new ArrayList<>();
     }
 
