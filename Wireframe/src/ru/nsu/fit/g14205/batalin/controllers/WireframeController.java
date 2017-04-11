@@ -1,5 +1,6 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
+import ru.nsu.fit.g14205.batalin.views.EditorDialog;
 import ru.nsu.fit.g14205.batalin.views.WireframeView;
 
 import javax.swing.*;
@@ -15,6 +16,13 @@ public class WireframeController {
     public void run() {
         wireframeView = new WireframeView(this);
         wireframeView.setVisible(true);
+    }
+
+    public void onLineEditButtonClicked() {
+        EditorDialog dialog = new EditorDialog();
+        dialog.pack();
+        dialog.setLocationRelativeTo(wireframeView);
+        dialog.setVisible(true);
     }
 
     public void onEnterToolbarButton(MouseEvent event) {

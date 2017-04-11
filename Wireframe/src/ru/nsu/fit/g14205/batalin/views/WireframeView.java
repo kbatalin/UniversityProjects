@@ -66,7 +66,7 @@ public class WireframeView extends JFrame {
 
     private void initEditMenu() {
         JMenu editMenu = buttonsManager.addMenu(null, "Edit");
-
+        buttonsManager.addItem(editMenu, "Line editor", null, null, actionEvent -> wireframeController.onLineEditButtonClicked());
     }
 
     private void initViewMenu() {
