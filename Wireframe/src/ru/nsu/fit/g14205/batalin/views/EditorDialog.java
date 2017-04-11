@@ -1,10 +1,14 @@
 package ru.nsu.fit.g14205.batalin.views;
 
+import ru.nsu.fit.g14205.batalin.controllers.EditorController;
+import ru.nsu.fit.g14205.batalin.controllers.WireframeController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class EditorDialog extends JDialog {
+    private EditorController editorController;
     private JPanel contentPane;
 //    private JButton buttonOK;
 //    private JButton buttonCancel;
@@ -33,7 +37,9 @@ public class EditorDialog extends JDialog {
     private JSpinner greenSpinner;
     private JSpinner blueSpinner;
 
-    public EditorDialog() {
+    public EditorDialog(EditorController editorController) {
+        this.editorController = editorController;
+
         setContentPane(contentPane);
         setModal(true);
         setResizable(false);
@@ -81,14 +87,7 @@ public class EditorDialog extends JDialog {
         dispose();
     }
 
-    public static void main(String[] args) {
-        EditorDialog dialog = new EditorDialog();
-        dialog.pack();
-        dialog.setVisible(true);
-        System.exit(0);
-    }
-
     private void createUIComponents() {
-        // TODO: place custom component creation code here
+        content = new LineEditorContentView(editorController);
     }
 }

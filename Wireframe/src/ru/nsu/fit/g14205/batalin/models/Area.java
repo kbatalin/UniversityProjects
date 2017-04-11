@@ -19,10 +19,10 @@ public class Area {
     }
 
     public double getWidth() {
-        return Math.abs(first.getX() - second.getX());
+        return Math.abs(second.getX() - first.getX());
     }
 
     public double getHeight() {
-        return Math.abs(first.getY() - second.getY());
+        return Math.abs(second.getY() - first.getY());
     }
 }
