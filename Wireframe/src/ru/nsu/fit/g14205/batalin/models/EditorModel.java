@@ -19,8 +19,12 @@ public class EditorModel extends ObservableBase implements Observable {
 
     public EditorModel(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
-        zoom = 20;
+        zoom = 100;
         currentLine = 0;
+    }
+
+    public int getDefaultSize() {
+        return 30;
     }
 
     public int getMaxZoom() {

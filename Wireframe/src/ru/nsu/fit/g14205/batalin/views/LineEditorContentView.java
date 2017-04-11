@@ -51,8 +51,20 @@ public class LineEditorContentView extends JPanel {
         Graphics2D graphics = image.createGraphics();
         graphics.setPaint(Color.GRAY);
 
-        graphics.drawLine(0, image.getHeight() / 2, image.getWidth(), image.getHeight() / 2);
-        graphics.drawLine(image.getWidth() / 2, 0, image.getWidth() / 2, image.getHeight());
+        int xCenter = image.getWidth() / 2;
+        int yCenter = image.getHeight() / 2;
+        graphics.drawLine(0, yCenter, image.getWidth(), yCenter);
+        graphics.drawLine(xCenter, 0, xCenter, image.getHeight());
+
+        int size = editorModel.getDefaultSize();
+
+        for(int x = size - (yCenter % size); x < image.getWidth(); x += size) {
+            graphics.drawLine(x, yCenter - 2, x, yCenter + 2);
+        }
+
+        for(int y = size - (xCenter % size); y < image.getHeight(); y += size) {
+            graphics.drawLine(xCenter - 2, y, xCenter + 2, y);
+        }
     }
 
     private void paintLine(BufferedImage image) {
@@ -62,7 +74,7 @@ public class LineEditorContentView extends JPanel {
 
         Dimension size = getSize();
         Area area = lineProperties.getArea();
-        double ratio = Math.min(size.getWidth(), size.getHeight()) / Math.min(area.getWidth(), area.getHeight()) / 100. * zoom;
+        double ratio = editorModel.getDefaultSize() / 100. * zoom;
 
         int lineColor = lineProperties.getColor().getRGB();
 
@@ -87,7 +99,7 @@ public class LineEditorContentView extends JPanel {
 
         Dimension size = getSize();
         Area area = lineProperties.getArea();
-        double ratio = Math.min(size.getWidth(), size.getHeight()) / Math.min(area.getWidth(), area.getHeight()) / 100. * zoom;
+        double ratio = editorModel.getDefaultSize() / 100. * zoom;
 
         int ovalSize = (int)Math.round(applicationProperties.getControlPointRadius() * ratio);
         Iterator<Point2D> controlPointsIterator = lineProperties.getControlPointsIterator();
