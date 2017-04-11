@@ -87,6 +87,10 @@ public class EditorDialog extends JDialog {
         dispose();
     }
 
+    public LineEditorContentView getLineEditorContentView() {
+        return (LineEditorContentView) content;
+    }
+
     private void createUIComponents() {
         content = new LineEditorContentView(editorController);
     }
