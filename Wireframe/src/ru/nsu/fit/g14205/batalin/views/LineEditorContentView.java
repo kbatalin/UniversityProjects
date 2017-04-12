@@ -80,19 +80,20 @@ public class LineEditorContentView extends JPanel {
         Graphics2D graphics = image.createGraphics();
         graphics.setPaint(Color.GRAY);
 
-        int xCenter = image.getWidth() / 2;
-        int yCenter = image.getHeight() / 2;
-        graphics.drawLine(0, yCenter, image.getWidth(), yCenter);
-        graphics.drawLine(xCenter, 0, xCenter, image.getHeight());
+        int widthCenter = image.getWidth() / 2;
+        int heightCenter = image.getHeight() / 2;
+        graphics.drawLine(0, heightCenter, image.getWidth(), heightCenter);
+        graphics.drawLine(widthCenter, 0, widthCenter, image.getHeight());
 
-        int size = editorModel.getDefaultSize();
+        int zoom = editorModel.getZoom();
+        int size = (int)Math.round(editorModel.getDefaultSize() / 100. * zoom);
 
-        for(int x = size - (yCenter % size); x < image.getWidth(); x += size) {
-            graphics.drawLine(x, yCenter - 2, x, yCenter + 2);
+        for(int x = (widthCenter % size); x < image.getWidth(); x += size) {
+            graphics.drawLine(x, heightCenter - 2, x, heightCenter + 2);
         }
 
-        for(int y = size - (xCenter % size); y < image.getHeight(); y += size) {
-            graphics.drawLine(xCenter - 2, y, xCenter + 2, y);
+        for(int y = (heightCenter % size); y < image.getHeight(); y += size) {
+            graphics.drawLine(widthCenter - 2, y, widthCenter + 2, y);
         }
     }
 
@@ -112,7 +113,6 @@ public class LineEditorContentView extends JPanel {
             int x = (int)Math.round(pos.getX() * ratio + size.getWidth() / 2);
             int y = (int)Math.round(size.getHeight() - pos.getY() * ratio - size.getHeight() / 2);
             if (x < 0 || x >= image.getWidth() || y < 0 || y >= image.getHeight()) {
-                System.out.println(x + " " + y);
                 continue;
             }
             image.setRGB(x, y, lineColor);
