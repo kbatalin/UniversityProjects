@@ -22,6 +22,8 @@ public interface LineProperties extends Observable {
 
     Point2D getPoint(double t);
 
+    double getLength();
+
     Area getArea();
 
     enum Event implements ObserveEvent {

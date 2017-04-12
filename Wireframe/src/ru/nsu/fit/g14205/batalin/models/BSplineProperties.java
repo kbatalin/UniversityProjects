@@ -115,6 +115,11 @@ public class BSplineProperties extends ObservableBase implements LineProperties 
         return getPoint(segmentIndex, tSegment);
     }
 
+    @Override
+    public double getLength() {
+        return length;
+    }
+
     private Point2D getPoint(int segment, double t) {
         if (Double.compare(t, 0.) < 0 || Double.compare(t, 1.) > 0) {
             throw new IllegalArgumentException("Param t must be >= 0 and <= 1");
