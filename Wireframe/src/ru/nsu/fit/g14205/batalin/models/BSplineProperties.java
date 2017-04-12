@@ -56,7 +56,7 @@ public class BSplineProperties extends ObservableBase implements LineProperties 
 
         for(int i = 0; i < controlPoints.size(); ++i) {
             Point2D controlPoint = controlPoints.get(i);
-            double distance = controlPoint.distanceSq(pos);
+            double distance = controlPoint.distance(pos);
             if (Double.compare(distance, controlPointRadius) <= 0 && Double.compare(distance, minDistance) < 0) {
                 minDistance = distance;
                 index = i;

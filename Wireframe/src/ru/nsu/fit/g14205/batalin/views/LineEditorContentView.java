@@ -132,7 +132,7 @@ public class LineEditorContentView extends JPanel {
         Dimension size = getSize();
         double ratio = editorModel.getDefaultSize() / 100. * zoom;
 
-        int ovalSize = (int)Math.round(applicationProperties.getControlPointRadius() * ratio);
+        int ovalSize = (int)Math.round(applicationProperties.getControlPointRadius() * ratio) * 2;
         Iterator<Point2D> controlPointsIterator = lineProperties.getControlPointsIterator();
         while (controlPointsIterator.hasNext()) {
             Point2D pos = controlPointsIterator.next();
