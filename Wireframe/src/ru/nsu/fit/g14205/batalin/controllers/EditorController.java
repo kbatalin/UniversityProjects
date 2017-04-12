@@ -103,11 +103,16 @@ public class EditorController {
         int controlPointIndex = lineProperties.getControlPointId(pos);
         if (controlPointIndex == -1) {
             lineProperties.addControlPoint(pos);
+            activeControlPoint = lineProperties.getControlPointsCount() - 1;
             return;
         }
 
-        activeControlPoint = controlPointIndex;
-        System.out.println(controlPointIndex);
+        if(mouseEvent.getButton() == MouseEvent.BUTTON1) {
+            activeControlPoint = controlPointIndex;
+        } else if(mouseEvent.getButton() == MouseEvent.BUTTON3) {
+            activeControlPoint = -1;
+            lineProperties.delControlPoint(controlPointIndex);
+        }
     }
 
     public void onMouseDragged(MouseEvent mouseEvent) {

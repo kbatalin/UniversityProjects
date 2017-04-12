@@ -17,6 +17,7 @@ public interface LineProperties extends Observable {
     int getControlPointId(Point2D pos);
     void setControlPoint(int id, Point2D pos);
     Iterator<Point2D> getControlPointsIterator();
+    int getControlPointsCount();
     void addControlPoint(Point2D pos);
     void delControlPoint(int id);
 

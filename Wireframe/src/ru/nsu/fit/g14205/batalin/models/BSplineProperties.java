@@ -67,6 +67,11 @@ public class BSplineProperties extends ObservableBase implements LineProperties 
     }
 
     @Override
+    public int getControlPointsCount() {
+        return controlPoints.size();
+    }
+
+    @Override
     public void setControlPoint(int id, Point2D pos) {
         controlPoints.set(id, pos);
         afterControlPointChanging();
