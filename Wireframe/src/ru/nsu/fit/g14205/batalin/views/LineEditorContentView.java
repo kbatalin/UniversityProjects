@@ -39,6 +39,7 @@ public class LineEditorContentView extends JPanel {
 
         editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, this::repaint);
         editorModel.addObserver(EditorModel.Event.ZOOM_CHANGED, this::repaint);
+        applicationProperties.addObserver(ApplicationProperties.Event.AREA_CHANGED, this::repaint);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -101,6 +102,7 @@ public class LineEditorContentView extends JPanel {
         int zoom = editorModel.getZoom();
         int currentLine = editorModel.getCurrentLine();
         LineProperties lineProperties = applicationProperties.getLineProperties().get(currentLine);
+        Area area = applicationProperties.getArea();
 
         Dimension size = getSize();
         double ratio = editorModel.getDefaultSize() / 100. * zoom;
@@ -118,7 +120,12 @@ public class LineEditorContentView extends JPanel {
             if (x < 0 || x >= image.getWidth() || y < 0 || y >= image.getHeight()) {
                 continue;
             }
-            image.setRGB(x, y, lineColor);
+
+            if(t < area.first.getX() || t > area.second.getX()) {
+                image.setRGB(x, y, Color.GRAY.getRGB());
+            } else {
+                image.setRGB(x, y, lineColor);
+            }
         }
     }
 

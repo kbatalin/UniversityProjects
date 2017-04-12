@@ -115,8 +115,6 @@ public class EditorDialog extends JDialog {
         editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, this::updColor);
 
         initAreaSpinners();
-
-        applicationProperties.addObserver(ApplicationProperties.Event.AREA_CHANGED, this::repaint);
     }
 
     private void initAreaSpinners() {
