@@ -11,10 +11,23 @@ import java.util.List;
 public class SimpleApplicationProperties extends ObservableBase implements ApplicationProperties {
     private double controlPointRadius;
     private ArrayList<LineProperties> lineProperties;
+    private Area area;
 
     public SimpleApplicationProperties() {
         controlPointRadius = .3;
         lineProperties = new ArrayList<>();
+        area = new Area(0, 0, 1, 1);
+    }
+
+    @Override
+    public Area getArea() {
+        return area;
+    }
+
+    @Override
+    public void setArea(Area area) {
+        this.area = area;
+        notifyObservers(Event.AREA_CHANGED);
     }
 
     @Override

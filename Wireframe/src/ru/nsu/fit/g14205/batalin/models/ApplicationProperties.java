@@ -16,8 +16,12 @@ public interface ApplicationProperties extends Observable {
     void addLineProperties(LineProperties lineProperties);
     void delLineProperties(int index);
 
+    Area getArea();
+    void setArea(Area area);
+
     enum Event implements ObserveEvent {
         LINE_PROPERTIES_ADDED,
         LINE_PROPERTIES_REMOVED,
+        AREA_CHANGED,
     }
 }

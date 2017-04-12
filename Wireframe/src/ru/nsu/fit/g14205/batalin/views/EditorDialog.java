@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.views;
 import ru.nsu.fit.g14205.batalin.controllers.EditorController;
 import ru.nsu.fit.g14205.batalin.controllers.WireframeController;
 import ru.nsu.fit.g14205.batalin.models.ApplicationProperties;
+import ru.nsu.fit.g14205.batalin.models.Area;
 import ru.nsu.fit.g14205.batalin.models.EditorModel;
 import ru.nsu.fit.g14205.batalin.models.LineProperties;
 
@@ -112,6 +113,48 @@ public class EditorDialog extends JDialog {
         numberSpinner.addChangeListener(changeEvent -> editorController.onNumberSpinnerChanged(((Number)numberSpinner.getValue()).intValue()));
 
         editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, this::updColor);
+
+
+        Area area = applicationProperties.getArea();
+        SpinnerNumberModel aSpinnerModel = new SpinnerNumberModel(area.first.getX(), 0., 1., 0.1);
+        aSpinner.setModel(aSpinnerModel);
+        aSpinner.addChangeListener(changeEvent -> {
+            Area currentArea = applicationProperties.getArea();
+            double oldValue = currentArea.first.getX();
+            double newValue = ((Number) aSpinner.getValue()).doubleValue();
+            double bValue = ((Number) bSpinner.getValue()).doubleValue();
+            if(Double.compare(oldValue, newValue) >= 0) {
+                applicationProperties.setArea(new Area(newValue, currentArea.first.getY(), currentArea.second.getX(), currentArea.second.getY()));
+                return;
+            }
+            if (Double.compare(newValue, bValue) > 0) {
+                bSpinner.setValue(newValue);
+                bValue = newValue;
+            }
+
+            applicationProperties.setArea(new Area(newValue, currentArea.first.getY(), bValue, currentArea.second.getY()));
+        });
+
+        SpinnerNumberModel bSpinnerModel = new SpinnerNumberModel(area.second.getX(), 0., 1., 0.1);
+        bSpinner.setModel(bSpinnerModel);
+        bSpinner.addChangeListener(changeEvent -> {
+            Area currentArea = applicationProperties.getArea();
+            double oldValue = currentArea.second.getX();
+            double newValue = ((Number) bSpinner.getValue()).doubleValue();
+            double aValue = ((Number) aSpinner.getValue()).doubleValue();
+            if(Double.compare(oldValue, newValue) <= 0) {
+                applicationProperties.setArea(new Area(currentArea.first.getX(), currentArea.first.getY(), newValue, currentArea.second.getY()));
+                return;
+            }
+            if (Double.compare(newValue, aValue) < 0) {
+                aSpinner.setValue(newValue);
+                aValue = newValue;
+            }
+
+            applicationProperties.setArea(new Area(aValue, currentArea.first.getY(), newValue, currentArea.second.getY()));
+        });
+
+        applicationProperties.addObserver(ApplicationProperties.Event.AREA_CHANGED, this::repaint);
     }
 
     private void updColor() {
