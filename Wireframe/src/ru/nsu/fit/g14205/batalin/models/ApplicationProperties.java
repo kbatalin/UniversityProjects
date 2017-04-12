@@ -20,6 +20,7 @@ public interface ApplicationProperties extends Observable, Cloneable {
     void setArea(Area area);
 
     ApplicationProperties clone() throws CloneNotSupportedException;
+    void apply(ApplicationProperties applicationProperties);
 
     enum Event implements ObserveEvent {
         LINE_PROPERTIES_ADDED,

@@ -40,7 +40,19 @@ public class EditorController {
         dialog.setLocationRelativeTo(wireframeController.getWireframeView());
         dialog.setVisible(true);
 
+        if (!dialog.getResult()) {
+            return;
+        }
 
+        wireframeController.getApplicationProperties().apply(applicationProperties);
+    }
+
+    public void onApplyButtonClicked() {
+        try {
+            wireframeController.getApplicationProperties().apply(applicationProperties.clone());
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void onAddButtonClicked() {

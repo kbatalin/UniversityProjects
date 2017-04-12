@@ -32,6 +32,14 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     }
 
     @Override
+    public void apply(ApplicationProperties applicationProperties) {
+        controlPointRadius = applicationProperties.getControlPointRadius();
+        lineProperties = new ArrayList<>();
+        lineProperties.addAll(applicationProperties.getLineProperties());
+        area = applicationProperties.getArea();
+    }
+
+    @Override
     public Area getArea() {
         return area;
     }

@@ -40,9 +40,12 @@ public class EditorDialog extends JDialog {
     private JSlider zoomSlider;
     private JButton addButton;
     private JButton deleteButton;
+    private boolean result;
 
     public EditorDialog(EditorController editorController) {
         this.editorController = editorController;
+
+        result = false;
 
         setContentPane(contentPane);
         setModal(true);
@@ -82,6 +85,8 @@ public class EditorDialog extends JDialog {
 
         ApplicationProperties applicationProperties = editorController.getApplicationProperties();
         EditorModel editorModel = editorController.getEditorModel();
+
+        applyButton.addActionListener(actionEvent -> editorController.onApplyButtonClicked());
 
         LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
         Color color = lineProperties.getColor();
@@ -216,13 +221,17 @@ public class EditorDialog extends JDialog {
     }
 
     private void onOK() {
-        // add your code here
+        result = true;
         dispose();
     }
 
     private void onCancel() {
-        // add your code here if necessary
+        result = false;
         dispose();
+    }
+
+    public boolean getResult() {
+        return result;
     }
 
     public LineEditorContentView getLineEditorContentView() {
