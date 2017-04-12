@@ -2,6 +2,7 @@ package ru.nsu.fit.g14205.batalin.controllers;
 
 import org.omg.CORBA.PRIVATE_MEMBER;
 import ru.nsu.fit.g14205.batalin.models.ApplicationProperties;
+import ru.nsu.fit.g14205.batalin.models.BSplineProperties;
 import ru.nsu.fit.g14205.batalin.models.EditorModel;
 import ru.nsu.fit.g14205.batalin.models.LineProperties;
 import ru.nsu.fit.g14205.batalin.views.EditorDialog;
@@ -34,6 +35,20 @@ public class EditorController {
         dialog.pack();
         dialog.setLocationRelativeTo(wireframeController.getWireframeView());
         dialog.setVisible(true);
+    }
+
+    public void onAddButtonClicked() {
+        LineProperties lineProperties = new BSplineProperties(applicationProperties);
+        applicationProperties.addLineProperties(lineProperties);
+        editorModel.setCurrentLine(applicationProperties.getLinePropertiesCount() - 1);
+    }
+
+    public void onDeleteButtonClicked() {
+
+    }
+
+    public void onNumberSpinnerChanged(int value) {
+        editorModel.setCurrentLine(value);
     }
 
     public void onRedSpinnerChanged(int value) {

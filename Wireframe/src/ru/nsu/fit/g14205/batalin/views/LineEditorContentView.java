@@ -110,6 +110,9 @@ public class LineEditorContentView extends JPanel {
         double dt = 1 / (lineProperties.getLength() * ratio * 10);
         for(double t = 0.; Double.compare(t, 1.) <= 0; t += dt) {
             Point2D pos = lineProperties.getPoint(t);
+            if (pos == null) {
+                continue;
+            }
             int x = (int)Math.round(pos.getX() * ratio + size.getWidth() / 2);
             int y = (int)Math.round(size.getHeight() - pos.getY() * ratio - size.getHeight() / 2);
             if (x < 0 || x >= image.getWidth() || y < 0 || y >= image.getHeight()) {

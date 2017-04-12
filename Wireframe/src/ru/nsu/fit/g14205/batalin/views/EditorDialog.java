@@ -37,6 +37,8 @@ public class EditorDialog extends JDialog {
     private JSpinner greenSpinner;
     private JSpinner blueSpinner;
     private JSlider zoomSlider;
+    private JButton addButton;
+    private JButton deleteButton;
 
     public EditorDialog(EditorController editorController) {
         this.editorController = editorController;
@@ -96,6 +98,25 @@ public class EditorDialog extends JDialog {
         zoomSlider.setMaximum(editorModel.getMaxZoom());
         zoomSlider.setValue(editorModel.getZoom());
         zoomSlider.addChangeListener(changeEvent -> editorController.onZoomSliderChanged(zoomSlider.getValue()));
+
+        addButton.addActionListener(actionEvent -> editorController.onAddButtonClicked());
+        deleteButton.addActionListener(actionEvent -> editorController.onDeleteButtonClicked());
+
+        editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, () -> {
+            numberSpinner.setValue(editorModel.getCurrentLine());
+        });
+
+        updNumberSpinner();
+        applicationProperties.addObserver(ApplicationProperties.Event.LINE_PROPERTIES_ADDED, this::updNumberSpinner);
+        applicationProperties.addObserver(ApplicationProperties.Event.LINE_PROPERTIES_REMOVED, this::updNumberSpinner);
+        numberSpinner.addChangeListener(changeEvent -> editorController.onNumberSpinnerChanged(((Number)numberSpinner.getValue()).intValue()));
+    }
+
+    private void updNumberSpinner() {
+        ApplicationProperties applicationProperties = editorController.getApplicationProperties();
+        EditorModel editorModel = editorController.getEditorModel();
+        SpinnerNumberModel numberSpinnerModel = new SpinnerNumberModel(editorModel.getCurrentLine(), 0, applicationProperties.getLinePropertiesCount(), 1);
+        numberSpinner.setModel(numberSpinnerModel);
     }
 
     private void onOK() {

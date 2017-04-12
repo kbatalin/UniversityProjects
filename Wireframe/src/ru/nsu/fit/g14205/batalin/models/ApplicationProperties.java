@@ -12,6 +12,7 @@ public interface ApplicationProperties extends Observable {
     double getControlPointRadius();
 
     List<LineProperties> getLineProperties();
+    int getLinePropertiesCount();
     void addLineProperties(LineProperties lineProperties);
     void delLineProperties(int index);
 

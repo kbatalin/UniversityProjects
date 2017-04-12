@@ -27,7 +27,9 @@ public class BSplineProperties extends ObservableBase implements LineProperties 
         matrix = matrix.multiply(1 / 6.);
 
         controlPoints = new ArrayList<>();
+        segmentsLengths = new ArrayList<>();
         area = new Area(0, 0, 0, 0);
+        color = Color.BLUE;
     }
 
     @Override

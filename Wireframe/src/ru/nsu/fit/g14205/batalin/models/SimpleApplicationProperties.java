@@ -28,6 +28,11 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     }
 
     @Override
+    public int getLinePropertiesCount() {
+        return lineProperties.size();
+    }
+
+    @Override
     public void addLineProperties(LineProperties properties) {
         lineProperties.add(properties);
         notifyObservers(Event.LINE_PROPERTIES_ADDED);
