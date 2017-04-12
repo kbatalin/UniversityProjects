@@ -51,6 +51,13 @@ public class LineEditorContentView extends JPanel {
                 editorController.onMouseReleased(mouseEvent);
             }
         });
+
+        addMouseMotionListener(new MouseAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent mouseEvent) {
+                editorController.onMouseDragged(mouseEvent);
+            }
+        });
     }
 
     @Override

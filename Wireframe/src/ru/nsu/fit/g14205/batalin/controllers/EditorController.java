@@ -21,6 +21,8 @@ public class EditorController {
 
     private EditorDialog dialog;
 
+    private int activeControlPoint = -1;
+
     public EditorController(WireframeController wireframeController) {
         this.wireframeController = wireframeController;
         this.applicationProperties = wireframeController.getApplicationProperties();
@@ -51,11 +53,22 @@ public class EditorController {
             return;
         }
 
+        activeControlPoint = controlPointIndex;
         System.out.println(controlPointIndex);
     }
 
-    public void onMouseReleased(MouseEvent mouseEvent) {
+    public void onMouseDragged(MouseEvent mouseEvent) {
+        if (activeControlPoint == -1) {
+            return;
+        }
 
+        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        Point2D pos = pixel2Point(mouseEvent.getPoint());
+        lineProperties.setControlPoint(activeControlPoint, pos);
+    }
+
+    public void onMouseReleased(MouseEvent mouseEvent) {
+        activeControlPoint = -1;
     }
 
     private Point2D pixel2Point(Point pos) {
