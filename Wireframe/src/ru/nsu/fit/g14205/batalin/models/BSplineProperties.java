@@ -98,7 +98,7 @@ public class BSplineProperties extends ObservableBase implements LineProperties 
             throw new IllegalArgumentException("Param t must be >= 0 and <= 1");
         }
 
-        if (segmentsLengths.size() < 4) {
+        if (controlPoints.size() < 4) {
             return null;
         }
 
