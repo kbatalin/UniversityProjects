@@ -16,7 +16,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     public SimpleApplicationProperties() {
         controlPointRadius = .3;
         lineProperties = new ArrayList<>();
-        area = new Area(0, 0, 1, 1);
+        area = new Area(0, 0, 1, 2 * Math.PI);
     }
 
     @Override

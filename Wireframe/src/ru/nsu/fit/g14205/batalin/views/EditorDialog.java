@@ -114,7 +114,13 @@ public class EditorDialog extends JDialog {
 
         editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, this::updColor);
 
+        initAreaSpinners();
 
+        applicationProperties.addObserver(ApplicationProperties.Event.AREA_CHANGED, this::repaint);
+    }
+
+    private void initAreaSpinners() {
+        ApplicationProperties applicationProperties = editorController.getApplicationProperties();
         Area area = applicationProperties.getArea();
         SpinnerNumberModel aSpinnerModel = new SpinnerNumberModel(area.first.getX(), 0., 1., 0.1);
         aSpinner.setModel(aSpinnerModel);
@@ -154,7 +160,43 @@ public class EditorDialog extends JDialog {
             applicationProperties.setArea(new Area(aValue, currentArea.first.getY(), newValue, currentArea.second.getY()));
         });
 
-        applicationProperties.addObserver(ApplicationProperties.Event.AREA_CHANGED, this::repaint);
+        SpinnerNumberModel cSpinnerModel = new SpinnerNumberModel(area.first.getY(), 0., 2 * Math.PI, 0.1);
+        cSpinner.setModel(cSpinnerModel);
+        cSpinner.addChangeListener(changeEvent -> {
+            Area currentArea = applicationProperties.getArea();
+            double oldValue = currentArea.first.getY();
+            double newValue = ((Number) cSpinner.getValue()).doubleValue();
+            double dValue = ((Number) dSpinner.getValue()).doubleValue();
+            if(Double.compare(oldValue, newValue) >= 0) {
+                applicationProperties.setArea(new Area(currentArea.first.getX(), newValue, currentArea.second.getX(), currentArea.second.getY()));
+                return;
+            }
+            if (Double.compare(newValue, dValue) > 0) {
+                dSpinner.setValue(newValue);
+                dValue = newValue;
+            }
+
+            applicationProperties.setArea(new Area(currentArea.first.getX(), newValue, currentArea.second.getX(), dValue));
+        });
+
+        SpinnerNumberModel dSpinnerModel = new SpinnerNumberModel(area.second.getY(), 0., 2 * Math.PI, 0.1);
+        dSpinner.setModel(dSpinnerModel);
+        dSpinner.addChangeListener(changeEvent -> {
+            Area currentArea = applicationProperties.getArea();
+            double oldValue = currentArea.second.getY();
+            double newValue = ((Number) dSpinner.getValue()).doubleValue();
+            double cValue = ((Number) cSpinner.getValue()).doubleValue();
+            if(Double.compare(oldValue, newValue) <= 0) {
+                applicationProperties.setArea(new Area(currentArea.first.getX(), currentArea.first.getY(), currentArea.second.getX(), newValue));
+                return;
+            }
+            if (Double.compare(newValue, cValue) < 0) {
+                cSpinner.setValue(newValue);
+                cValue = newValue;
+            }
+
+            applicationProperties.setArea(new Area(currentArea.first.getX(), cValue, currentArea.second.getX(), newValue));
+        });
     }
 
     private void updColor() {
