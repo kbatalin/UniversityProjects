@@ -110,6 +110,18 @@ public class EditorDialog extends JDialog {
         applicationProperties.addObserver(ApplicationProperties.Event.LINE_PROPERTIES_ADDED, this::updNumberSpinner);
         applicationProperties.addObserver(ApplicationProperties.Event.LINE_PROPERTIES_REMOVED, this::updNumberSpinner);
         numberSpinner.addChangeListener(changeEvent -> editorController.onNumberSpinnerChanged(((Number)numberSpinner.getValue()).intValue()));
+
+        editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, this::updColor);
+    }
+
+    private void updColor() {
+        ApplicationProperties applicationProperties = editorController.getApplicationProperties();
+        EditorModel editorModel = editorController.getEditorModel();
+        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        Color color = lineProperties.getColor();
+        redSpinner.setValue(color.getRed());
+        greenSpinner.setValue(color.getGreen());
+        blueSpinner.setValue(color.getBlue());
     }
 
     private void updNumberSpinner() {
