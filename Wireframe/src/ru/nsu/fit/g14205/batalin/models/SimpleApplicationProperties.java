@@ -20,6 +20,18 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     }
 
     @Override
+    public ApplicationProperties clone() throws CloneNotSupportedException {
+        SimpleApplicationProperties applicationProperties = (SimpleApplicationProperties) super.clone();
+        applicationProperties.controlPointRadius = controlPointRadius;
+        applicationProperties.area = area.clone();
+        applicationProperties.lineProperties = new ArrayList<>();
+        for (LineProperties line : lineProperties) {
+            applicationProperties.lineProperties.add(line.clone());
+        }
+        return applicationProperties;
+    }
+
+    @Override
     public Area getArea() {
         return area;
     }

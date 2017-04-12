@@ -10,7 +10,7 @@ import java.util.Iterator;
 /**
  * Created by kir55rus on 12.04.17.
  */
-public interface LineProperties extends Observable {
+public interface LineProperties extends Observable, Cloneable {
     Color getColor();
     void setColor(Color color);
 
@@ -26,6 +26,8 @@ public interface LineProperties extends Observable {
     double getLength();
 
     Area getArea();
+
+    LineProperties clone() throws CloneNotSupportedException;
 
     enum Event implements ObserveEvent {
         COLOR_CHANGED,

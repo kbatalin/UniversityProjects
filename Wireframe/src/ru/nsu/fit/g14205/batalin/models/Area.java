@@ -5,7 +5,7 @@ import java.awt.geom.Point2D;
 /**
  * Created by kir55rus on 12.04.17.
  */
-public class Area {
+public class Area implements Cloneable {
     public Point2D first;
     public Point2D second;
 
@@ -16,6 +16,14 @@ public class Area {
     public Area(double x1, double y1, double x2, double y2) {
         first = new Point2D.Double(x1, y1);
         second = new Point2D.Double(x2, y2);
+    }
+
+    @Override
+    protected Area clone() throws CloneNotSupportedException {
+        Area area = (Area) super.clone();
+        area.first = new Point2D.Double(first.getX(), first.getY());
+        area.second = new Point2D.Double(second.getX(), second.getY());
+        return area;
     }
 
     public double getWidth() {

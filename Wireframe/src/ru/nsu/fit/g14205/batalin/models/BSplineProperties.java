@@ -33,6 +33,23 @@ public class BSplineProperties extends ObservableBase implements LineProperties 
     }
 
     @Override
+    public LineProperties clone() throws CloneNotSupportedException {
+        BSplineProperties bSplineProperties = (BSplineProperties) super.clone();
+        bSplineProperties.applicationProperties = applicationProperties;
+        bSplineProperties.color = new Color(color.getRGB());
+        bSplineProperties.length = length;
+        bSplineProperties.controlPoints = new ArrayList<>();
+        for (Point2D point : controlPoints) {
+            bSplineProperties.controlPoints.add(new Point2D.Double(point.getX(), point.getY()));
+        }
+        bSplineProperties.segmentsLengths = new ArrayList<>();
+        bSplineProperties.segmentsLengths.addAll(segmentsLengths);
+        bSplineProperties.matrix = matrix.clone();
+        bSplineProperties.area = area.clone();
+        return bSplineProperties;
+    }
+
+    @Override
     public Area getArea() {
         return area;
     }

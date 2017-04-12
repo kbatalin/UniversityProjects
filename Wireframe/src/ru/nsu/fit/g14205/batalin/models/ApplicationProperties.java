@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by kir55rus on 12.04.17.
  */
-public interface ApplicationProperties extends Observable {
+public interface ApplicationProperties extends Observable, Cloneable {
     double getControlPointRadius();
 
     List<LineProperties> getLineProperties();
@@ -18,6 +18,8 @@ public interface ApplicationProperties extends Observable {
 
     Area getArea();
     void setArea(Area area);
+
+    ApplicationProperties clone() throws CloneNotSupportedException;
 
     enum Event implements ObserveEvent {
         LINE_PROPERTIES_ADDED,

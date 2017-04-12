@@ -6,7 +6,7 @@ import java.awt.image.BufferedImage;
 /**
  * Created by kir55rus on 28.03.17.
  */
-public class Matrix {
+public class Matrix implements Cloneable {
     private int width;
     private int height;
     private double[] data;
@@ -23,6 +23,15 @@ public class Matrix {
         if(data != null) {
             System.arraycopy(data, 0, this.data, 0, data.length);
         }
+    }
+
+    public Matrix clone() throws CloneNotSupportedException {
+        Matrix matrix = (Matrix) super.clone();
+        matrix.width = width;
+        matrix.height = height;
+        matrix.data = new double[data.length];
+        System.arraycopy(data, 0, matrix.data, 0, data.length);
+        return matrix;
     }
 
     public int getWidth() {

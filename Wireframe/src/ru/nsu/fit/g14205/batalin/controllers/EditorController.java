@@ -26,7 +26,11 @@ public class EditorController {
 
     public EditorController(WireframeController wireframeController) {
         this.wireframeController = wireframeController;
-        this.applicationProperties = wireframeController.getApplicationProperties();
+        try {
+            this.applicationProperties = wireframeController.getApplicationProperties().clone();
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
         this.editorModel = new EditorModel(applicationProperties);
     }
 
@@ -35,6 +39,8 @@ public class EditorController {
         dialog.pack();
         dialog.setLocationRelativeTo(wireframeController.getWireframeView());
         dialog.setVisible(true);
+
+
     }
 
     public void onAddButtonClicked() {
