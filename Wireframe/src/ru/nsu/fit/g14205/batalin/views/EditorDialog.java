@@ -20,12 +20,7 @@ public class EditorDialog extends JDialog {
     private JPanel content;
     private JButton OKButton;
     private JButton applyButton;
-    private JButton zoomButton;
-    private JButton zoomButton1;
-    private JButton addButton;
-    private JButton delButton;
-    private JCheckBox interactiveCheckBox;
-    private JCheckBox autoscaleCheckBox;
+    private JButton zoomPlusButton;
     private JSpinner nSpinner;
     private JSpinner aSpinner;
     private JSpinner znSpinner;
@@ -41,6 +36,7 @@ public class EditorDialog extends JDialog {
     private JSpinner redSpinner;
     private JSpinner greenSpinner;
     private JSpinner blueSpinner;
+    private JSlider zoomSlider;
 
     public EditorDialog(EditorController editorController) {
         this.editorController = editorController;
@@ -95,6 +91,11 @@ public class EditorDialog extends JDialog {
         SpinnerNumberModel blueSpinnerModel = new SpinnerNumberModel(color.getBlue(), 0, 255, 1);
         blueSpinner.setModel(blueSpinnerModel);
         blueSpinner.addChangeListener(changeEvent -> editorController.onBlueSpinnerChanged(blueSpinnerModel.getNumber().intValue()));
+
+        zoomSlider.setMinimum(editorModel.getMinZoom());
+        zoomSlider.setMaximum(editorModel.getMaxZoom());
+        zoomSlider.setValue(editorModel.getZoom());
+        zoomSlider.addChangeListener(changeEvent -> editorController.onZoomSliderChanged(zoomSlider.getValue()));
     }
 
     private void onOK() {

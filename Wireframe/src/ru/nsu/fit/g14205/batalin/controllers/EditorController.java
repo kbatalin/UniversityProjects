@@ -54,6 +54,10 @@ public class EditorController {
         lineProperties.setColor(new Color(color.getRed(), color.getGreen(), value));
     }
 
+    public void onZoomSliderChanged(int value) {
+        editorModel.setZoom(value);
+    }
+
     public EditorModel getEditorModel() {
         return editorModel;
     }
