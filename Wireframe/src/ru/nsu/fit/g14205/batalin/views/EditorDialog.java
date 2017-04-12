@@ -115,7 +115,8 @@ public class EditorDialog extends JDialog {
     private void updNumberSpinner() {
         ApplicationProperties applicationProperties = editorController.getApplicationProperties();
         EditorModel editorModel = editorController.getEditorModel();
-        SpinnerNumberModel numberSpinnerModel = new SpinnerNumberModel(editorModel.getCurrentLine(), 0, applicationProperties.getLinePropertiesCount(), 1);
+        int maxValue = Math.max(0, applicationProperties.getLinePropertiesCount() - 1);
+        SpinnerNumberModel numberSpinnerModel = new SpinnerNumberModel(editorModel.getCurrentLine(), 0, maxValue, 1);
         numberSpinner.setModel(numberSpinnerModel);
     }
 

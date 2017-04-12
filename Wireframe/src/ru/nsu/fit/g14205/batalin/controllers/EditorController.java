@@ -44,7 +44,23 @@ public class EditorController {
     }
 
     public void onDeleteButtonClicked() {
+        int currentLine = editorModel.getCurrentLine();
+        --currentLine;
+        if (currentLine >= 0) {
+            editorModel.setCurrentLine(currentLine);
+            applicationProperties.delLineProperties(currentLine + 1);
+            return;
+        }
 
+        if (applicationProperties.getLinePropertiesCount() > 1) {
+            applicationProperties.delLineProperties(0);
+            editorModel.setCurrentLine(0);
+            return;
+        }
+
+        applicationProperties.delLineProperties(0);
+        applicationProperties.addLineProperties(new BSplineProperties(applicationProperties));
+        editorModel.setCurrentLine(0);
     }
 
     public void onNumberSpinnerChanged(int value) {
