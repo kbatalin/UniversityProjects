@@ -2,8 +2,13 @@ package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.EditorController;
 import ru.nsu.fit.g14205.batalin.controllers.WireframeController;
+import ru.nsu.fit.g14205.batalin.models.ApplicationProperties;
+import ru.nsu.fit.g14205.batalin.models.EditorModel;
+import ru.nsu.fit.g14205.batalin.models.LineProperties;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -75,6 +80,21 @@ public class EditorDialog extends JDialog {
 
         content.setMinimumSize(new Dimension(600, 400));
         content.setSize(600, 400);
+
+        ApplicationProperties applicationProperties = editorController.getApplicationProperties();
+        EditorModel editorModel = editorController.getEditorModel();
+
+        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        Color color = lineProperties.getColor();
+        SpinnerNumberModel redSpinnerModel = new SpinnerNumberModel(color.getRed(), 0, 255, 1);
+        redSpinner.setModel(redSpinnerModel);
+        redSpinner.addChangeListener(changeEvent -> editorController.onRedSpinnerChanged(redSpinnerModel.getNumber().intValue()));
+        SpinnerNumberModel greenSpinnerModel = new SpinnerNumberModel(color.getGreen(), 0, 255, 1);
+        greenSpinner.setModel(greenSpinnerModel);
+        greenSpinner.addChangeListener(changeEvent -> editorController.onGreenSpinnerChanged(greenSpinnerModel.getNumber().intValue()));
+        SpinnerNumberModel blueSpinnerModel = new SpinnerNumberModel(color.getBlue(), 0, 255, 1);
+        blueSpinner.setModel(blueSpinnerModel);
+        blueSpinner.addChangeListener(changeEvent -> editorController.onBlueSpinnerChanged(blueSpinnerModel.getNumber().intValue()));
     }
 
     private void onOK() {

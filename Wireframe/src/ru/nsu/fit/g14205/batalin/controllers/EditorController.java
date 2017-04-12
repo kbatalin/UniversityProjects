@@ -36,6 +36,24 @@ public class EditorController {
         dialog.setVisible(true);
     }
 
+    public void onRedSpinnerChanged(int value) {
+        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        Color color = lineProperties.getColor();
+        lineProperties.setColor(new Color(value, color.getGreen(), color.getBlue()));
+    }
+
+    public void onGreenSpinnerChanged(int value) {
+        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        Color color = lineProperties.getColor();
+        lineProperties.setColor(new Color(color.getRed(), value, color.getBlue()));
+    }
+
+    public void onBlueSpinnerChanged(int value) {
+        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        Color color = lineProperties.getColor();
+        lineProperties.setColor(new Color(color.getRed(), color.getGreen(), value));
+    }
+
     public EditorModel getEditorModel() {
         return editorModel;
     }
