@@ -1,0 +1,24 @@
+package net.kir55rus.commands;
+
+import net.kir55rus.util.Field;
+import org.junit.Test;
+
+import java.util.Stack;
+
+import static org.junit.Assert.*;
+
+/**
+ * Created by kir55rus on 26.02.16.
+ */
+public class EndTest {
+
+    @Test
+    public void testExecute() throws Exception {
+        Field field = new Field();
+        field.setExecution(true);
+
+        new End().execute(new Stack<>(), field);
+
+        assertEquals("Bad end", false, field.isExecution());
+    }
+}

@@ -1,0 +1,77 @@
+<project name="Befunge" default="compile">
+
+    <property name="name.application" value="Befunge"/>
+
+	<property name="dir.build" value="../out/production/task_1"/>
+
+    <property name="dir.src" value="../src"/>
+
+    <property name="dir.lib" value="../lib"/>
+
+    <property name="dir.jar" value="${dir.build}/../jar"/>
+
+    <property name="file.jar" value="${dir.jar}/${name.application}.jar"/>    
+
+    <patternset id="compiler.resources">
+        <exclude name="**/?*.java"/>
+        <exclude name="**/?*.form"/>
+        <exclude name="**/?*.class"/>
+        <exclude name="**/?*.groovy"/>
+        <exclude name="**/?*.scala"/>
+        <exclude name="**/?*.flex"/>
+        <exclude name="**/?*.kt"/>
+        <exclude name="**/?*.clj"/>
+        <exclude name="**/?*.aj"/>
+    </patternset>
+
+    <path id="libs.log4j">
+        <fileset dir="${dir.lib}">
+            <include name="log4j.jar"/>
+        </fileset>
+    </path>
+
+	<target name="clean">
+        <delete dir="${dir.build}"/>
+        <delete dir="${dir.jar}"/>
+    </target>
+
+    <target name="mkdirs" depends="clean">
+        <mkdir dir="${dir.build}"/>
+        <mkdir dir="${dir.jar}/lib"/>
+    </target>
+
+    <target name="compile" depends="mkdirs">
+        <javac includeantruntime="false" srcdir="${dir.src}" destdir="${dir.build}">
+            <classpath>
+                <path refid="libs.log4j"/>
+            </classpath>
+        </javac>
+
+        <copy todir="${dir.build}">
+            <fileset dir="${dir.src}">
+                <patternset refid="compiler.resources"/>
+                <type type="file"/>
+            </fileset>
+        </copy>
+    </target>
+
+
+    <target name="jar" depends="compile">
+        <jar destfile="${file.jar}"
+             basedir="${dir.build}"
+             compress="false"
+             index="false">
+            <manifest>
+                <attribute name="Main-Class" value="net.kir55rus.Befunge"/>
+                <attribute name="Class-Path" value="./lib/log4j.jar"/>
+            </manifest>
+        </jar>
+
+        <copy todir="${dir.jar}/lib">
+            <fileset dir="${dir.lib}">
+                <type type="file"/>
+            </fileset>
+        </copy>
+    </target>
+
+</project>
