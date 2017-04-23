@@ -26,6 +26,14 @@ public class Point3D implements Cloneable {
         this.z = z;
     }
 
+    public Matrix toMatrix3() {
+        return new Matrix(1, 3, new double[]{x, y, z});
+    }
+
+    public Matrix toMatrix4() {
+        return new Matrix(1, 4, new double[]{x, y, z, 1});
+    }
+
     public double getX() {
         return x;
     }
