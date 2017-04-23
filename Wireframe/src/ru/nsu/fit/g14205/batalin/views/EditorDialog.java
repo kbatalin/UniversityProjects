@@ -125,7 +125,7 @@ public class EditorDialog extends JDialog {
     private void initAreaSpinners() {
         ApplicationProperties applicationProperties = editorController.getApplicationProperties();
         Area area = applicationProperties.getArea();
-        SpinnerNumberModel aSpinnerModel = new SpinnerNumberModel(area.first.getX(), 0., 1., 0.1);
+        SpinnerNumberModel aSpinnerModel = new SpinnerNumberModel(area.first.getX(), 0., 1., 0.01);
         aSpinner.setModel(aSpinnerModel);
         aSpinner.addChangeListener(changeEvent -> {
             Area currentArea = applicationProperties.getArea();
@@ -144,7 +144,7 @@ public class EditorDialog extends JDialog {
             applicationProperties.setArea(new Area(newValue, currentArea.first.getY(), bValue, currentArea.second.getY()));
         });
 
-        SpinnerNumberModel bSpinnerModel = new SpinnerNumberModel(area.second.getX(), 0., 1., 0.1);
+        SpinnerNumberModel bSpinnerModel = new SpinnerNumberModel(area.second.getX(), 0., 1., 0.01);
         bSpinner.setModel(bSpinnerModel);
         bSpinner.addChangeListener(changeEvent -> {
             Area currentArea = applicationProperties.getArea();
@@ -163,7 +163,7 @@ public class EditorDialog extends JDialog {
             applicationProperties.setArea(new Area(aValue, currentArea.first.getY(), newValue, currentArea.second.getY()));
         });
 
-        SpinnerNumberModel cSpinnerModel = new SpinnerNumberModel(area.first.getY(), 0., 2 * Math.PI, 0.1);
+        SpinnerNumberModel cSpinnerModel = new SpinnerNumberModel(area.first.getY(), 0., 2 * Math.PI, 0.01);
         cSpinner.setModel(cSpinnerModel);
         cSpinner.addChangeListener(changeEvent -> {
             Area currentArea = applicationProperties.getArea();
@@ -182,7 +182,7 @@ public class EditorDialog extends JDialog {
             applicationProperties.setArea(new Area(currentArea.first.getX(), newValue, currentArea.second.getX(), dValue));
         });
 
-        SpinnerNumberModel dSpinnerModel = new SpinnerNumberModel(area.second.getY(), 0., 2 * Math.PI, 0.1);
+        SpinnerNumberModel dSpinnerModel = new SpinnerNumberModel(area.second.getY(), 0., 2 * Math.PI, 0.01);
         dSpinner.setModel(dSpinnerModel);
         dSpinner.addChangeListener(changeEvent -> {
             Area currentArea = applicationProperties.getArea();
