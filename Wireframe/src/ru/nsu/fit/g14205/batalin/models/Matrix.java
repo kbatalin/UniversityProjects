@@ -94,4 +94,18 @@ public class Matrix implements Cloneable {
 
         return get(0, 0);
     }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for(int y = 0; y < height; ++y) {
+            for(int x = 0; x < width; ++x) {
+                builder.append(get(x, y));
+                builder.append(" ");
+            }
+            builder.append(String.format("%n"));
+        }
+
+        return builder.toString();
+    }
 }
