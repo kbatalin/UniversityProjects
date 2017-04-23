@@ -1,43 +1,42 @@
 package ru.nsu.fit.g14205.batalin.models;
 
-import java.awt.geom.Point2D;
 
 /**
  * Created by Kirill Batalin (kir55rus) on 23.04.17.
  */
 public class Segment implements Cloneable {
-    private Point2D first;
-    private Point2D second;
+    private Point3D first;
+    private Point3D second;
 
     public Segment() {
     }
 
-    public Segment(Point2D first, Point2D second) {
+    public Segment(Point3D first, Point3D second) {
         this.first = first;
         this.second = second;
     }
 
-    public Point2D getFirst() {
+    public Point3D getFirst() {
         return first;
     }
 
-    public void setFirst(Point2D first) {
+    public void setFirst(Point3D first) {
         this.first = first;
     }
 
-    public Point2D getSecond() {
+    public Point3D getSecond() {
         return second;
     }
 
-    public void setSecond(Point2D second) {
+    public void setSecond(Point3D second) {
         this.second = second;
     }
 
     @Override
     public Segment clone() throws CloneNotSupportedException {
         Segment segment = (Segment) super.clone();
-        segment.first = new Point2D.Double(first.getX(), first.getY());
-        segment.second = new Point2D.Double(second.getX(), second.getY());
+        segment.first = new Point3D(first.getX(), first.getY(), first.getZ());
+        segment.second = new Point3D(second.getX(), second.getY(), second.getZ());
         return segment;
     }
 }
