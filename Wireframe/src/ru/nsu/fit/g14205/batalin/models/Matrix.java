@@ -60,6 +60,27 @@ public class Matrix implements Cloneable {
         return result;
     }
 
+    public Matrix deduct(Matrix matrix) {
+        return add(matrix.multiply(-1.));
+    }
+
+    public Matrix add(Matrix matrix) {
+        if (matrix.width != width || matrix.height != height) {
+            throw new IllegalArgumentException("Bad matrix size");
+        }
+
+        Matrix result = new Matrix(width, height);
+
+        for(int x = 0; x < width; ++x) {
+            for(int y = 0; y < height; ++y) {
+                double sum = get(x, y) + matrix.get(x, y);
+                result.set(x, y, sum);
+            }
+        }
+
+        return result;
+    }
+
     public Matrix add(double val) {
         Matrix result = new Matrix(width, height);
         for(int i = 0; i < data.length; ++i) {
