@@ -49,4 +49,20 @@ public class Point3D implements Cloneable {
     public void setZ(double z) {
         this.z = z;
     }
+
+    public static Point3D createMin(Point3D a, Point3D b) {
+        return new Point3D(
+                Math.min(a.getX(), b.getX()),
+                Math.min(a.getY(), b.getY()),
+                Math.min(a.getZ(), b.getZ())
+        );
+    }
+
+    public static Point3D createMax(Point3D a, Point3D b) {
+        return new Point3D(
+                Math.max(a.getX(), b.getX()),
+                Math.max(a.getY(), b.getY()),
+                Math.max(a.getZ(), b.getZ())
+        );
+    }
 }
