@@ -21,6 +21,8 @@ public class Scene implements Iterable<Segment> {
         segments.add(segment);
     }
 
+    public
+
     public void clear() {
         segments.clear();
     }
