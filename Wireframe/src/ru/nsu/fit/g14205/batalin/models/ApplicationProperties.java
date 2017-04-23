@@ -20,6 +20,7 @@ public interface ApplicationProperties extends Observable, Cloneable {
     void setArea(Area area);
 
     CameraProperties getCameraProperties();
+    ViewPyramidProperties getViewPyramidProperties();
 
     ApplicationProperties clone() throws CloneNotSupportedException;
     void apply(ApplicationProperties applicationProperties);

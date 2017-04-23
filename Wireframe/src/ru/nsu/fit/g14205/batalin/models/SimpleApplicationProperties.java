@@ -13,12 +13,14 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     private ArrayList<LineProperties> lineProperties;
     private Area area;
     private CameraProperties cameraProperties;
+    private ViewPyramidProperties viewPyramidProperties;
 
     public SimpleApplicationProperties() {
         controlPointRadius = .3;
         lineProperties = new ArrayList<>();
         area = new Area(0, 0, 1, 2 * Math.PI);
         cameraProperties = new Camera(new Point3D(-10, 0, 0), new Point3D(10, 0, 0), new Point3D(0, 1, 0));
+        viewPyramidProperties = new ViewPyramid(5, 15, 1, 1);
     }
 
     @Override
@@ -27,6 +29,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         applicationProperties.controlPointRadius = controlPointRadius;
         applicationProperties.cameraProperties = cameraProperties.clone();
         applicationProperties.area = area.clone();
+        applicationProperties.viewPyramidProperties = viewPyramidProperties.clone();
         applicationProperties.lineProperties = new ArrayList<>();
         for (LineProperties line : lineProperties) {
             applicationProperties.lineProperties.add(line.clone());
@@ -41,6 +44,12 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         lineProperties.addAll(applicationProperties.getLineProperties());
         area = applicationProperties.getArea();
         cameraProperties = applicationProperties.getCameraProperties();
+        viewPyramidProperties = applicationProperties.getViewPyramidProperties();
+    }
+
+    @Override
+    public ViewPyramidProperties getViewPyramidProperties() {
+        return viewPyramidProperties;
     }
 
     @Override
