@@ -102,7 +102,7 @@ public class Matrix implements Cloneable {
             sum = 1.;
         }
 
-        return multiply(1 / sum);
+        return multiply(1 / Math.abs(sum));
     }
 
     @Override
