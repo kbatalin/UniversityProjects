@@ -32,6 +32,22 @@ public class Segment implements Cloneable {
         this.second = second;
     }
 
+    public Point3D getMinPoint() {
+        return new Point3D(
+                Math.min(first.getX(), second.getX()),
+                Math.min(first.getY(), second.getY()),
+                Math.min(first.getZ(), second.getZ())
+        );
+    }
+
+    public Point3D getMaxPoint() {
+        return new Point3D(
+                Math.max(first.getX(), second.getX()),
+                Math.max(first.getY(), second.getY()),
+                Math.max(first.getZ(), second.getZ())
+        );
+    }
+
     @Override
     public Segment clone() throws CloneNotSupportedException {
         Segment segment = (Segment) super.clone();
