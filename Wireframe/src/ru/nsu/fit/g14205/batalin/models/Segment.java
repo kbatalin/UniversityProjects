@@ -6,8 +6,8 @@ import java.awt.geom.Point2D;
  * Created by Kirill Batalin (kir55rus) on 23.04.17.
  */
 public class Segment implements Cloneable {
-    public Point2D first;
-    public Point2D second;
+    private Point2D first;
+    private Point2D second;
 
     public Segment() {
     }
