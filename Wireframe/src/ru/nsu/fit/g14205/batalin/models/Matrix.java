@@ -51,6 +51,10 @@ public class Matrix implements Cloneable {
         return data[y * width + x];
     }
 
+    public Matrix divide(double value) {
+        return multiply(1 / value);
+    }
+
     public Matrix multiply(double val) {
         Matrix result = new Matrix(width, height);
         for(int i = 0; i < data.length; ++i) {
