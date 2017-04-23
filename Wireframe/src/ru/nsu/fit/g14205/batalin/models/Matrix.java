@@ -2,6 +2,7 @@ package ru.nsu.fit.g14205.batalin.models;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 
 /**
  * Created by kir55rus on 28.03.17.
@@ -93,6 +94,15 @@ public class Matrix implements Cloneable {
         }
 
         return get(0, 0);
+    }
+
+    public Matrix normalize() {
+        double sum = Arrays.stream(data).sum();
+        if (Double.compare(sum, 0.) == 0) {
+            sum = 1.;
+        }
+
+        return multiply(1 / sum);
     }
 
     @Override
