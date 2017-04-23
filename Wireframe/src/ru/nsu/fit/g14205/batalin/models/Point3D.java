@@ -50,6 +50,11 @@ public class Point3D implements Cloneable {
         this.z = z;
     }
 
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
+
     public static Point3D createMin(Point3D a, Point3D b) {
         return new Point3D(
                 Math.min(a.getX(), b.getX()),

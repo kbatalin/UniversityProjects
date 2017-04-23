@@ -29,6 +29,11 @@ public class Parallelepiped implements Cloneable {
         return parallelepiped;
     }
 
+    @Override
+    public String toString() {
+        return "Pos: " + pos.toString() + ", width: " + width + ", height: " + height + ", depth: " + depth;
+    }
+
     public Point3D getPos() {
         return pos;
     }
