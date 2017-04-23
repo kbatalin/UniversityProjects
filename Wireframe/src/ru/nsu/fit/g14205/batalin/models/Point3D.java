@@ -20,6 +20,16 @@ public class Point3D implements Cloneable {
     public Point3D() {
     }
 
+    public Point3D(Matrix matrix) {
+        if (matrix.getWidth() != 1 || matrix.getHeight() != 3) {
+            throw new IllegalArgumentException("Bad matrix size");
+        }
+
+        x = matrix.get(0, 0);
+        y = matrix.get(0, 1);
+        z = matrix.get(0, 2);
+    }
+
     public Point3D(double x, double y, double z) {
         this.x = x;
         this.y = y;
