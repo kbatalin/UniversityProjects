@@ -42,12 +42,31 @@ public class WorkspaceView extends JComponent {
         Scene scene = getTestScene();
 
         Matrix worldToCamMatrix = getWorldToCamMatrix();
-
-        Matrix pos = scene.getOutboardBox().getPos().toMatrix4();
-        pos = worldToCamMatrix.multiply(pos);
-
         Matrix projectionMatrix = getProjectionMatrix();
-        pos = projectionMatrix.multiply(pos);
+
+        Matrix scale = new Matrix(4, 4, new double[]{
+                10, 0, 0, 0,
+                0, 10, 0, 0,
+                0, 0, 0, 0,
+                0, 0, 0, 0,
+        });
+
+        for (Segment segment : scene) {
+            Matrix pos1 = segment.getFirst().toMatrix4();
+            pos1 = projectionMatrix.multiply(worldToCamMatrix.multiply(pos1));
+            pos1 = pos1.divide(pos1.get(0, 3));
+
+            Matrix pos2 = segment.getSecond().toMatrix4();
+            pos2 = projectionMatrix.multiply(worldToCamMatrix.multiply(pos2));
+            pos2 = pos2.divide(pos2.get(0, 3));
+
+            pos1 = scale.multiply(pos1);
+            pos2 = scale.multiply(pos2);
+
+            graphics.drawLine((int)pos1.get(0,0), (int)pos1.get(0,1), (int)pos2.get(0,0), (int)pos2.get(0,1));
+        }
+        Matrix pos = scene.getOutboardBox().getPos().toMatrix4();
+        pos = projectionMatrix.multiply(worldToCamMatrix.multiply(pos));
         pos = pos.multiply(1. / pos.get(0, 3));
 
         System.out.println(pos);
