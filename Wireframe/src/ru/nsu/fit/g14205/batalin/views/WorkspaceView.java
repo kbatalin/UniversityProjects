@@ -108,7 +108,24 @@ public class WorkspaceView extends JComponent {
         drawFigure(graphics, scene, sceneTransformMatrix, displayTransform);
     }
 
+    private void drawAxes(Graphics graphics, Matrix csTransform, Matrix displayTransform) {
+        Graphics2D graphics2D = (Graphics2D) graphics;
+        graphics2D.setStroke(new BasicStroke(3));
+
+        graphics.setColor(Color.RED);
+        drawSegment(graphics, new Segment(new Point3D(0, 0, 0), new Point3D(1, 0, 0)), csTransform, displayTransform);
+
+        graphics.setColor(Color.GREEN);
+        drawSegment(graphics, new Segment(new Point3D(0, 0, 0), new Point3D(0, 1, 0)), csTransform, displayTransform);
+
+        graphics.setColor(Color.BLUE);
+        drawSegment(graphics, new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 1)), csTransform, displayTransform);
+
+        graphics2D.setStroke(new BasicStroke(1));
+    }
+
     private void drawFigure(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
+
         Iterator<PaintedFigure> figureIterator = figure.figures();
         Matrix transformMatrix = figure.getCoordinateSystem().getTransformMatrix().multiply(csTransform);
         while (figureIterator.hasNext()) {
@@ -118,6 +135,7 @@ public class WorkspaceView extends JComponent {
         }
 
         drawSegments(graphics, figure, csTransform, displayTransform);
+        drawAxes(graphics, csTransform, displayTransform);
     }
 
     private void drawSegments(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
@@ -125,29 +143,34 @@ public class WorkspaceView extends JComponent {
             return;
         }
 
+        graphics.setColor(Color.GRAY);
         Iterator<Segment> iterator = figure.segments();
         while (iterator.hasNext()) {
             Segment segment = iterator.next();
-            Matrix pos1 = segment.getFirst().toMatrix4();
-            pos1 = csTransform.multiply(pos1);
-            pos1 = pos1.divide(pos1.get(0, 3));
-
-            Matrix pos2 = segment.getSecond().toMatrix4();
-            pos2 = csTransform.multiply(pos2);
-            pos2 = pos2.divide(pos2.get(0, 3));
-
-            pos1 = pos1.subMatrix(0, 0, 1, 3);
-            pos2 = pos2.subMatrix(0, 0, 1, 3);
-            pos1.set(0, 2, 1);
-            pos2.set(0, 2, 1);
-            pos1 = displayTransform.multiply(pos1);
-            pos2 = displayTransform.multiply(pos2);
-
-            int x0 = (int) Math.round(pos1.get(0, 0));
-            int y0 = (int) Math.round(pos1.get(0, 1));
-            int x1 = (int) Math.round(pos2.get(0, 0));
-            int y1 = (int) Math.round(pos2.get(0, 1));
-            graphics.drawLine(x0, y0, x1, y1);
+            drawSegment(graphics, segment, csTransform, displayTransform);
         }
+    }
+
+    private void drawSegment(Graphics graphics, Segment segment, Matrix csTransform, Matrix displayTransform) {
+        Matrix pos1 = segment.getFirst().toMatrix4();
+        pos1 = csTransform.multiply(pos1);
+        pos1 = pos1.divide(pos1.get(0, 3));
+
+        Matrix pos2 = segment.getSecond().toMatrix4();
+        pos2 = csTransform.multiply(pos2);
+        pos2 = pos2.divide(pos2.get(0, 3));
+
+        pos1 = pos1.subMatrix(0, 0, 1, 3);
+        pos2 = pos2.subMatrix(0, 0, 1, 3);
+        pos1.set(0, 2, 1);
+        pos2.set(0, 2, 1);
+        pos1 = displayTransform.multiply(pos1);
+        pos2 = displayTransform.multiply(pos2);
+
+        int x0 = (int) Math.round(pos1.get(0, 0));
+        int y0 = (int) Math.round(pos1.get(0, 1));
+        int x1 = (int) Math.round(pos2.get(0, 0));
+        int y1 = (int) Math.round(pos2.get(0, 1));
+        graphics.drawLine(x0, y0, x1, y1);
     }
 }

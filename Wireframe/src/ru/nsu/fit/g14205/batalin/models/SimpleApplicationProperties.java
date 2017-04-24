@@ -64,12 +64,12 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
 
     private PaintedFigure createDefaultScene() {
         List<Segment> segments = new ArrayList<>();
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(3, 0, 0)));
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 3, 0)));
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 3)));
-        segments.add(new Segment(new Point3D(0, 3, 0), new Point3D(0, 0, 3)));
-        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 0, 3)));
-        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 3, 0)));
+        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(10, 0, 0)));
+        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 10, 0)));
+        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 10)));
+        segments.add(new Segment(new Point3D(0, 10, 0), new Point3D(0, 0, 10)));
+        segments.add(new Segment(new Point3D(10, 0, 0), new Point3D(0, 0, 10)));
+        segments.add(new Segment(new Point3D(10, 0, 0), new Point3D(0, 10, 0)));
 
         PaintedFigure figure = new Figure();
         figure.addSegments(segments);

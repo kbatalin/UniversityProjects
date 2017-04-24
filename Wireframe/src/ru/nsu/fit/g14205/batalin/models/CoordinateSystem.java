@@ -4,6 +4,9 @@ import ru.nsu.fit.g14205.batalin.models.observe.Observable;
 import ru.nsu.fit.g14205.batalin.models.observe.ObservableBase;
 import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Kirill Batalin (kir55rus) on 24.04.17.
  */
@@ -17,12 +20,12 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
     }
 
     public CoordinateSystem() {
-        center = new Point3D(0, 0, 0);
-        rotation = new Matrix(3, 3, new double[]{
+        this(new Point3D(0, 0, 0),
+                new Matrix(3, 3, new double[]{
                 1, 0, 0,
                 0, 1, 0,
                 0, 0, 1
-        });
+        }));
     }
 
     public CoordinateSystem(Point3D center, Matrix rotation) {
