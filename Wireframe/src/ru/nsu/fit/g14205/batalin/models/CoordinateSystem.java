@@ -7,7 +7,7 @@ import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
 /**
  * Created by Kirill Batalin (kir55rus) on 24.04.17.
  */
-public class CoordinateSystem extends ObservableBase implements Observable {
+public class CoordinateSystem extends ObservableBase implements Observable, Cloneable {
     private Point3D center;
     private Matrix rotation;
 
@@ -28,6 +28,14 @@ public class CoordinateSystem extends ObservableBase implements Observable {
     public CoordinateSystem(Point3D center, Matrix rotation) {
         this.center = center;
         this.rotation = rotation;
+    }
+
+    @Override
+    public CoordinateSystem clone() throws CloneNotSupportedException {
+        CoordinateSystem coordinateSystem = (CoordinateSystem) super.clone();
+        coordinateSystem.center = center.clone();
+        coordinateSystem.rotation.clone();
+        return coordinateSystem;
     }
 
     public Point3D getCenter() {

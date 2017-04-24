@@ -14,6 +14,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     private Area area;
     private CameraProperties cameraProperties;
     private ViewPyramidProperties viewPyramidProperties;
+    private PaintedFigure scene;
 
     public SimpleApplicationProperties() {
         controlPointRadius = .3;
@@ -21,6 +22,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         area = new Area(0, 0, 1, 2 * Math.PI);
         cameraProperties = new Camera(new Point3D(-10, 0, 0), new Point3D(10, 0, 0), new Point3D(0, 1, 0));
         viewPyramidProperties = new ViewPyramid(5, 15, 10, 10);
+        scene = createDefaultScene();
     }
 
     @Override
@@ -30,6 +32,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         applicationProperties.cameraProperties = cameraProperties.clone();
         applicationProperties.area = area.clone();
         applicationProperties.viewPyramidProperties = viewPyramidProperties.clone();
+        applicationProperties.scene = scene.clone();
         applicationProperties.lineProperties = new ArrayList<>();
         for (LineProperties line : lineProperties) {
             applicationProperties.lineProperties.add(line.clone());
@@ -45,6 +48,35 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         area = applicationProperties.getArea();
         cameraProperties = applicationProperties.getCameraProperties();
         viewPyramidProperties = applicationProperties.getViewPyramidProperties();
+        scene = applicationProperties.getScene();
+    }
+
+    @Override
+    public PaintedFigure getScene() {
+        return scene;
+    }
+
+    @Override
+    public void setScene(PaintedFigure scene) {
+        this.scene = scene;
+        notifyObservers(Event.SCENE_CHANGED);
+    }
+
+    private PaintedFigure createDefaultScene() {
+        List<Segment> segments = new ArrayList<>();
+        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(3, 0, 0)));
+        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 3, 0)));
+        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 3)));
+        segments.add(new Segment(new Point3D(0, 3, 0), new Point3D(0, 0, 3)));
+        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 0, 3)));
+        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 3, 0)));
+
+        PaintedFigure figure = new Figure();
+        figure.addSegments(segments);
+
+        PaintedFigure scene = new Figure();
+        scene.addFigure(figure);
+        return scene;
     }
 
     @Override

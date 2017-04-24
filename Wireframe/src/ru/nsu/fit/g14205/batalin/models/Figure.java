@@ -34,6 +34,21 @@ public class Figure extends ObservableBase implements PaintedFigure {
     }
 
     @Override
+    public PaintedFigure clone() throws CloneNotSupportedException {
+        Figure figure = (Figure) super.clone();
+        figure.coordinateSystem = coordinateSystem.clone();
+        figure.figures = new ArrayList<>();
+        for (PaintedFigure paintedFigure : figures) {
+            figure.figures.add(paintedFigure.clone());
+        }
+        figure.segments = new ArrayList<>();
+        for (Segment segment : segments) {
+            figure.segments.add(segment.clone());
+        }
+        return figure;
+    }
+
+    @Override
     public CoordinateSystem getCoordinateSystem() {
         return coordinateSystem;
     }

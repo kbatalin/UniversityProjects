@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by Kirill Batalin (kir55rus) on 24.04.17.
  */
-public interface PaintedFigure extends Observable {
+public interface PaintedFigure extends Observable, Cloneable {
     void addFigure(PaintedFigure figure);
 
     void addFigures(List<PaintedFigure> figures);
@@ -27,6 +27,8 @@ public interface PaintedFigure extends Observable {
     Iterator<PaintedFigure> figures();
 
     Iterator<Segment> segments();
+
+    PaintedFigure clone() throws CloneNotSupportedException;
 
     enum Event implements ObserveEvent {
         FIGURE_CHANGED,

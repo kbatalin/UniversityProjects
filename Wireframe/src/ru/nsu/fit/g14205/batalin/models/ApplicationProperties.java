@@ -22,6 +22,9 @@ public interface ApplicationProperties extends Observable, Cloneable {
     CameraProperties getCameraProperties();
     ViewPyramidProperties getViewPyramidProperties();
 
+    PaintedFigure getScene();
+    void setScene(PaintedFigure scene);
+
     ApplicationProperties clone() throws CloneNotSupportedException;
     void apply(ApplicationProperties applicationProperties);
 
@@ -29,5 +32,6 @@ public interface ApplicationProperties extends Observable, Cloneable {
         LINE_PROPERTIES_ADDED,
         LINE_PROPERTIES_REMOVED,
         AREA_CHANGED,
+        SCENE_CHANGED,
     }
 }
