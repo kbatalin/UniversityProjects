@@ -74,6 +74,12 @@ public class Point3D implements Cloneable {
     }
 
     public static Point3D createMin(Point3D a, Point3D b) {
+        if (a == null) {
+            return b;
+        }
+        if (b == null) {
+            return a;
+        }
         return new Point3D(
                 Math.min(a.getX(), b.getX()),
                 Math.min(a.getY(), b.getY()),
@@ -82,6 +88,12 @@ public class Point3D implements Cloneable {
     }
 
     public static Point3D createMax(Point3D a, Point3D b) {
+        if (a == null) {
+            return b;
+        }
+        if (b == null) {
+            return a;
+        }
         return new Point3D(
                 Math.max(a.getX(), b.getX()),
                 Math.max(a.getY(), b.getY()),
