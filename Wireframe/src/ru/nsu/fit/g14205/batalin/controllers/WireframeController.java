@@ -75,8 +75,8 @@ public class WireframeController {
         //Y
         Matrix rotateY;
         {
-            double s = Math.sin(Math.PI / 180. * -x);
-            double c = Math.cos(Math.PI / 180. * -x);
+            double s = Math.sin(Math.PI / 180. * x);
+            double c = Math.cos(Math.PI / 180. * x);
             rotateY = new Matrix(3, 3, new double[]{
                     c, 0, s,
                     0, 1, 0,
@@ -87,12 +87,12 @@ public class WireframeController {
         //X
         Matrix rotateX;
         {
-            double s = Math.sin(Math.PI / 180. * -y);
-            double c = Math.cos(Math.PI / 180. * -y);
+            double s = Math.sin(Math.PI / 180. * y);
+            double c = Math.cos(Math.PI / 180. * y);
             rotateX = new Matrix(3, 3, new double[]{
-                    1, 0, 0,
-                    0, c, -s,
-                    0, s, c,
+                    c, -s, 0,
+                    s, c, 0,
+                    0, 0, 1
             });
         }
 

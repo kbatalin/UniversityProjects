@@ -24,14 +24,14 @@ public class ViewPyramid extends ObservableBase implements ViewPyramidProperties
     }
 
     private void updMatrix() {
-        double zf = getFrontPlaneDistance();
-        double zb = getBackPlaneDistance();
+        double zf = -getFrontPlaneDistance();
+        double zb = -getBackPlaneDistance();
         double sw = getFrontPlaneWidth();
         double sh = getFrontPlaneHeight();
         projectionMatrix = new Matrix(4, 4, new double[]{
-                2 * -zf / sw, 0, 0, 0,
-                0, 2 * -zf / sh, 0, 0,
-                0, 0, zf / (zb - zf), zf * zb / (zb - zf),
+                2 * zf / sw, 0, 0, 0,
+                0, 2 * zf / sh, 0, 0,
+                0, 0, zf / (zb - zf), -zf * zb / (zb - zf),
                 0, 0, 1, 0
         });
     }

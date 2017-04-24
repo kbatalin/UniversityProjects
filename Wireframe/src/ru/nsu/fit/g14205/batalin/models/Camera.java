@@ -31,27 +31,37 @@ public class Camera extends ObservableBase implements CameraProperties {
     }
 
     private void updMatrix() {
-        Point3D cam = getCameraPosition();
-        Point3D camZ = new Point3D(cam.toMatrix3().deduct(getViewPoint().toMatrix3()).normalize());
-        Point3D camY = new Point3D(getUpVector().toMatrix3().normalize());
-        Point3D camX = new Point3D(new Matrix(3, 3, new double[]{
-                0, -camY.getZ(), camY.getY(),
-                camY.getZ(), 0, -camY.getX(),
-                -camY.getY(), camY.getX(), 0,
-        }).multiply(camZ.toMatrix3()).normalize());
-        Matrix MRotateCam = new Matrix(3,3, new double[]{
-                camX.getX(), camX.getY(), camX.getZ(),
-                camY.getX(), camY.getY(), camY.getZ(),
-                camZ.getX(), camZ.getY(), camZ.getZ(),
-        });
-        Matrix MOffsetCam = MRotateCam.multiply(cam.toMatrix3());
+        Point3D camPos = getCameraPosition();
+        Point3D viewPoint = getViewPoint();
+        Point3D up = getUpVector();
 
-        worldToCamMatrix = new Matrix(4,4, new double[]{
-                MRotateCam.get(0,0), MRotateCam.get(1,0), MRotateCam.get(2,0), -MOffsetCam.get(0,0),
-                MRotateCam.get(0,1), MRotateCam.get(1,1), MRotateCam.get(2,1), -MOffsetCam.get(0,1),
-                MRotateCam.get(0,2), MRotateCam.get(1,2), MRotateCam.get(2,2), -MOffsetCam.get(0,2),
+        Point3D zC = new Point3D(camPos.toMatrix3().deduct(viewPoint.toMatrix3()).normalize());
+        Point3D xC = new Point3D(new Matrix(3, 3, new double[]{
+                0, -up.getZ(), up.getY(),
+                up.getZ(), 0, -up.getX(),
+                -up.getY(), up.getX(), 0
+        }).multiply(zC.toMatrix3()).normalize());
+        Point3D yC = new Point3D(new Matrix(3, 3, new double[]{
+                0, -zC.getZ(), zC.getY(),
+                zC.getZ(), 0, -zC.getX(),
+                -zC.getY(), zC.getX(), 0
+        }).multiply(xC.toMatrix3()));
+
+        Matrix shift = new Matrix(4, 4, new double[]{
+                1, 0, 0, -camPos.getX(),
+                0, 1, 0, -camPos.getY(),
+                0, 0, 1, -camPos.getZ(),
                 0, 0, 0, 1
         });
+
+        Matrix MRotateCam = new Matrix(4, 4, new double[]{
+                xC.getX(), xC.getY(), xC.getZ(), 0,
+                yC.getX(), yC.getY(), yC.getZ(), 0,
+                zC.getX(), zC.getY(), zC.getZ(), 0,
+                0, 0, 0, 1
+        });
+
+        worldToCamMatrix = MRotateCam.multiply(shift);
     }
 
     @Override

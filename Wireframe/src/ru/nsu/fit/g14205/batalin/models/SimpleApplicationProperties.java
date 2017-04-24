@@ -21,7 +21,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         lineProperties = new ArrayList<>();
         area = new Area(0, 0, 1, 2 * Math.PI);
         cameraProperties = new Camera(new Point3D(-10, 0, 0), new Point3D(10, 0, 0), new Point3D(0, 1, 0));
-        viewPyramidProperties = new ViewPyramid(5, 15, 10, 10);
+        viewPyramidProperties = new ViewPyramid(15, 5, 10, 10);
         scene = createDefaultScene();
     }
 
@@ -64,19 +64,20 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
 
     private PaintedFigure createDefaultScene() {
         List<Segment> segments = new ArrayList<>();
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(10, 0, 0)));
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 10, 0)));
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 10)));
-        segments.add(new Segment(new Point3D(0, 10, 0), new Point3D(0, 0, 10)));
-        segments.add(new Segment(new Point3D(10, 0, 0), new Point3D(0, 0, 10)));
-        segments.add(new Segment(new Point3D(10, 0, 0), new Point3D(0, 10, 0)));
+        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(3, 0, 0)));
+        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 3, 0)));
+        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 3)));
+        segments.add(new Segment(new Point3D(0, 3, 0), new Point3D(0, 0, 3)));
+        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 0, 3)));
+        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 3, 0)));
 
         PaintedFigure figure = new Figure();
         figure.addSegments(segments);
 
         PaintedFigure scene = new Figure();
         scene.addFigure(figure);
-        return scene;
+//        return scene;
+        return figure;
     }
 
     @Override

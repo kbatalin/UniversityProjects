@@ -91,43 +91,35 @@ public class WorkspaceView extends JComponent {
         Matrix projectionMatrix = viewPyramid.getProjectionMatrix();
         Matrix sceneTransformMatrix = projectionMatrix.multiply(worldToCamMatrix);
 
-        Matrix scale = new Matrix(3, 3, new double[]{
-                viewPortSizeRatio, 0, 0,
-                0, viewPortSizeRatio, 0,
-                0, 0, 1
-        });
+        Matrix ox = worldToCamMatrix.multiply(new Point3D(20, 0, 0).toMatrix4());
+        Matrix oy = worldToCamMatrix.multiply(new Point3D(0, 1, 0).toMatrix4());
+        Matrix oz = worldToCamMatrix.multiply(new Point3D(0, 0, 1).toMatrix4());
 
-        Matrix offset = new Matrix(3, 3, new double[]{
-                1, 0, componentSize.getWidth() / 2,
-                0, -1, componentSize.getHeight() / 2,
-                0, 0, 1,
-        });
 
-        Matrix displayTransform = offset.multiply(scale);
+        System.out.println(ox);
+
+        ox = projectionMatrix.multiply(ox);
+        ox = ox.divide(ox.get(0, 3));
+
+        System.out.println(ox);
+
+        int x0 = viewPort.x;
+        int y0 = viewPort.y;
+        int x1 = x0 + viewPort.width;
+        int y1 = y0 + viewPort.height;
+        Matrix displayTransform = new Matrix(4, 4, new double[]{
+                (x1 - x0) / 2., 0, 0, (x0 + x1) / 2.,
+                0, -(y1 - y0) / 2., 0, (y0 + y1) / 2.,
+                0, 0, 1 / 2., 1 / 2.,
+                0, 0, 0, 1
+        });
 
         drawFigure(graphics, scene, sceneTransformMatrix, displayTransform);
     }
 
-    private void drawAxes(Graphics graphics, Matrix csTransform, Matrix displayTransform) {
-        Graphics2D graphics2D = (Graphics2D) graphics;
-        graphics2D.setStroke(new BasicStroke(3));
-
-        graphics.setColor(Color.RED);
-        drawSegment(graphics, new Segment(new Point3D(0, 0, 0), new Point3D(1, 0, 0)), csTransform, displayTransform);
-
-        graphics.setColor(Color.GREEN);
-        drawSegment(graphics, new Segment(new Point3D(0, 0, 0), new Point3D(0, 1, 0)), csTransform, displayTransform);
-
-        graphics.setColor(Color.BLUE);
-        drawSegment(graphics, new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 1)), csTransform, displayTransform);
-
-        graphics2D.setStroke(new BasicStroke(1));
-    }
-
     private void drawFigure(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
-
         Iterator<PaintedFigure> figureIterator = figure.figures();
-        Matrix transformMatrix = figure.getCoordinateSystem().getTransformMatrix().multiply(csTransform);
+        Matrix transformMatrix = csTransform.multiply(figure.getCoordinateSystem().getTransformMatrix());
         while (figureIterator.hasNext()) {
             PaintedFigure paintedFigure = figureIterator.next();
 
@@ -160,10 +152,6 @@ public class WorkspaceView extends JComponent {
         pos2 = csTransform.multiply(pos2);
         pos2 = pos2.divide(pos2.get(0, 3));
 
-        pos1 = pos1.subMatrix(0, 0, 1, 3);
-        pos2 = pos2.subMatrix(0, 0, 1, 3);
-        pos1.set(0, 2, 1);
-        pos2.set(0, 2, 1);
         pos1 = displayTransform.multiply(pos1);
         pos2 = displayTransform.multiply(pos2);
 
@@ -172,5 +160,21 @@ public class WorkspaceView extends JComponent {
         int x1 = (int) Math.round(pos2.get(0, 0));
         int y1 = (int) Math.round(pos2.get(0, 1));
         graphics.drawLine(x0, y0, x1, y1);
+    }
+
+    private void drawAxes(Graphics graphics, Matrix csTransform, Matrix displayTransform) {
+        Graphics2D graphics2D = (Graphics2D) graphics;
+        graphics2D.setStroke(new BasicStroke(3));
+
+        graphics.setColor(Color.RED);
+        drawSegment(graphics, new Segment(new Point3D(0, 0, 0), new Point3D(1, 0, 0)), csTransform, displayTransform);
+
+        graphics.setColor(Color.GREEN);
+        drawSegment(graphics, new Segment(new Point3D(0, 0, 0), new Point3D(0, 1, 0)), csTransform, displayTransform);
+
+        graphics.setColor(Color.BLUE);
+        drawSegment(graphics, new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 1)), csTransform, displayTransform);
+
+        graphics2D.setStroke(new BasicStroke(1));
     }
 }
