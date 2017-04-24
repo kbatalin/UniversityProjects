@@ -34,6 +34,8 @@ public class WorkspaceView extends JComponent {
         pyramidProperties.addObserver(ViewPyramidProperties.Event.FRONT_PLANE_DISTANCE_CHANGED, this::repaint);
         pyramidProperties.addObserver(ViewPyramidProperties.Event.BACK_PLANE_DISTANCE_CHANGED, this::repaint);
 
+        applicationProperties.getScene().addObserver(PaintedFigure.Event.FIGURE_CHANGED, this::repaint);
+
         addMouseWheelListener(new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
@@ -83,7 +85,7 @@ public class WorkspaceView extends JComponent {
         graphics.drawRect(viewPort.x, viewPort.y, viewPort.width, viewPort.height);
 
 
-        PaintedFigure scene = getTestScene();
+        PaintedFigure scene = applicationProperties.getScene();
 
         Matrix worldToCamMatrix = camera.getWorldToCamMatrix();
         Matrix projectionMatrix = viewPyramid.getProjectionMatrix();
@@ -108,11 +110,11 @@ public class WorkspaceView extends JComponent {
 
     private void drawFigure(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
         Iterator<PaintedFigure> figureIterator = figure.figures();
+        Matrix transformMatrix = figure.getCoordinateSystem().getTransformMatrix().multiply(csTransform);
         while (figureIterator.hasNext()) {
             PaintedFigure paintedFigure = figureIterator.next();
 
-            CoordinateSystem coordinateSystem = paintedFigure.getCoordinateSystem();
-            drawSegments(graphics, paintedFigure, coordinateSystem.getTransformMatrix().multiply(csTransform), displayTransform);
+            drawFigure(graphics, paintedFigure, transformMatrix, displayTransform);
         }
 
         drawSegments(graphics, figure, csTransform, displayTransform);
@@ -147,31 +149,5 @@ public class WorkspaceView extends JComponent {
             int y1 = (int) Math.round(pos2.get(0, 1));
             graphics.drawLine(x0, y0, x1, y1);
         }
-    }
-
-    private PaintedFigure getTestScene() {
-
-        List<Segment> segments = new ArrayList<>();
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(3, 0, 0)));
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 3, 0)));
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 3)));
-        segments.add(new Segment(new Point3D(0, 3, 0), new Point3D(0, 0, 3)));
-        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 0, 3)));
-        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 3, 0)));
-
-        PaintedFigure figure = new Figure();
-        figure.addSegments(segments);
-//        figure.getCoordinateSystem().setCenter(new Point3D(5, 3, 2));
-//        double degree = Math.PI / 4;
-//        Matrix rotation = new Matrix(3, 3, new double[]{
-//                1, 0, 0,
-//                0, Math.cos(degree), -Math.sin(degree),
-//                0, Math.sin(degree), Math.cos(degree)
-//        });
-//        figure.getCoordinateSystem().setRotation(rotation.multiply(figure.getCoordinateSystem().getRotation()));
-
-        PaintedFigure scene = new Figure();
-        scene.addFigure(figure);
-        return scene;
     }
 }
