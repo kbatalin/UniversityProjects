@@ -5,6 +5,8 @@ import ru.nsu.fit.g14205.batalin.models.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseWheelEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,13 @@ public class WorkspaceView extends JComponent {
         pyramidProperties.addObserver(ViewPyramidProperties.Event.FRONT_PLANE_SIZE_CHANGED, this::repaint);
         pyramidProperties.addObserver(ViewPyramidProperties.Event.FRONT_PLANE_DISTANCE_CHANGED, this::repaint);
         pyramidProperties.addObserver(ViewPyramidProperties.Event.BACK_PLANE_DISTANCE_CHANGED, this::repaint);
+
+        addMouseWheelListener(new MouseAdapter() {
+            @Override
+            public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
+                wireframeController.onMouseWheelMoved(mouseWheelEvent);
+            }
+        });
     }
 
     @Override

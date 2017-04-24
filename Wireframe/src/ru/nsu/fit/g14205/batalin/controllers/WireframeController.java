@@ -1,15 +1,13 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
-import ru.nsu.fit.g14205.batalin.models.ApplicationProperties;
-import ru.nsu.fit.g14205.batalin.models.BSplineProperties;
-import ru.nsu.fit.g14205.batalin.models.LineProperties;
-import ru.nsu.fit.g14205.batalin.models.SimpleApplicationProperties;
+import ru.nsu.fit.g14205.batalin.models.*;
 import ru.nsu.fit.g14205.batalin.views.EditorDialog;
 import ru.nsu.fit.g14205.batalin.views.WireframeView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
 
 /**
@@ -46,6 +44,13 @@ public class WireframeController {
 
     public WireframeView getWireframeView() {
         return wireframeView;
+    }
+
+    public void onMouseWheelMoved(MouseWheelEvent event) {
+        ViewPyramidProperties pyramidProperties = applicationProperties.getViewPyramidProperties();
+        double zf = pyramidProperties.getFrontPlaneDistance();
+        zf += 0.5 * event.getWheelRotation();
+        pyramidProperties.setFrontPlaneDistance(zf);
     }
 
     public void onLineEditButtonClicked() {
