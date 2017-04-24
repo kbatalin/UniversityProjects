@@ -19,6 +19,8 @@ public interface CameraProperties extends Observable, Cloneable {
 
     void setUpVector(Point3D upVector);
 
+    Matrix getWorldToCamMatrix();
+
     CameraProperties clone() throws CloneNotSupportedException;
 
     enum Event implements ObserveEvent {

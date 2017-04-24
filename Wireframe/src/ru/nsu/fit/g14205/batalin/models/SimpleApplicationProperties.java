@@ -20,7 +20,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         lineProperties = new ArrayList<>();
         area = new Area(0, 0, 1, 2 * Math.PI);
         cameraProperties = new Camera(new Point3D(-10, 0, 0), new Point3D(10, 0, 0), new Point3D(0, 1, 0));
-        viewPyramidProperties = new ViewPyramid(5, 15, 1, 1);
+        viewPyramidProperties = new ViewPyramid(5, 15, 10, 10);
     }
 
     @Override

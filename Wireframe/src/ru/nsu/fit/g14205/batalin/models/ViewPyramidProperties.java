@@ -19,6 +19,8 @@ public interface ViewPyramidProperties extends Observable, Cloneable {
     double getFrontPlaneHeight();
     void setFrontPlaneHeight(double height);
 
+    Matrix getProjectionMatrix();
+
     ViewPyramidProperties clone() throws CloneNotSupportedException;
 
     enum Event implements ObserveEvent {
