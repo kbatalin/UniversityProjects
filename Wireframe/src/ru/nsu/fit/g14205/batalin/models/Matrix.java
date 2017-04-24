@@ -51,6 +51,21 @@ public class Matrix implements Cloneable {
         return data[y * width + x];
     }
 
+    public Matrix subMatrix(int x0, int y0, int width, int height) {
+        if (x0 < 0 || y0 < 0 || width <= 0 || height <= 0 || x0 + width > this.width || y0 + height > this.height) {
+            throw new IllegalArgumentException("Bad sybMatrix size");
+        }
+
+        Matrix matrix = new Matrix(width, height);
+        for(int x = 0; x < width; ++x) {
+            for(int y = 0; y < height; ++y) {
+                matrix.set(x, y, get(x + x0, y + y0));
+            }
+        }
+
+        return matrix;
+    }
+
     public Matrix divide(double value) {
         return multiply(1 / value);
     }
