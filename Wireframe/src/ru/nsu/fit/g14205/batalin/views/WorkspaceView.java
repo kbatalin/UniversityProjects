@@ -17,6 +17,18 @@ public class WorkspaceView extends JComponent {
 
     public WorkspaceView(WireframeController wireframeController) {
         this.wireframeController = wireframeController;
+
+        ApplicationProperties applicationProperties = wireframeController.getApplicationProperties();
+        CameraProperties cameraProperties = applicationProperties.getCameraProperties();
+        ViewPyramidProperties pyramidProperties = applicationProperties.getViewPyramidProperties();
+
+        cameraProperties.addObserver(CameraProperties.Event.UP_VECTOR_CHANGED, this::repaint);
+        cameraProperties.addObserver(CameraProperties.Event.VIEW_POINT_CHANGED, this::repaint);
+        cameraProperties.addObserver(CameraProperties.Event.CAMERA_POSITION_CHANGED, this::repaint);
+
+        pyramidProperties.addObserver(ViewPyramidProperties.Event.FRONT_PLANE_SIZE_CHANGED, this::repaint);
+        pyramidProperties.addObserver(ViewPyramidProperties.Event.FRONT_PLANE_DISTANCE_CHANGED, this::repaint);
+        pyramidProperties.addObserver(ViewPyramidProperties.Event.BACK_PLANE_DISTANCE_CHANGED, this::repaint);
     }
 
     @Override
