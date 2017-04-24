@@ -206,22 +206,13 @@ public class WorkspaceView extends JComponent {
     }
 
     private Segment getPartSegmentZ(Point3D in, Point3D out) {
-        double k = (out.getY() - in.getY()) / (out.getX() - in.getX());
-        double b = in.getY() - k * in.getX();
+        double border = Double.compare(out.getZ(), -1.) < 0 ? -1. : 0;
 
-        if (Double.compare(out.getZ(), -1.) < 0) {
-            double ratio = (-1. - out.getZ()) / (in.getZ() - out.getZ());
+        double t = (border - in.getZ()) / (out.getZ() - in.getZ());
+        double x = in.getX() + (out.getX() - in.getX()) * t;
+        double y = in.getY() + (out.getY() - in.getY()) * t;
+        double z = border;
 
-            double x = in.getX() + (out.getX() - in.getX()) * ratio;
-            double y = k * x + b;
-            double z = -1.;
-            return new Segment(in, new Point3D(x, y, z));
-        }
-
-        double ratio = (out.getZ()) / (out.getZ() - in.getZ());
-        double x = in.getX() + (out.getX() - in.getX()) * ratio;
-        double y = k * x + b;
-        double z = -1.;
         return new Segment(in, new Point3D(x, y, z));
     }
 
