@@ -16,6 +16,7 @@ public class Figure extends ObservableBase implements PaintedFigure {
     private CoordinateSystem coordinateSystem;
 
     public Figure() {
+        this(null, null);
     }
 
     public Figure(List<PaintedFigure> figures, List<Segment> segments) {

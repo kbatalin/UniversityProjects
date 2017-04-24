@@ -15,6 +15,7 @@ import java.awt.geom.Point2D;
  */
 public class WireframeController {
     private ApplicationProperties applicationProperties;
+    private Point2D prevPos;
 
     private WireframeView wireframeView;
 
@@ -51,6 +52,26 @@ public class WireframeController {
         double zf = pyramidProperties.getFrontPlaneDistance();
         zf += 0.5 * event.getWheelRotation();
         pyramidProperties.setFrontPlaneDistance(zf);
+    }
+
+    public void onMousePressed(MouseEvent mouseEvent) {
+        prevPos = mouseEvent.getPoint();
+    }
+
+    public void onMouseReleased(MouseEvent mouseEvent) {
+        prevPos = null;
+    }
+
+    public void onMouseDragged(MouseEvent mouseEvent) {
+        Point2D pos = mouseEvent.getPoint();
+        if (prevPos == null) {
+            prevPos = pos;
+            return;
+        }
+
+        double x = (pos.getX() - prevPos.getX()) * 0.5;
+        double y = (pos.getY() - prevPos.getY()) * 0.5;
+
     }
 
     public void onLineEditButtonClicked() {
