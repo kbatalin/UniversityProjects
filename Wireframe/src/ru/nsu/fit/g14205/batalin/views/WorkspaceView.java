@@ -177,6 +177,8 @@ public class WorkspaceView extends JComponent {
                 new Point2D.Double(-1, -1),
                 new Point2D.Double(-1, 1),
         };
+
+        //X, Y
         for(int i = 0; i < corners.length; ++i) {
             int next = (i + 1) % corners.length;
             Line2D border = new Line2D.Double(corners[i], corners[next]);
@@ -192,7 +194,35 @@ public class WorkspaceView extends JComponent {
             }
         }
 
-        return null;
+        //Z
+        double k = (pos2.getY() - pos1.getY()) / (pos2.getX() - pos1.getX());
+        double b = pos1.getY() - k * pos1.getX();
+
+        if (inViewPort1) {
+            return getPartSegmentZ(pos1, pos2);
+        }
+
+        return getPartSegmentZ(pos2, pos1);
+    }
+
+    private Segment getPartSegmentZ(Point3D in, Point3D out) {
+        double k = (out.getY() - in.getY()) / (out.getX() - in.getX());
+        double b = in.getY() - k * in.getX();
+
+        if (Double.compare(out.getZ(), -1.) < 0) {
+            double ratio = (-1. - out.getZ()) / (in.getZ() - out.getZ());
+
+            double x = in.getX() + (out.getX() - in.getX()) * ratio;
+            double y = k * x + b;
+            double z = -1.;
+            return new Segment(in, new Point3D(x, y, z));
+        }
+
+        double ratio = (out.getZ()) / (out.getZ() - in.getZ());
+        double x = in.getX() + (out.getX() - in.getX()) * ratio;
+        double y = k * x + b;
+        double z = -1.;
+        return new Segment(in, new Point3D(x, y, z));
     }
 
     private Point2D getIntersectPoint(Line2D line1, Line2D line2) {
@@ -228,7 +258,9 @@ public class WorkspaceView extends JComponent {
         return Double.compare(pos.getX(), 1.) <= 0 &&
                 Double.compare(pos.getX(), -1.) >= 0 &&
                 Double.compare(pos.getY(), 1.) <= 0 &&
-                Double.compare(pos.getY(), -1.) >= 0;
+                Double.compare(pos.getY(), -1.) >= 0 &&
+                Double.compare(pos.getZ(), -1.) >= 0 &&
+                Double.compare(pos.getZ(), 0) <= 0;
     }
 
     private void drawAxes(Graphics graphics, Matrix csTransform, Matrix displayTransform) {
