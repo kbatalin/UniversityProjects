@@ -134,8 +134,8 @@ public class WorkspaceView extends JComponent {
             drawFigure(graphics, paintedFigure, transformMatrix, displayTransform);
         }
 
-        drawSegments(graphics, figure, csTransform, displayTransform);
-        drawAxes(graphics, csTransform, displayTransform);
+        drawSegments(graphics, figure, transformMatrix, displayTransform);
+        drawAxes(graphics, transformMatrix, displayTransform);
     }
 
     private void drawSegments(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
