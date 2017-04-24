@@ -46,12 +46,18 @@ public class WorkspaceView extends JComponent {
         Matrix worldToCamMatrix = camera.getWorldToCamMatrix();
         Matrix projectionMatrix = viewPyramid.getProjectionMatrix();
 
-        Matrix scale = new Matrix(4, 4, new double[]{
-                viewPortSizeRatio, 0, 0, 0,
-                0, viewPortSizeRatio, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
+        Matrix scale = new Matrix(3, 3, new double[]{
+                viewPortSizeRatio, 0, 0,
+                0, viewPortSizeRatio, 0,
+                0, 0, 1
         });
+
+        Matrix offset = new Matrix(3, 3, new double[]{
+                1, 0, componentSize.getWidth() / 2,
+                0, -1, componentSize.getHeight() / 2,
+                0, 0, 1,
+        });
+
 
         for (Segment segment : scene) {
             Matrix pos1 = segment.getFirst().toMatrix4();
@@ -62,16 +68,21 @@ public class WorkspaceView extends JComponent {
             pos2 = projectionMatrix.multiply(worldToCamMatrix.multiply(pos2));
             pos2 = pos2.divide(pos2.get(0, 3));
 
+            pos1 = pos1.subMatrix(0, 0, 1, 3);
+            pos2 = pos2.subMatrix(0, 0, 1, 3);
+            pos1.set(0, 2, 1);
+            pos2.set(0, 2, 1);
             pos1 = scale.multiply(pos1);
             pos2 = scale.multiply(pos2);
+            pos1 = offset.multiply(pos1);
+            pos2 = offset.multiply(pos2);
 
-            graphics.drawLine((int)pos1.get(0,0), (int)pos1.get(0,1), (int)pos2.get(0,0), (int)pos2.get(0,1));
+            int x0 = (int) Math.round(pos1.get(0, 0));
+            int y0 = (int) Math.round(pos1.get(0, 1));
+            int x1 = (int) Math.round(pos2.get(0, 0));
+            int y1 = (int) Math.round(pos2.get(0, 1));
+            graphics.drawLine(x0, y0, x1, y1);
         }
-        Matrix pos = scene.getOutboardBox().getPos().toMatrix4();
-        pos = projectionMatrix.multiply(worldToCamMatrix.multiply(pos));
-        pos = pos.multiply(1. / pos.get(0, 3));
-
-        System.out.println(pos);
     }
 
     private Scene getTestScene() {
