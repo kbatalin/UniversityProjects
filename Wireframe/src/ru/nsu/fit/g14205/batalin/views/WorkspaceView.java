@@ -3,11 +3,14 @@ package ru.nsu.fit.g14205.batalin.views;
 import ru.nsu.fit.g14205.batalin.controllers.WireframeController;
 import ru.nsu.fit.g14205.batalin.models.*;
 
+import javax.sound.sampled.Line;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -91,18 +94,6 @@ public class WorkspaceView extends JComponent {
         Matrix projectionMatrix = viewPyramid.getProjectionMatrix();
         Matrix sceneTransformMatrix = projectionMatrix.multiply(worldToCamMatrix);
 
-        Matrix ox = worldToCamMatrix.multiply(new Point3D(20, 0, 0).toMatrix4());
-        Matrix oy = worldToCamMatrix.multiply(new Point3D(0, 1, 0).toMatrix4());
-        Matrix oz = worldToCamMatrix.multiply(new Point3D(0, 0, 1).toMatrix4());
-
-
-        System.out.println(ox);
-
-        ox = projectionMatrix.multiply(ox);
-        ox = ox.divide(ox.get(0, 3));
-
-        System.out.println(ox);
-
         int x0 = viewPort.x;
         int y0 = viewPort.y;
         int x1 = x0 + viewPort.width;
@@ -152,14 +143,92 @@ public class WorkspaceView extends JComponent {
         pos2 = csTransform.multiply(pos2);
         pos2 = pos2.divide(pos2.get(0, 3));
 
-        pos1 = displayTransform.multiply(pos1);
-        pos2 = displayTransform.multiply(pos2);
+        Segment visibleSegment = clipping(new Point3D(pos1.subMatrix(0, 0, 1, 3)),
+                new Point3D(pos2.subMatrix(0, 0, 1, 3)));
+        if (visibleSegment == null) {
+            return;
+        }
+
+        pos1 = displayTransform.multiply(visibleSegment.getFirst().toMatrix4());
+        pos2 = displayTransform.multiply(visibleSegment.getSecond().toMatrix4());
 
         int x0 = (int) Math.round(pos1.get(0, 0));
         int y0 = (int) Math.round(pos1.get(0, 1));
         int x1 = (int) Math.round(pos2.get(0, 0));
         int y1 = (int) Math.round(pos2.get(0, 1));
         graphics.drawLine(x0, y0, x1, y1);
+    }
+
+    private Segment clipping(Point3D pos1, Point3D pos2) {
+        boolean inViewPort1 = isInFrame(pos1);
+        boolean inViewPort2 = isInFrame(pos2);
+
+        if (inViewPort1 && inViewPort2) {
+            return new Segment(pos1, pos2);
+        }
+        if (!inViewPort1 && !inViewPort2) {
+            return null;
+        }
+
+        Line2D line = new Line2D.Double(pos1.getX(), pos1.getY(), pos2.getX(), pos2.getY());
+        Point2D[] corners = new Point2D[]{
+                new Point2D.Double(1, 1),
+                new Point2D.Double(1, -1),
+                new Point2D.Double(-1, -1),
+                new Point2D.Double(-1, 1),
+        };
+        for(int i = 0; i < corners.length; ++i) {
+            int next = (i + 1) % corners.length;
+            Line2D border = new Line2D.Double(corners[i], corners[next]);
+            if(!border.intersectsLine(line)) {
+                continue;
+            }
+
+            Point2D intersectPoint = getIntersectPoint(line, border);
+            if (inViewPort1) {
+                return new Segment(pos1, new Point3D(intersectPoint));
+            } else {
+                return new Segment(pos2, new Point3D(intersectPoint));
+            }
+        }
+
+        return null;
+    }
+
+    private Point2D getIntersectPoint(Line2D line1, Line2D line2) {
+        double k = (line1.getP2().getY() - line1.getP1().getY()) / (line1.getP2().getX() - line1.getP1().getX());
+        double b = line1.getP2().getY() - k * line1.getP2().getX();
+
+        double x1 = line1.getX1();
+        double y1 = line1.getY1();
+        double x2 = line1.getX2();
+        double y2 = line1.getY2();
+        double x3 = line2.getX1();
+        double y3 = line2.getY1();
+        double x4 = line2.getX2();
+        double y4 = line2.getY2();
+
+        double x = (
+                (x2 - x1) * (x3 * y4 - x4 * y3) - (x4 - x3) * (x1 * y2 - x2 * y1)
+        ) /
+                (
+                        (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+                );
+        double y = (
+                (y3 - y4)*(x1*y2 - x2*y1) - (y1 - y2)*(x3*y4 - x4*y3)
+        ) /
+                (
+                        (x1 - x2)*(y3 - y4) - (y1 - y2)*(x3 - x4)
+                );
+
+        return new Point2D.Double(x, y);
+    }
+
+    private boolean isInFrame(Point3D pos) {
+        return Double.compare(pos.getX(), 1.) <= 0 &&
+                Double.compare(pos.getX(), -1.) >= 0 &&
+                Double.compare(pos.getY(), 1.) <= 0 &&
+                Double.compare(pos.getY(), -1.) >= 0;
     }
 
     private void drawAxes(Graphics graphics, Matrix csTransform, Matrix displayTransform) {

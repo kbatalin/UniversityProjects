@@ -1,5 +1,7 @@
 package ru.nsu.fit.g14205.batalin.models;
 
+import java.awt.geom.Point2D;
+
 /**
  * Created by Kirill Batalin (kir55rus) on 23.04.17.
  */
@@ -7,6 +9,12 @@ public class Point3D implements Cloneable {
     private double x;
     private double y;
     private double z;
+
+    public Point3D(Point2D point2D) {
+        x = point2D.getX();
+        y = point2D.getY();
+        z = 0.;
+    }
 
     @Override
     public Point3D clone() throws CloneNotSupportedException {
