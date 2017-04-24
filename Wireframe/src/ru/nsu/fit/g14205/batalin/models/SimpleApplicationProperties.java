@@ -73,11 +73,11 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
 
         PaintedFigure figure = new Figure();
         figure.addSegments(segments);
+        figure.getCoordinateSystem().setCenter(new Point3D(3,3,3));
 
         PaintedFigure scene = new Figure();
         scene.addFigure(figure);
-//        return scene;
-        return figure;
+        return scene;
     }
 
     @Override
