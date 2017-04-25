@@ -72,6 +72,8 @@ public class WireframeView extends JFrame {
 
     private void initViewMenu() {
         JMenu viewMenu = buttonsManager.addMenu(null, "View");
+        buttonsManager.addItem(viewMenu, "Init", "Init", "document.png", wireframeController::onInitButtonClicked);
+
     }
 
     private void initHelpMenu() {

@@ -160,6 +160,15 @@ public class WireframeController {
         }
     }
 
+    public void onInitButtonClicked(ActionEvent actionEvent) {
+        applicationProperties.getScene().getFigureProperties().getCoordinateSystem().setTransformMatrix(new Matrix(4, 4, new double[]{
+                1, 0, 0, 0,
+                0, 1, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+        }));
+    }
+
     public void onAboutDialogClicked(ActionEvent actionEvent) {
         AboutView dialog = new AboutView();
         dialog.pack();
