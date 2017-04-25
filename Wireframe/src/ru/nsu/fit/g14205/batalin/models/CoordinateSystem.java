@@ -21,11 +21,12 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
 
     public CoordinateSystem() {
         this(new Point3D(0, 0, 0),
-                new Matrix(3, 3, new double[]{
-                1, 0, 0,
-                0, 1, 0,
-                0, 0, 1
-        }));
+                new Matrix(4, 4, new double[]{
+                        1, 0, 0, 0,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0,
+                        0, 0, 0, 1
+                }));
     }
 
     public CoordinateSystem(Point3D center, Matrix rotation) {
@@ -60,11 +61,13 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
     }
 
     public Matrix getTransformMatrix() {
-        return new Matrix(4, 4, new double[]{
-                rotation.get(0, 0), rotation.get(1, 0), rotation.get(2, 0), center.getX(),
-                rotation.get(0, 1), rotation.get(1, 1), rotation.get(2, 1), center.getY(),
-                rotation.get(0, 2), rotation.get(1, 2), rotation.get(2, 2), center.getZ(),
+        Matrix offset = new Matrix(4, 4, new double[]{
+                1, 0, 0, center.getX(),
+                0, 1, 0, center.getY(),
+                0, 0, 1, center.getZ(),
                 0, 0, 0, 1
         });
+
+        return offset.multiply(rotation);
     }
 }
