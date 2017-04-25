@@ -43,12 +43,22 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     @Override
     public void apply(ApplicationProperties applicationProperties) {
         controlPointRadius = applicationProperties.getControlPointRadius();
-        lineProperties = new ArrayList<>();
-        lineProperties.addAll(applicationProperties.getLineProperties());
-        area = applicationProperties.getArea();
-        cameraProperties = applicationProperties.getCameraProperties();
-        viewPyramidProperties = applicationProperties.getViewPyramidProperties();
-        scene = applicationProperties.getScene();
+
+        lineProperties.clear();
+        for (LineProperties line : applicationProperties.getLineProperties()) {
+            addLineProperties(line);
+        }
+        setArea(applicationProperties.getArea());
+        setScene(applicationProperties.getScene());
+
+        cameraProperties.setCameraPosition(applicationProperties.getCameraProperties().getCameraPosition());
+        cameraProperties.setUpVector(applicationProperties.getCameraProperties().getUpVector());
+        cameraProperties.setViewPoint(applicationProperties.getCameraProperties().getViewPoint());
+
+        viewPyramidProperties.setFrontPlaneDistance(applicationProperties.getViewPyramidProperties().getFrontPlaneDistance());
+        viewPyramidProperties.setBackPlaneDistance(applicationProperties.getViewPyramidProperties().getBackPlaneDistance());
+        viewPyramidProperties.setFrontPlaneHeight(applicationProperties.getViewPyramidProperties().getFrontPlaneHeight());
+        viewPyramidProperties.setFrontPlaneWidth(applicationProperties.getViewPyramidProperties().getFrontPlaneWidth());
     }
 
     @Override
