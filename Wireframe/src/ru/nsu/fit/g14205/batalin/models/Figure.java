@@ -96,6 +96,7 @@ public class Figure extends ObservableBase implements PaintedFigure {
 
     public void clear() {
         figures.clear();
+        segments.clear();
         updOutboardBox();
     }
 
