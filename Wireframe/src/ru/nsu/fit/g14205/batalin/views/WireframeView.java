@@ -56,7 +56,7 @@ public class WireframeView extends JFrame {
     private void initFileMenu() {
         JMenu fileMenu = buttonsManager.addMenu(null, "File");
 
-        buttonsManager.addItem(fileMenu, "New", "Create new", "document.png", null);
+//        buttonsManager.addItem(fileMenu, "New", "Create new", "document.png", null);
         buttonsManager.addItem(fileMenu, "Open", "Open", "folder.png", wireframeController::onOpenButtonClicked);
         buttonsManager.addItem(fileMenu, "Save", "Save", "save.png", wireframeController::onSaveButtonClicked);
 
@@ -67,7 +67,7 @@ public class WireframeView extends JFrame {
 
     private void initEditMenu() {
         JMenu editMenu = buttonsManager.addMenu(null, "Edit");
-        buttonsManager.addItem(editMenu, "Line editor", null, null, actionEvent -> wireframeController.onLineEditButtonClicked());
+        buttonsManager.addItem(editMenu, "Line editor", "Line editor", "create_isoline.png", actionEvent -> wireframeController.onLineEditButtonClicked());
     }
 
     private void initViewMenu() {
