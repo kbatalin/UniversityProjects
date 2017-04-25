@@ -37,6 +37,12 @@ public class EditorDialog extends JDialog {
     private JSlider zoomSlider;
     private JButton addButton;
     private JButton deleteButton;
+    private JSpinner cXSpinner;
+    private JSpinner alphaSpinner;
+    private JSpinner cYSpinner;
+    private JSpinner betaSpinner;
+    private JSpinner cZSpinner;
+    private JSpinner thetaSpinner;
     private boolean result;
 
     public EditorDialog(EditorController editorController) {
