@@ -9,7 +9,7 @@ import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
  */
 public class EditorModel extends ObservableBase implements Observable {
     private int zoom;
-    private int currentLine;
+    private int currentFigure;
     private ApplicationProperties applicationProperties;
 
     public enum Event implements ObserveEvent {
@@ -20,7 +20,7 @@ public class EditorModel extends ObservableBase implements Observable {
     public EditorModel(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
         zoom = 100;
-        currentLine = 0;
+        currentFigure = 0;
     }
 
     public int getDefaultSize() {
@@ -44,16 +44,16 @@ public class EditorModel extends ObservableBase implements Observable {
         notifyObservers(Event.ZOOM_CHANGED);
     }
 
-    public int getCurrentLine() {
-        return currentLine;
+    public int getCurrentFigure() {
+        return currentFigure;
     }
 
-    public void setCurrentLine(int currentLine) {
-        if (currentLine < 0 || currentLine >= applicationProperties.getLineProperties().size()) {
+    public void setCurrentFigure(int currentFigure) {
+        if (currentFigure < 0 || currentFigure >= applicationProperties.getFigurePropertiesCount()) {
             throw new IllegalArgumentException("Bad active line index");
         }
 
-        this.currentLine = currentLine;
+        this.currentFigure = currentFigure;
         notifyObservers(Event.ACTIVE_LINE_CHANGED);
     }
 }

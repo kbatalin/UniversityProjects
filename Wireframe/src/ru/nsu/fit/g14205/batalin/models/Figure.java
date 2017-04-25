@@ -14,32 +14,31 @@ public class Figure extends ObservableBase implements PaintedFigure {
     private List<PaintedFigure> figures = new ArrayList<>();
     private List<Segment> segments = new ArrayList<>();
     private Parallelepiped outboardBox;
-    private CoordinateSystem coordinateSystem;
-    private Color color;
+    private FigureProperties figureProperties;
 
-    public Figure() {
-        this(null, null);
+    public Figure(FigureProperties figureProperties) {
+        this(figureProperties, null, null);
     }
 
-    public Figure(List<PaintedFigure> figures, List<Segment> segments) {
-        this(new CoordinateSystem(), figures, segments);
-    }
-
-    public Figure(CoordinateSystem coordinateSystem, List<PaintedFigure> figures, List<Segment> segments) {
-        this.coordinateSystem = coordinateSystem;
+    public Figure(FigureProperties figureProperties, List<PaintedFigure> figures, List<Segment> segments) {
         addFigures(figures);
         addSegments(segments);
         updOutboardBox();
-        color = Color.GRAY;
+        this.figureProperties = figureProperties;
 
+        CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
         coordinateSystem.addObserver(CoordinateSystem.Event.ROTATION_CHANGED, this::updOutboardBox);
         coordinateSystem.addObserver(CoordinateSystem.Event.CENTER_CHANGED, this::updOutboardBox);
+        if (figureProperties.getLineProperties() != null) {
+            figureProperties.getLineProperties().addObserver(LineProperties.Event.COLOR_CHANGED, () -> {
+                notifyObservers(Event.FIGURE_CHANGED);
+            });
+        }
     }
 
     @Override
     public PaintedFigure clone() throws CloneNotSupportedException {
         Figure figure = (Figure) super.clone();
-        figure.coordinateSystem = coordinateSystem.clone();
         figure.figures = new ArrayList<>();
         for (PaintedFigure paintedFigure : figures) {
             figure.figures.add(paintedFigure.clone());
@@ -48,23 +47,13 @@ public class Figure extends ObservableBase implements PaintedFigure {
         for (Segment segment : segments) {
             figure.segments.add(segment.clone());
         }
+        figure.figureProperties = figureProperties.clone();
         return figure;
     }
 
     @Override
-    public CoordinateSystem getCoordinateSystem() {
-        return coordinateSystem;
-    }
-
-    @Override
-    public Color getColor() {
-        return color;
-    }
-
-    @Override
-    public void setColor(Color color) {
-        this.color = color;
-        notifyObservers(Event.FIGURE_CHANGED);
+    public FigureProperties getFigureProperties() {
+        return figureProperties;
     }
 
     @Override

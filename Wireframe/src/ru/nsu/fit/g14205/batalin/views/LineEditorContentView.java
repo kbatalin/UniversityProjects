@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
 
 /**
  * Created by kir55rus on 12.04.17.
@@ -25,14 +26,15 @@ public class LineEditorContentView extends JPanel {
         applicationProperties = editorController.getApplicationProperties();
         editorModel = editorController.getEditorModel();
 
-        for (LineProperties lineProperties : applicationProperties.getLineProperties()) {
+        for (FigureProperties figureProperties : applicationProperties.getFigureProperties()) {
+            LineProperties lineProperties = figureProperties.getLineProperties();
             lineProperties.addObserver(LineProperties.Event.CONTROL_POINTS_CHANGED, LineEditorContentView.this::repaint);
             lineProperties.addObserver(LineProperties.Event.COLOR_CHANGED, LineEditorContentView.this::repaint);
         }
 
-        applicationProperties.addObserver(ApplicationProperties.Event.LINE_PROPERTIES_ADDED, () -> {
-            java.util.List<LineProperties> lineProperties = applicationProperties.getLineProperties();
-            LineProperties properties = lineProperties.get(lineProperties.size() - 1);
+        applicationProperties.addObserver(ApplicationProperties.Event.FIGURE_PROPERTIES_ADDED, () -> {
+            List<FigureProperties> figureProperties = applicationProperties.getFigureProperties();
+            LineProperties properties = figureProperties.get(figureProperties.size() - 1).getLineProperties();
             properties.addObserver(LineProperties.Event.CONTROL_POINTS_CHANGED, LineEditorContentView.this::repaint);
             properties.addObserver(LineProperties.Event.COLOR_CHANGED, LineEditorContentView.this::repaint);
         });
@@ -100,8 +102,9 @@ public class LineEditorContentView extends JPanel {
 
     private void paintLine(BufferedImage image) {
         int zoom = editorModel.getZoom();
-        int currentLine = editorModel.getCurrentLine();
-        LineProperties lineProperties = applicationProperties.getLineProperties().get(currentLine);
+        int currentLine = editorModel.getCurrentFigure();
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(currentLine);
+        LineProperties lineProperties = figureProperties.getLineProperties();
         Area area = applicationProperties.getArea();
 
         Dimension size = getSize();
@@ -133,8 +136,9 @@ public class LineEditorContentView extends JPanel {
         Graphics2D graphics = image.createGraphics();
         graphics.setColor(Color.WHITE);
         int zoom = editorModel.getZoom();
-        int currentLine = editorModel.getCurrentLine();
-        LineProperties lineProperties = applicationProperties.getLineProperties().get(currentLine);
+        int currentLine = editorModel.getCurrentFigure();
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(currentLine);
+        LineProperties lineProperties = figureProperties.getLineProperties();
 
         Dimension size = getSize();
         double ratio = editorModel.getDefaultSize() / 100. * zoom;

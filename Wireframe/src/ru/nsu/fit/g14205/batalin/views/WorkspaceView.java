@@ -110,7 +110,7 @@ public class WorkspaceView extends JComponent {
 
     private void drawFigure(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
         Iterator<PaintedFigure> figureIterator = figure.figures();
-        Matrix transformMatrix = csTransform.multiply(figure.getCoordinateSystem().getTransformMatrix());
+        Matrix transformMatrix = csTransform.multiply(figure.getFigureProperties().getCoordinateSystem().getTransformMatrix());
         while (figureIterator.hasNext()) {
             PaintedFigure paintedFigure = figureIterator.next();
 
@@ -125,8 +125,12 @@ public class WorkspaceView extends JComponent {
         if (figure == null) {
             return;
         }
+        LineProperties lineProperties = figure.getFigureProperties().getLineProperties();
+        if (lineProperties == null) {
+            return;
+        }
 
-        graphics.setColor(figure.getColor());
+        graphics.setColor(lineProperties.getColor());
         Iterator<Segment> iterator = figure.segments();
         while (iterator.hasNext()) {
             Segment segment = iterator.next();

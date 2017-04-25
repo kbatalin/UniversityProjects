@@ -9,23 +9,25 @@ import java.util.List;
 /**
  * Created by kir55rus on 12.04.17.
  */
-public class SimpleApplicationProperties extends ObservableBase implements ApplicationProperties {
+public class ApplicationPropertiesDefault extends ObservableBase implements ApplicationProperties {
     private double controlPointRadius;
-    private ArrayList<LineProperties> lineProperties;
+    private ArrayList<FigureProperties> figureProperties;
     private Area area;
     private CameraProperties cameraProperties;
     private ViewPyramidProperties viewPyramidProperties;
     private PaintedFigure scene;
     private Grid grid;
 
-    public SimpleApplicationProperties() {
+    public ApplicationPropertiesDefault() {
         controlPointRadius = .3;
-        lineProperties = new ArrayList<>();
+        figureProperties = new ArrayList<>();
         area = new Area(0, 0, 1, 2 * Math.PI);
         cameraProperties = new Camera(new Point3D(-10, 0, 0), new Point3D(10, 0, 0), new Point3D(0, 1, 0));
         viewPyramidProperties = new ViewPyramid(15, 5, 10, 10);
-        scene = createDefaultScene();
         grid = new Grid(5, 6, 5);
+
+        FigureProperties sceneProperties = new FigurePropertiesDefault();
+        scene = new Figure(sceneProperties);
 
         grid.addObserver(Grid.Event.SIZE_CHANGED, this::updFigures);
         grid.addObserver(Grid.Event.SEGMENT_SPLITTING_CHANGED, this::updFigures);
@@ -33,15 +35,15 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
 
     @Override
     public ApplicationProperties clone() throws CloneNotSupportedException {
-        SimpleApplicationProperties applicationProperties = (SimpleApplicationProperties) super.clone();
+        ApplicationPropertiesDefault applicationProperties = (ApplicationPropertiesDefault) super.clone();
         applicationProperties.controlPointRadius = controlPointRadius;
         applicationProperties.cameraProperties = cameraProperties.clone();
         applicationProperties.area = area.clone();
         applicationProperties.viewPyramidProperties = viewPyramidProperties.clone();
         applicationProperties.scene = scene.clone();
-        applicationProperties.lineProperties = new ArrayList<>();
-        for (LineProperties line : lineProperties) {
-            applicationProperties.lineProperties.add(line.clone());
+        applicationProperties.figureProperties = new ArrayList<>();
+        for (FigureProperties figure : figureProperties) {
+            applicationProperties.figureProperties.add(figure.clone());
         }
         applicationProperties.grid = grid.clone();
         return applicationProperties;
@@ -51,9 +53,9 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     public void apply(ApplicationProperties applicationProperties) {
         controlPointRadius = applicationProperties.getControlPointRadius();
 
-        lineProperties.clear();
-        for (LineProperties line : applicationProperties.getLineProperties()) {
-            addLineProperties(line);
+        figureProperties.clear();
+        for (FigureProperties figure : applicationProperties.getFigureProperties()) {
+            addFigureProperties(figure);
         }
         setArea(applicationProperties.getArea());
         setScene(applicationProperties.getScene());
@@ -87,24 +89,6 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         notifyObservers(Event.SCENE_CHANGED);
     }
 
-    private PaintedFigure createDefaultScene() {
-        List<Segment> segments = new ArrayList<>();
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(3, 0, 0)));
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 3, 0)));
-        segments.add(new Segment(new Point3D(0, 0, 0), new Point3D(0, 0, 3)));
-        segments.add(new Segment(new Point3D(0, 3, 0), new Point3D(0, 0, 3)));
-        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 0, 3)));
-        segments.add(new Segment(new Point3D(3, 0, 0), new Point3D(0, 3, 0)));
-
-        PaintedFigure figure = new Figure();
-        figure.addSegments(segments);
-        figure.getCoordinateSystem().setCenter(new Point3D(3,3,3));
-
-        PaintedFigure scene = new Figure();
-        scene.addFigure(figure);
-        return scene;
-    }
-
     @Override
     public ViewPyramidProperties getViewPyramidProperties() {
         return viewPyramidProperties;
@@ -128,29 +112,34 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     }
 
     @Override
-    public List<LineProperties> getLineProperties() {
-        return lineProperties;
+    public List<FigureProperties> getFigureProperties() {
+        return figureProperties;
     }
 
     @Override
-    public int getLinePropertiesCount() {
-        return lineProperties.size();
+    public int getFigurePropertiesCount() {
+        return figureProperties.size();
     }
 
     @Override
-    public void addLineProperties(LineProperties properties) {
-        lineProperties.add(properties);
-        notifyObservers(Event.LINE_PROPERTIES_ADDED);
+    public void addFigureProperties(FigureProperties properties) {
+        figureProperties.add(properties);
+        addFigure(properties);
+        notifyObservers(Event.FIGURE_PROPERTIES_ADDED);
     }
 
     private void updFigures() {
         scene.clear();
-        for (LineProperties line : lineProperties) {
-            addFigure(line);
+        for (FigureProperties figure : figureProperties) {
+            addFigure(figure);
         }
     }
 
-    private void addFigure(LineProperties lineProperties) {
+    private void addFigure(FigureProperties figureProperties) {
+        LineProperties lineProperties = figureProperties.getLineProperties();
+        if (lineProperties == null) {
+            return;
+        }
 
         Point2D[] funcValues = new Point2D[grid.getCols() * grid.getSegmentSplitting() + 1];
         double u = area.first.getX();
@@ -171,7 +160,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
             cosines[i] = Math.cos(v);
         }
 
-        PaintedFigure figure = new Figure();
+        PaintedFigure figure = new Figure(figureProperties);
         for(int i = 1; i < funcValues.length; i += grid.getSegmentSplitting()) {
             for(int j = 0; j < sinuses.length; j += grid.getSegmentSplitting()) {
                 for(int q = 0; q < grid.getSegmentSplitting(); ++q) {
@@ -214,14 +203,13 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
             }
         }
 
-        figure.setColor(lineProperties.getColor());
         scene.addFigure(figure);
     }
 
     @Override
-    public void delLineProperties(int index) {
-        lineProperties.remove(index);
-        notifyObservers(Event.LINE_PROPERTIES_REMOVED);
+    public void delFigureProperties(int index) {
+        figureProperties.remove(index);
+        notifyObservers(Event.FIGURE_PROPERTIES_REMOVED);
     }
 
     @Override

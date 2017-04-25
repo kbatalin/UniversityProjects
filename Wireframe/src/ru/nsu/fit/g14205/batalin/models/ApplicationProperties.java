@@ -11,10 +11,10 @@ import java.util.List;
 public interface ApplicationProperties extends Observable, Cloneable {
     double getControlPointRadius();
 
-    List<LineProperties> getLineProperties();
-    int getLinePropertiesCount();
-    void addLineProperties(LineProperties lineProperties);
-    void delLineProperties(int index);
+    List<FigureProperties> getFigureProperties();
+    int getFigurePropertiesCount();
+    void addFigureProperties(FigureProperties figureProperties);
+    void delFigureProperties(int index);
 
     Area getArea();
     void setArea(Area area);
@@ -31,8 +31,8 @@ public interface ApplicationProperties extends Observable, Cloneable {
     void apply(ApplicationProperties applicationProperties);
 
     enum Event implements ObserveEvent {
-        LINE_PROPERTIES_ADDED,
-        LINE_PROPERTIES_REMOVED,
+        FIGURE_PROPERTIES_ADDED,
+        FIGURE_PROPERTIES_REMOVED,
         AREA_CHANGED,
         SCENE_CHANGED,
     }

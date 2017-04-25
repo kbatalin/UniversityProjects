@@ -1,12 +1,9 @@
 package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.EditorController;
-import ru.nsu.fit.g14205.batalin.controllers.WireframeController;
 import ru.nsu.fit.g14205.batalin.models.*;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -91,7 +88,8 @@ public class EditorDialog extends JDialog {
 
         applyButton.addActionListener(actionEvent -> editorController.onApplyButtonClicked());
 
-        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        LineProperties lineProperties = figureProperties.getLineProperties();
         Color color = lineProperties.getColor();
         SpinnerNumberModel redSpinnerModel = new SpinnerNumberModel(color.getRed(), 0, 255, 1);
         redSpinner.setModel(redSpinnerModel);
@@ -115,7 +113,6 @@ public class EditorDialog extends JDialog {
         kSpinner.addChangeListener(changeEvent -> editorController.onKSpinnerChanged(kSpinnerModel.getNumber().intValue()));
 
 
-
         zoomSlider.setMinimum(editorModel.getMinZoom());
         zoomSlider.setMaximum(editorModel.getMaxZoom());
         zoomSlider.setValue(editorModel.getZoom());
@@ -124,18 +121,34 @@ public class EditorDialog extends JDialog {
         addButton.addActionListener(actionEvent -> editorController.onAddButtonClicked());
         deleteButton.addActionListener(actionEvent -> editorController.onDeleteButtonClicked());
 
-        editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, () -> {
-            numberSpinner.setValue(editorModel.getCurrentLine());
-        });
+        editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, this::onLineChanged);
 
         updNumberSpinner();
-        applicationProperties.addObserver(ApplicationProperties.Event.LINE_PROPERTIES_ADDED, this::updNumberSpinner);
-        applicationProperties.addObserver(ApplicationProperties.Event.LINE_PROPERTIES_REMOVED, this::updNumberSpinner);
+        applicationProperties.addObserver(ApplicationProperties.Event.FIGURE_PROPERTIES_ADDED, this::updNumberSpinner);
+        applicationProperties.addObserver(ApplicationProperties.Event.FIGURE_PROPERTIES_REMOVED, this::updNumberSpinner);
         numberSpinner.addChangeListener(changeEvent -> editorController.onNumberSpinnerChanged(((Number)numberSpinner.getValue()).intValue()));
 
         editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, this::updColor);
 
         initAreaSpinners();
+        initCoordinateSystemSpinners();
+    }
+
+    private void onLineChanged() {
+        EditorModel editorModel = editorController.getEditorModel();
+        numberSpinner.setValue(editorModel.getCurrentFigure());
+
+
+    }
+
+    private void initCoordinateSystemSpinners() {
+        ApplicationProperties applicationProperties = editorController.getApplicationProperties();
+        EditorModel editorModel = editorController.getEditorModel();
+
+
+//        SpinnerNumberModel cXSpinnerModel = new SpinnerNumberModel(grid.getSegmentSplitting(), 1, 50, 1);
+//        cXSpinner.setModel(cXSpinnerModel);
+//        cXSpinner.addChangeListener(changeEvent -> editorController.onKSpinnerChanged(kSpinnerModel.getNumber().intValue()));
     }
 
     private void initAreaSpinners() {
@@ -221,7 +234,8 @@ public class EditorDialog extends JDialog {
     private void updColor() {
         ApplicationProperties applicationProperties = editorController.getApplicationProperties();
         EditorModel editorModel = editorController.getEditorModel();
-        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        LineProperties lineProperties = figureProperties.getLineProperties();
         Color color = lineProperties.getColor();
         redSpinner.setValue(color.getRed());
         greenSpinner.setValue(color.getGreen());
@@ -231,8 +245,8 @@ public class EditorDialog extends JDialog {
     private void updNumberSpinner() {
         ApplicationProperties applicationProperties = editorController.getApplicationProperties();
         EditorModel editorModel = editorController.getEditorModel();
-        int maxValue = Math.max(0, applicationProperties.getLinePropertiesCount() - 1);
-        SpinnerNumberModel numberSpinnerModel = new SpinnerNumberModel(editorModel.getCurrentLine(), 0, maxValue, 1);
+        int maxValue = Math.max(0, applicationProperties.getFigurePropertiesCount() - 1);
+        SpinnerNumberModel numberSpinnerModel = new SpinnerNumberModel(editorModel.getCurrentFigure(), 0, maxValue, 1);
         numberSpinner.setModel(numberSpinnerModel);
     }
 

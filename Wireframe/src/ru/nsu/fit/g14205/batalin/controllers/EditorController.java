@@ -1,10 +1,6 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
-import org.omg.CORBA.PRIVATE_MEMBER;
-import ru.nsu.fit.g14205.batalin.models.ApplicationProperties;
-import ru.nsu.fit.g14205.batalin.models.BSplineProperties;
-import ru.nsu.fit.g14205.batalin.models.EditorModel;
-import ru.nsu.fit.g14205.batalin.models.LineProperties;
+import ru.nsu.fit.g14205.batalin.models.*;
 import ru.nsu.fit.g14205.batalin.views.EditorDialog;
 import ru.nsu.fit.g14205.batalin.views.LineEditorContentView;
 
@@ -57,28 +53,31 @@ public class EditorController {
 
     public void onAddButtonClicked() {
         LineProperties lineProperties = new BSplineProperties(applicationProperties);
-        applicationProperties.addLineProperties(lineProperties);
-        editorModel.setCurrentLine(applicationProperties.getLinePropertiesCount() - 1);
+        FigureProperties figureProperties = new FigurePropertiesDefault(lineProperties);
+        applicationProperties.addFigureProperties(figureProperties);
+        editorModel.setCurrentFigure(applicationProperties.getFigurePropertiesCount() - 1);
     }
 
     public void onDeleteButtonClicked() {
-        int currentLine = editorModel.getCurrentLine();
+        int currentLine = editorModel.getCurrentFigure();
         --currentLine;
         if (currentLine >= 0) {
-            editorModel.setCurrentLine(currentLine);
-            applicationProperties.delLineProperties(currentLine + 1);
+            editorModel.setCurrentFigure(currentLine);
+            applicationProperties.delFigureProperties(currentLine + 1);
             return;
         }
 
-        if (applicationProperties.getLinePropertiesCount() > 1) {
-            applicationProperties.delLineProperties(0);
-            editorModel.setCurrentLine(0);
+        if (applicationProperties.getFigurePropertiesCount() > 1) {
+            applicationProperties.delFigureProperties(0);
+            editorModel.setCurrentFigure(0);
             return;
         }
 
-        applicationProperties.delLineProperties(0);
-        applicationProperties.addLineProperties(new BSplineProperties(applicationProperties));
-        editorModel.setCurrentLine(0);
+        applicationProperties.delFigureProperties(0);
+        LineProperties lineProperties = new BSplineProperties(applicationProperties);
+        FigureProperties figureProperties = new FigurePropertiesDefault(lineProperties);
+        applicationProperties.addFigureProperties(figureProperties);
+        editorModel.setCurrentFigure(0);
     }
 
     public void onNSpinnerChanged(int value) {
@@ -94,23 +93,26 @@ public class EditorController {
     }
 
     public void onNumberSpinnerChanged(int value) {
-        editorModel.setCurrentLine(value);
+        editorModel.setCurrentFigure(value);
     }
 
     public void onRedSpinnerChanged(int value) {
-        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        LineProperties lineProperties = figureProperties.getLineProperties();
         Color color = lineProperties.getColor();
         lineProperties.setColor(new Color(value, color.getGreen(), color.getBlue()));
     }
 
     public void onGreenSpinnerChanged(int value) {
-        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        LineProperties lineProperties = figureProperties.getLineProperties();
         Color color = lineProperties.getColor();
         lineProperties.setColor(new Color(color.getRed(), value, color.getBlue()));
     }
 
     public void onBlueSpinnerChanged(int value) {
-        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        LineProperties lineProperties = figureProperties.getLineProperties();
         Color color = lineProperties.getColor();
         lineProperties.setColor(new Color(color.getRed(), color.getGreen(), value));
     }
@@ -128,7 +130,8 @@ public class EditorController {
     }
 
     public void onMousePressed(MouseEvent mouseEvent) {
-        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        LineProperties lineProperties = figureProperties.getLineProperties();
         Point2D pos = pixel2Point(mouseEvent.getPoint());
         int controlPointIndex = lineProperties.getControlPointId(pos);
         if (controlPointIndex == -1) {
@@ -150,7 +153,8 @@ public class EditorController {
             return;
         }
 
-        LineProperties lineProperties = applicationProperties.getLineProperties().get(editorModel.getCurrentLine());
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        LineProperties lineProperties = figureProperties.getLineProperties();
         Point2D pos = pixel2Point(mouseEvent.getPoint());
         lineProperties.setControlPoint(activeControlPoint, pos);
     }

@@ -1,7 +1,6 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.*;
-import ru.nsu.fit.g14205.batalin.views.EditorDialog;
 import ru.nsu.fit.g14205.batalin.views.WireframeView;
 
 import javax.swing.*;
@@ -20,7 +19,7 @@ public class WireframeController {
     private WireframeView wireframeView;
 
     public void run() {
-        applicationProperties = new SimpleApplicationProperties();
+        applicationProperties = new ApplicationPropertiesDefault();
 
         LineProperties lineProperties = new BSplineProperties(applicationProperties);
         lineProperties.setColor(Color.GREEN);
@@ -33,7 +32,8 @@ public class WireframeController {
         lineProperties.addControlPoint(new Point2D.Double(3, -3));
         lineProperties.addControlPoint(new Point2D.Double(4, -3));
 
-        applicationProperties.addLineProperties(lineProperties);
+        FigureProperties figureProperties = new FigurePropertiesDefault(lineProperties);
+        applicationProperties.addFigureProperties(figureProperties);
 
         wireframeView = new WireframeView(this);
         wireframeView.setVisible(true);
@@ -99,7 +99,7 @@ public class WireframeController {
         }
 
         Matrix rotation = rotateY.multiply(rotateX);
-        CoordinateSystem coordinateSystem = applicationProperties.getScene().getCoordinateSystem();
+        CoordinateSystem coordinateSystem = applicationProperties.getScene().getFigureProperties().getCoordinateSystem();
         coordinateSystem.setRotation(rotation.multiply(coordinateSystem.getRotation()));
 
 //        System.out.println(coordinateSystem.getRotation());
