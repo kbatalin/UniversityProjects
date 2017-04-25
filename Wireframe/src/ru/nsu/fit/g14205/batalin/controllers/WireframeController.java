@@ -109,6 +109,10 @@ public class WireframeController {
         prevPos = pos;
     }
 
+    public void onSaveButtonClicked(ActionEvent actionEvent) {
+
+    }
+
     public void onAboutDialogClicked(ActionEvent actionEvent) {
         AboutView dialog = new AboutView();
         dialog.pack();

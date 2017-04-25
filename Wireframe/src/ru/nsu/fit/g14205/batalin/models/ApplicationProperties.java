@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.models;
 import ru.nsu.fit.g14205.batalin.models.observe.Observable;
 import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -30,10 +31,14 @@ public interface ApplicationProperties extends Observable, Cloneable {
     ApplicationProperties clone() throws CloneNotSupportedException;
     void apply(ApplicationProperties applicationProperties);
 
+    Color getBackgroundColor();
+    void setBackgroundColor(Color color);
+
     enum Event implements ObserveEvent {
         FIGURE_PROPERTIES_ADDED,
         FIGURE_PROPERTIES_REMOVED,
         AREA_CHANGED,
         SCENE_CHANGED,
+        BACKGROUND_COLOR_CHANGED,
     }
 }

@@ -39,6 +39,8 @@ public class WorkspaceView extends JComponent {
 
         applicationProperties.getScene().addObserver(PaintedFigure.Event.FIGURE_CHANGED, this::repaint);
 
+        applicationProperties.addObserver(ApplicationProperties.Event.BACKGROUND_COLOR_CHANGED, this::repaint);
+
         addMouseWheelListener(new MouseAdapter() {
             @Override
             public void mouseWheelMoved(MouseWheelEvent mouseWheelEvent) {
@@ -70,13 +72,13 @@ public class WorkspaceView extends JComponent {
     protected void paintComponent(Graphics graphics) {
         super.paintComponent(graphics);
 
-        Dimension componentSize = getSize();
-        graphics.setColor(Color.BLACK);
-        graphics.fillRect(0, 0, componentSize.width, componentSize.height);
-
         ApplicationProperties applicationProperties = wireframeController.getApplicationProperties();
         ViewPyramidProperties viewPyramid = applicationProperties.getViewPyramidProperties();
         CameraProperties camera = applicationProperties.getCameraProperties();
+
+        Dimension componentSize = getSize();
+        graphics.setColor(applicationProperties.getBackgroundColor());
+        graphics.fillRect(0, 0, componentSize.width, componentSize.height);
 
         double viewPortSizeRatio = Math.min((componentSize.getWidth() - 2*margins) / viewPyramid.getFrontPlaneWidth(),
                 (componentSize.getHeight() - 2* margins) / viewPyramid.getFrontPlaneHeight());

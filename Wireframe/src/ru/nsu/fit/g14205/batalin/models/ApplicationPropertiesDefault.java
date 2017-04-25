@@ -2,6 +2,7 @@ package ru.nsu.fit.g14205.batalin.models;
 
 import ru.nsu.fit.g14205.batalin.models.observe.ObservableBase;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +18,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
     private ViewPyramidProperties viewPyramidProperties;
     private PaintedFigure scene;
     private Grid grid;
+    private Color backgroundColor;
 
     public ApplicationPropertiesDefault() {
         controlPointRadius = .3;
@@ -28,6 +30,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
 
         FigureProperties sceneProperties = new FigurePropertiesDefault();
         scene = new Figure(sceneProperties);
+        backgroundColor = Color.BLACK;
 
         grid.addObserver(Grid.Event.SIZE_CHANGED, this::updFigures);
         grid.addObserver(Grid.Event.SEGMENT_SPLITTING_CHANGED, this::updFigures);
@@ -46,6 +49,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
             applicationProperties.figureProperties.add(figure.clone());
         }
         applicationProperties.grid = grid.clone();
+        applicationProperties.backgroundColor = new Color(backgroundColor.getRGB());
         return applicationProperties;
     }
 
@@ -71,6 +75,19 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
         viewPyramidProperties.setBackPlaneDistance(applicationProperties.getViewPyramidProperties().getBackPlaneDistance());
         viewPyramidProperties.setFrontPlaneHeight(applicationProperties.getViewPyramidProperties().getFrontPlaneHeight());
         viewPyramidProperties.setFrontPlaneWidth(applicationProperties.getViewPyramidProperties().getFrontPlaneWidth());
+
+        setBackgroundColor(applicationProperties.getBackgroundColor());
+    }
+
+    @Override
+    public Color getBackgroundColor() {
+        return backgroundColor;
+    }
+
+    @Override
+    public void setBackgroundColor(Color backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        notifyObservers(Event.BACKGROUND_COLOR_CHANGED);
     }
 
     @Override
