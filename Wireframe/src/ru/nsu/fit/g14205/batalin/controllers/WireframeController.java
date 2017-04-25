@@ -100,7 +100,30 @@ public class WireframeController {
 
         Matrix rotation = rotateY.multiply(rotateX);
         CoordinateSystem coordinateSystem = applicationProperties.getScene().getFigureProperties().getCoordinateSystem();
-        coordinateSystem.setRotation(rotation.multiply(coordinateSystem.getRotation()));
+
+        double newBeta = coordinateSystem.getBetaAngle() + Math.PI / 180. * x;
+//        if(Double.compare(newBeta, Math.PI * 2) >= 0) {
+//            newBeta -= Math.PI * 2;
+//        }
+//        if (Double.compare(newBeta, 0) < 0) {
+//            newBeta += Math.PI * 2;
+//        }
+
+//        System.out.println(newBeta);
+
+        double newTheta = coordinateSystem.getThetaAngle() + Math.PI / 180. * y;
+
+//        if(Double.compare(newTheta, Math.PI * 2) >= 0) {
+//            newTheta -= Math.PI * 2;
+//        }
+//        if (Double.compare(newTheta, 0) < 0) {
+//            newTheta += Math.PI * 2;
+//        }
+//        System.out.println((int) (newBeta * 180 / Math.PI));
+
+        coordinateSystem.setBetaAngle(newBeta);
+        coordinateSystem.setThetaAngle(newTheta);
+//        coordinateSystem.setRotation(rotation.multiply(coordinateSystem.getRotation()));
 
 //        System.out.println(coordinateSystem.getRotation());
 

@@ -142,10 +142,16 @@ public class EditorDialog extends JDialog {
 
         numberSpinner.setValue(editorModel.getCurrentFigure());
 
+        System.out.println(editorModel.getCurrentFigure());
+
         Point3D center = coordinateSystem.getCenter();
         cXSpinner.setValue(center.getX());
         cYSpinner.setValue(center.getY());
         cZSpinner.setValue(center.getZ());
+
+        alphaSpinner.setValue(coordinateSystem.getAlphaAngle() * 180 / Math.PI);
+        betaSpinner.setValue(coordinateSystem.getBetaAngle() * 180 / Math.PI);
+        thetaSpinner.setValue(coordinateSystem.getThetaAngle() * 180 / Math.PI);
     }
 
     private void initCoordinateSystemSpinners() {
@@ -169,6 +175,19 @@ public class EditorDialog extends JDialog {
         SpinnerNumberModel cZSpinnerModel = new SpinnerNumberModel(center.getZ(), minCrd, maxCrd, 1);
         cZSpinner.setModel(cZSpinnerModel);
         cZSpinner.addChangeListener(changeEvent -> editorController.onCZSpinnerChanged(cZSpinnerModel.getNumber().doubleValue()));
+
+
+        SpinnerNumberModel alphaSpinnerModel = new SpinnerNumberModel(coordinateSystem.getAlphaAngle() * 180 / Math.PI, 0., 360., 0.5);
+        alphaSpinner.setModel(alphaSpinnerModel);
+        alphaSpinner.addChangeListener(changeEvent -> editorController.onAlphaSpinnerChanged(alphaSpinnerModel.getNumber().doubleValue()));
+
+        SpinnerNumberModel betaSpinnerModel = new SpinnerNumberModel(coordinateSystem.getBetaAngle() * 180 / Math.PI, 0., 360., 0.5);
+        betaSpinner.setModel(betaSpinnerModel);
+        betaSpinner.addChangeListener(changeEvent -> editorController.onBetaSpinnerChanged(betaSpinnerModel.getNumber().doubleValue()));
+
+        SpinnerNumberModel thetaSpinnerModel = new SpinnerNumberModel(coordinateSystem.getThetaAngle() * 180 / Math.PI, 0., 360., 0.5);
+        thetaSpinner.setModel(thetaSpinnerModel);
+        thetaSpinner.addChangeListener(changeEvent -> editorController.onThetaSpinnerChanged(thetaSpinnerModel.getNumber().doubleValue()));
     }
 
     private void initAreaSpinners() {

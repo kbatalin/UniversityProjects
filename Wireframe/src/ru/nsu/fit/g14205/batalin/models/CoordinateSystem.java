@@ -12,7 +12,10 @@ import java.util.List;
  */
 public class CoordinateSystem extends ObservableBase implements Observable, Cloneable {
     private Point3D center;
-    private Matrix rotation;
+    private double alphaAngle;
+    private double betaAngle;
+    private double thetaAngle;
+    private Matrix transformMatrix;
 
     public enum Event implements ObserveEvent {
         CENTER_CHANGED,
@@ -20,25 +23,24 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
     }
 
     public CoordinateSystem() {
-        this(new Point3D(0, 0, 0),
-                new Matrix(4, 4, new double[]{
-                        1, 0, 0, 0,
-                        0, 1, 0, 0,
-                        0, 0, 1, 0,
-                        0, 0, 0, 1
-                }));
+        this(new Point3D(0, 0, 0), 0, 0, 0);
     }
 
-    public CoordinateSystem(Point3D center, Matrix rotation) {
+    public CoordinateSystem(Point3D center, double alphaAngle, double betaAngle, double thetaAngle) {
         this.center = center;
-        this.rotation = rotation;
+        this.alphaAngle = alphaAngle;
+        this.betaAngle = betaAngle;
+        this.thetaAngle = thetaAngle;
+        updTransformMatrix();
     }
 
     @Override
     public CoordinateSystem clone() throws CloneNotSupportedException {
         CoordinateSystem coordinateSystem = (CoordinateSystem) super.clone();
-        coordinateSystem.center = center.clone();
-        coordinateSystem.rotation.clone();
+        coordinateSystem.setCenter(center.clone());
+        coordinateSystem.setAlphaAngle(alphaAngle);
+        coordinateSystem.setBetaAngle(betaAngle);
+        coordinateSystem.setThetaAngle(thetaAngle);
         return coordinateSystem;
     }
 
@@ -46,21 +48,37 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
         return center;
     }
 
-    public void setCenter(Point3D center) {
-        this.center = center;
-        notifyObservers(Event.CENTER_CHANGED);
+    public double getAlphaAngle() {
+        return alphaAngle;
     }
 
-    public Matrix getRotation() {
-        return rotation;
-    }
-
-    public void setRotation(Matrix rotation) {
-        this.rotation = rotation;
+    public void setAlphaAngle(double alphaAngle) {
+        this.alphaAngle = alphaAngle;
+        updTransformMatrix();
         notifyObservers(Event.ROTATION_CHANGED);
     }
 
-    public Matrix getTransformMatrix() {
+    public double getBetaAngle() {
+        return betaAngle;
+    }
+
+    public void setBetaAngle(double betaAngle) {
+        this.betaAngle = betaAngle;
+        updTransformMatrix();
+        notifyObservers(Event.ROTATION_CHANGED);
+    }
+
+    public double getThetaAngle() {
+        return thetaAngle;
+    }
+
+    public void setThetaAngle(double thetaAngle) {
+        this.thetaAngle = thetaAngle;
+        updTransformMatrix();
+        notifyObservers(Event.ROTATION_CHANGED);
+    }
+
+    private void updTransformMatrix() {
         Matrix offset = new Matrix(4, 4, new double[]{
                 1, 0, 0, center.getX(),
                 0, 1, 0, center.getY(),
@@ -68,6 +86,43 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
                 0, 0, 0, 1
         });
 
-        return offset.multiply(rotation);
+        double xCos = Math.cos(alphaAngle);
+        double xSin = Math.sin(alphaAngle);
+        Matrix xRotate = new Matrix(4, 4, new double[]{
+                1, 0, 0, 0,
+                0, xCos, -xSin, 0,
+                0, xSin, xCos, 0,
+                0, 0, 0, 1
+        });
+
+        double yCos = Math.cos(betaAngle);
+        double ySin = Math.sin(betaAngle);
+        Matrix yRotate = new Matrix(4, 4, new double[]{
+                yCos, 0, ySin, 0,
+                0, 1, 0, 0,
+                -ySin, 0, yCos, 0,
+                0, 0, 0, 1
+        });
+
+        double zCos = Math.cos(thetaAngle);
+        double zSin = Math.sin(thetaAngle);
+        Matrix zRotate = new Matrix(4, 4, new double[]{
+                zCos, -zSin, 0, 0,
+                zSin, zCos, 0, 0,
+                0, 0, 1, 0,
+                0, 0, 0, 1
+        });
+
+        transformMatrix = offset.multiply(zRotate.multiply(yRotate.multiply(xRotate)));
+    }
+
+    public void setCenter(Point3D center) {
+        this.center = center;
+        updTransformMatrix();
+        notifyObservers(Event.CENTER_CHANGED);
+    }
+
+    public Matrix getTransformMatrix() {
+        return transformMatrix;
     }
 }

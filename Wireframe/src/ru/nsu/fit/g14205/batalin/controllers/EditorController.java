@@ -153,6 +153,24 @@ public class EditorController {
         coordinateSystem.setCenter(newCenter);
     }
 
+    public void onAlphaSpinnerChanged(double value) {
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
+        coordinateSystem.setAlphaAngle(value * Math.PI / 180);
+    }
+
+    public void onBetaSpinnerChanged(double value) {
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
+        coordinateSystem.setBetaAngle(value * Math.PI / 180);
+    }
+
+    public void onThetaSpinnerChanged(double value) {
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
+        coordinateSystem.setThetaAngle(value * Math.PI / 180);
+    }
+
     public void onMousePressed(MouseEvent mouseEvent) {
         FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
         LineProperties lineProperties = figureProperties.getLineProperties();
