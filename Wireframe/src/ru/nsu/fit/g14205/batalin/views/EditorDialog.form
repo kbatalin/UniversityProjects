@@ -29,7 +29,7 @@
                   <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="zn"/>
+                  <text value="zf"/>
                 </properties>
               </component>
               <component id="b7734" class="javax.swing.JLabel">
@@ -64,12 +64,12 @@
                   <enabled value="true"/>
                 </properties>
               </component>
-              <component id="417cf" class="javax.swing.JSpinner" binding="znSpinner">
+              <component id="417cf" class="javax.swing.JSpinner" binding="zfSpinner">
                 <constraints>
                   <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <enabled value="false"/>
+                  <enabled value="true"/>
                 </properties>
               </component>
               <component id="a5c4c" class="javax.swing.JLabel">
@@ -93,7 +93,7 @@
                   <grid row="2" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="4" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text value="zf"/>
+                  <text value="zb"/>
                 </properties>
               </component>
               <component id="c114c" class="javax.swing.JSpinner" binding="mSpinner">
@@ -112,12 +112,12 @@
                   <enabled value="true"/>
                 </properties>
               </component>
-              <component id="f0283" class="javax.swing.JSpinner" binding="zfSpinner">
+              <component id="f0283" class="javax.swing.JSpinner" binding="zbSpinner">
                 <constraints>
                   <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <enabled value="false"/>
+                  <enabled value="true"/>
                 </properties>
               </component>
               <component id="d4720" class="javax.swing.JLabel">
@@ -160,12 +160,12 @@
                   <enabled value="true"/>
                 </properties>
               </component>
-              <component id="bf55e" class="javax.swing.JSpinner" binding="sqSpinner">
+              <component id="bf55e" class="javax.swing.JSpinner" binding="swSpinner">
                 <constraints>
                   <grid row="2" column="5" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <enabled value="false"/>
+                  <enabled value="true"/>
                 </properties>
               </component>
               <component id="9e5ce" class="javax.swing.JLabel">
@@ -211,7 +211,7 @@
                   <grid row="2" column="7" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <enabled value="false"/>
+                  <enabled value="true"/>
                 </properties>
               </component>
               <component id="8c71e" class="javax.swing.JLabel">

@@ -18,13 +18,13 @@ public class EditorDialog extends JDialog {
     private JButton zoomPlusButton;
     private JSpinner nSpinner;
     private JSpinner aSpinner;
-    private JSpinner znSpinner;
+    private JSpinner zfSpinner;
     private JSpinner mSpinner;
     private JSpinner bSpinner;
-    private JSpinner zfSpinner;
+    private JSpinner zbSpinner;
     private JSpinner kSpinner;
     private JSpinner cSpinner;
-    private JSpinner sqSpinner;
+    private JSpinner swSpinner;
     private JSpinner numberSpinner;
     private JSpinner dSpinner;
     private JSpinner shSpinner;
@@ -112,6 +112,22 @@ public class EditorDialog extends JDialog {
         kSpinner.setModel(kSpinnerModel);
         kSpinner.addChangeListener(changeEvent -> editorController.onKSpinnerChanged(kSpinnerModel.getNumber().intValue()));
 
+        ViewPyramidProperties viewPyramid = applicationProperties.getViewPyramidProperties();
+        SpinnerNumberModel zfSpinnerModel = new SpinnerNumberModel(viewPyramid.getFrontPlaneDistance(), 1, 50, 1);
+        zfSpinner.setModel(zfSpinnerModel);
+        zfSpinner.addChangeListener(changeEvent -> editorController.onZfSpinnerChanged(zfSpinnerModel.getNumber().doubleValue()));
+
+        SpinnerNumberModel zbSpinnerModel = new SpinnerNumberModel(viewPyramid.getBackPlaneDistance(), 1, 50, 1);
+        zbSpinner.setModel(zbSpinnerModel);
+        zbSpinner.addChangeListener(changeEvent -> editorController.onZbSpinnerChanged(zbSpinnerModel.getNumber().doubleValue()));
+
+        SpinnerNumberModel swSpinnerModel = new SpinnerNumberModel(viewPyramid.getFrontPlaneWidth(), 1, 20, 1);
+        swSpinner.setModel(swSpinnerModel);
+        swSpinner.addChangeListener(changeEvent -> editorController.onSwSpinnerChanged(swSpinnerModel.getNumber().doubleValue()));
+
+        SpinnerNumberModel shSpinnerModel = new SpinnerNumberModel(viewPyramid.getFrontPlaneHeight(), 1, 20, 1);
+        shSpinner.setModel(shSpinnerModel);
+        shSpinner.addChangeListener(changeEvent -> editorController.onShSpinnerChanged(shSpinnerModel.getNumber().doubleValue()));
 
         zoomSlider.setMinimum(editorModel.getMinZoom());
         zoomSlider.setMaximum(editorModel.getMaxZoom());

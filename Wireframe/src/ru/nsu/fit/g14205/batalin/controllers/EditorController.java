@@ -153,6 +153,26 @@ public class EditorController {
         coordinateSystem.setCenter(newCenter);
     }
 
+    public void onZfSpinnerChanged(double value) {
+        ViewPyramidProperties viewPyramid = applicationProperties.getViewPyramidProperties();
+        viewPyramid.setFrontPlaneDistance(value);
+    }
+
+    public void onZbSpinnerChanged(double value) {
+        ViewPyramidProperties viewPyramid = applicationProperties.getViewPyramidProperties();
+        viewPyramid.setBackPlaneDistance(value);
+    }
+
+    public void onSwSpinnerChanged(double value) {
+        ViewPyramidProperties viewPyramid = applicationProperties.getViewPyramidProperties();
+        viewPyramid.setFrontPlaneWidth(value);
+    }
+
+    public void onShSpinnerChanged(double value) {
+        ViewPyramidProperties viewPyramid = applicationProperties.getViewPyramidProperties();
+        viewPyramid.setFrontPlaneHeight(value);
+    }
+
     public void onAlphaSpinnerChanged(double value) {
         FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
         CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
