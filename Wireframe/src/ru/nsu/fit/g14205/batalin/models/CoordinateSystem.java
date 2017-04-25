@@ -125,4 +125,9 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
     public Matrix getTransformMatrix() {
         return transformMatrix;
     }
+
+    public void setTransformMatrix(Matrix transformMatrix) {
+        this.transformMatrix = transformMatrix;
+        notifyObservers(Event.ROTATION_CHANGED);
+    }
 }

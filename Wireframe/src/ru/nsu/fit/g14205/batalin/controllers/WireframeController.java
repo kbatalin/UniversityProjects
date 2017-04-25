@@ -100,67 +100,9 @@ public class WireframeController {
 
         Matrix rotation = rotateY.multiply(rotateX);
         CoordinateSystem coordinateSystem = applicationProperties.getScene().getFigureProperties().getCoordinateSystem();
-
         Matrix transform = coordinateSystem.getTransformMatrix();
-        Matrix prevPosMatrix = new Matrix(1,4, new double[]{
-                prevPos.getX(),
-                prevPos.getY(),
-                0,
-                1,
-        });
-        Matrix currentPosMatrix = new Matrix(1, 4, new double[]{
-                pos.getX(),
-                pos.getY(),
-                0,
-                1,
-        });
-
-        Matrix tmp = new Matrix(1, 4, new double[]{
-                y,
-                x,
-                1,
-                1,
-        });
-        tmp = transform.multiply(tmp);
-
-//        x = tmp.get(0, 1);
-//        y = tmp.get(0, 0);
-
-        prevPosMatrix = transform.multiply(prevPosMatrix);
-        currentPosMatrix = transform.multiply(currentPosMatrix);
-
-        System.out.println();
-//
-//        System.out.println(prevPosMatrix);
-//
-//        x = (currentPosMatrix.get(0, 0) - prevPosMatrix.get(0, 0)) * 0.5;
-//        y = (currentPosMatrix.get(0, 1) - prevPosMatrix.get(0, 1)) * 0.5;
-
-        double newBeta = coordinateSystem.getBetaAngle() + Math.PI / 180. * x;
-//        if(Double.compare(newBeta, Math.PI * 2) >= 0) {
-//            newBeta -= Math.PI * 2;
-//        }
-//        if (Double.compare(newBeta, 0) < 0) {
-//            newBeta += Math.PI * 2;
-//        }
-
-//        System.out.println(newBeta);
-
-        double newTheta = coordinateSystem.getThetaAngle() + Math.PI / 180. * y;
-
-//        if(Double.compare(newTheta, Math.PI * 2) >= 0) {
-//            newTheta -= Math.PI * 2;
-//        }
-//        if (Double.compare(newTheta, 0) < 0) {
-//            newTheta += Math.PI * 2;
-//        }
-//        System.out.println((int) (newBeta * 180 / Math.PI));
-
-        coordinateSystem.setBetaAngle(newBeta);
-        coordinateSystem.setThetaAngle(newTheta);
-//        coordinateSystem.setRotation(rotation.multiply(coordinateSystem.getRotation()));
-
-//        System.out.println(coordinateSystem.getRotation());
+        transform = rotation.multiply(transform);
+        coordinateSystem.setTransformMatrix(transform);
 
         prevPos = pos;
     }
