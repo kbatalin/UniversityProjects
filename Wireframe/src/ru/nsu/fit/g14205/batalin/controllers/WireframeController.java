@@ -1,15 +1,22 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.*;
+import ru.nsu.fit.g14205.batalin.models.save.FileLoader;
+import ru.nsu.fit.g14205.batalin.models.save.FileSaver;
+import ru.nsu.fit.g14205.batalin.models.save.Loader;
+import ru.nsu.fit.g14205.batalin.models.save.Saver;
 import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.WireframeView;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
+import java.io.File;
 
 /**
  * Created by kir55rus on 11.04.17.
@@ -17,10 +24,18 @@ import java.awt.geom.Point2D;
 public class WireframeController {
     private ApplicationProperties applicationProperties;
     private Point2D prevPos;
+    private JFileChooser fileChooser;
 
     private WireframeView wireframeView;
 
     public void run() {
+        fileChooser = new JFileChooser();
+        File workingDirectory = new File(System.getProperty("user.dir") + File.separator + "FIT_14205_Batalin_Kirill_Wireframe_Data");
+        fileChooser.setCurrentDirectory(workingDirectory);
+        FileNameExtensionFilter settingsFileFilter = new FileNameExtensionFilter("Text (*.txt)", "txt");
+        fileChooser.setFileFilter(settingsFileFilter);
+
+
         applicationProperties = new ApplicationPropertiesDefault();
 
         LineProperties lineProperties = new BSplineProperties(applicationProperties);
@@ -109,8 +124,40 @@ public class WireframeController {
         prevPos = pos;
     }
 
-    public void onSaveButtonClicked(ActionEvent actionEvent) {
+    public void onOpenButtonClicked(ActionEvent actionEvent) {
+        int result = fileChooser.showOpenDialog(wireframeView);
 
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        try {
+            File file = fileChooser.getSelectedFile();
+            Loader loader = new FileLoader(file, applicationProperties);
+            loader.load();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(wireframeView,"Can't load file: " + e.getMessage(),"Open error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    public void onSaveButtonClicked(ActionEvent actionEvent) {
+        int result = fileChooser.showSaveDialog(wireframeView);
+
+        if (result != JFileChooser.APPROVE_OPTION) {
+            return;
+        }
+
+        File file = fileChooser.getSelectedFile();
+        try {
+            if (!file.getName().endsWith(".txt")) {
+                file = new File(file.getAbsolutePath() + ".txt");
+            }
+
+            Saver saver = new FileSaver(applicationProperties, file);
+            saver.save();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(wireframeView,"Can't save image: " + e.getMessage(),"Save error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void onAboutDialogClicked(ActionEvent actionEvent) {

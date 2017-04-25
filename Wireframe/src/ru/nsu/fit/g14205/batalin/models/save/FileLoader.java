@@ -32,24 +32,24 @@ public class FileLoader implements Loader {
             int n = Integer.parseInt(strData[0]);
             int m = Integer.parseInt(strData[1]);
             int k = Integer.parseInt(strData[2]);
-            int a = Integer.parseInt(strData[3]);
-            int b = Integer.parseInt(strData[4]);
-            int c = Integer.parseInt(strData[5]);
-            int d = Integer.parseInt(strData[6]);
-            strData = nextData(scanner);
+            double a = Double.parseDouble(strData[3]);
+            double b = Double.parseDouble(strData[4]);
+            double c = Double.parseDouble(strData[5]);
+            double d = Double.parseDouble(strData[6]);
 
             Grid grid = applicationProperties.getGrid();
             grid.setCols(n);
             grid.setRows(m);
+            grid.setSegmentSplitting(k);
 
             Area area = new Area(a, c, b, d);
             applicationProperties.setArea(area);
 
-            int zf = Integer.parseInt(strData[0]);
-            int zb = Integer.parseInt(strData[1]);
-            int sw = Integer.parseInt(strData[2]);
-            int sh = Integer.parseInt(strData[3]);
             strData = nextData(scanner);
+            double zf = Double.parseDouble(strData[0]);
+            double zb = Double.parseDouble(strData[1]);
+            double sw = Double.parseDouble(strData[2]);
+            double sh = Double.parseDouble(strData[3]);
 
             ViewPyramidProperties pyramidProperties = applicationProperties.getViewPyramidProperties();
             pyramidProperties.setFrontPlaneDistance(zf);
@@ -57,52 +57,75 @@ public class FileLoader implements Loader {
             pyramidProperties.setFrontPlaneWidth(sw);
             pyramidProperties.setFrontPlaneHeight(sh);
 
+            strData = nextData(scanner);
+            double r11 = Double.parseDouble(strData[0]);
+            double r12 = Double.parseDouble(strData[1]);
+            double r13 = Double.parseDouble(strData[2]);
+
+            strData = nextData(scanner);
+            double r21 = Double.parseDouble(strData[0]);
+            double r22 = Double.parseDouble(strData[1]);
+            double r23 = Double.parseDouble(strData[2]);
+
+            strData = nextData(scanner);
+            double r31 = Double.parseDouble(strData[0]);
+            double r32 = Double.parseDouble(strData[1]);
+            double r33 = Double.parseDouble(strData[2]);
+
+            Matrix sceneMatrix = new Matrix(4, 4, new double[]{
+                    r11, r12, r13, 0,
+                    r21, r22, r23, 0,
+                    r31, r32, r33, 0,
+                    0, 0, 0, 1
+            });
+            applicationProperties.getScene().getFigureProperties().getCoordinateSystem().setTransformMatrix(sceneMatrix);
+
+            strData = nextData(scanner);
             int red = Integer.parseInt(strData[0]);
             int green = Integer.parseInt(strData[1]);
             int blue = Integer.parseInt(strData[2]);
-            strData = nextData(scanner);
 
             applicationProperties.setBackgroundColor(new Color(red, green, blue));
 
-            int figuresCount = Integer.parseInt(strData[0]);
             strData = nextData(scanner);
+            int figuresCount = Integer.parseInt(strData[0]);
 
             applicationProperties.getScene().clear();
             applicationProperties.getFigureProperties().clear();
             for(int i = 0; i < figuresCount; ++i) {
+                strData = nextData(scanner);
                 red = Integer.parseInt(strData[0]);
                 green = Integer.parseInt(strData[1]);
                 blue = Integer.parseInt(strData[2]);
-                strData = nextData(scanner);
 
-                int cX = Integer.parseInt(strData[0]);
-                int cY = Integer.parseInt(strData[1]);
-                int cZ = Integer.parseInt(strData[2]);
                 strData = nextData(scanner);
+                double cX = Double.parseDouble(strData[0]);
+                double cY = Double.parseDouble(strData[1]);
+                double cZ = Double.parseDouble(strData[2]);
 
-                int r11 = Integer.parseInt(strData[0]);
-                int r12 = Integer.parseInt(strData[1]);
-                int r13 = Integer.parseInt(strData[2]);
                 strData = nextData(scanner);
+                r11 = Double.parseDouble(strData[0]);
+                r12 = Double.parseDouble(strData[1]);
+                r13 = Double.parseDouble(strData[2]);
 
-                int r21 = Integer.parseInt(strData[0]);
-                int r22 = Integer.parseInt(strData[1]);
-                int r23 = Integer.parseInt(strData[2]);
                 strData = nextData(scanner);
+                r21 = Double.parseDouble(strData[0]);
+                r22 = Double.parseDouble(strData[1]);
+                r23 = Double.parseDouble(strData[2]);
 
-                int r31 = Integer.parseInt(strData[0]);
-                int r32 = Integer.parseInt(strData[1]);
-                int r33 = Integer.parseInt(strData[2]);
                 strData = nextData(scanner);
+                r31 = Double.parseDouble(strData[0]);
+                r32 = Double.parseDouble(strData[1]);
+                r33 = Double.parseDouble(strData[2]);
 
+                strData = nextData(scanner);
                 n = Integer.parseInt(strData[0]);
-                strData = nextData(scanner);
 
                 LineProperties lineProperties = new BSplineProperties(applicationProperties);
                 for(int j = 0; j < n; ++j) {
-                    int x = Integer.parseInt(strData[0]);
-                    int y = Integer.parseInt(strData[1]);
                     strData = nextData(scanner);
+                    double x = Double.parseDouble(strData[0]);
+                    double y = Double.parseDouble(strData[1]);
 
                     lineProperties.addControlPoint(new Point2D.Double(x, y));
                 }
