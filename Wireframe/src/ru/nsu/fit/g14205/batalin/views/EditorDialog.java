@@ -2,10 +2,7 @@ package ru.nsu.fit.g14205.batalin.views;
 
 import ru.nsu.fit.g14205.batalin.controllers.EditorController;
 import ru.nsu.fit.g14205.batalin.controllers.WireframeController;
-import ru.nsu.fit.g14205.batalin.models.ApplicationProperties;
-import ru.nsu.fit.g14205.batalin.models.Area;
-import ru.nsu.fit.g14205.batalin.models.EditorModel;
-import ru.nsu.fit.g14205.batalin.models.LineProperties;
+import ru.nsu.fit.g14205.batalin.models.*;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -99,6 +96,19 @@ public class EditorDialog extends JDialog {
         SpinnerNumberModel blueSpinnerModel = new SpinnerNumberModel(color.getBlue(), 0, 255, 1);
         blueSpinner.setModel(blueSpinnerModel);
         blueSpinner.addChangeListener(changeEvent -> editorController.onBlueSpinnerChanged(blueSpinnerModel.getNumber().intValue()));
+
+        Grid grid = applicationProperties.getGrid();
+        SpinnerNumberModel nSpinnerModel = new SpinnerNumberModel(grid.getCols(), 1, 50, 1);
+        nSpinner.setModel(nSpinnerModel);
+        nSpinner.addChangeListener(changeEvent -> editorController.onNSpinnerChanged(nSpinnerModel.getNumber().intValue()));
+        SpinnerNumberModel mSpinnerModel = new SpinnerNumberModel(grid.getRows(), 1, 50, 1);
+        mSpinner.setModel(mSpinnerModel);
+        mSpinner.addChangeListener(changeEvent -> editorController.onMSpinnerChanged(mSpinnerModel.getNumber().intValue()));
+        SpinnerNumberModel kSpinnerModel = new SpinnerNumberModel(grid.getSegmentSplitting(), 1, 50, 1);
+        kSpinner.setModel(kSpinnerModel);
+        kSpinner.addChangeListener(changeEvent -> editorController.onKSpinnerChanged(kSpinnerModel.getNumber().intValue()));
+
+
 
         zoomSlider.setMinimum(editorModel.getMinZoom());
         zoomSlider.setMaximum(editorModel.getMaxZoom());

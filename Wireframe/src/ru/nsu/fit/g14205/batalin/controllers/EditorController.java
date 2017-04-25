@@ -81,6 +81,18 @@ public class EditorController {
         editorModel.setCurrentLine(0);
     }
 
+    public void onNSpinnerChanged(int value) {
+        applicationProperties.getGrid().setCols(value);
+    }
+
+    public void onMSpinnerChanged(int value) {
+        applicationProperties.getGrid().setRows(value);
+    }
+
+    public void onKSpinnerChanged(int value) {
+        applicationProperties.getGrid().setSegmentSplitting(value);
+    }
+
     public void onNumberSpinnerChanged(int value) {
         editorModel.setCurrentLine(value);
     }
