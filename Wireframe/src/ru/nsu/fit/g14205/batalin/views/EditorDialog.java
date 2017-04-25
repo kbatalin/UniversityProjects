@@ -135,20 +135,40 @@ public class EditorDialog extends JDialog {
     }
 
     private void onLineChanged() {
+        ApplicationProperties applicationProperties = editorController.getApplicationProperties();
         EditorModel editorModel = editorController.getEditorModel();
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
+
         numberSpinner.setValue(editorModel.getCurrentFigure());
 
-
+        Point3D center = coordinateSystem.getCenter();
+        cXSpinner.setValue(center.getX());
+        cYSpinner.setValue(center.getY());
+        cZSpinner.setValue(center.getZ());
     }
 
     private void initCoordinateSystemSpinners() {
         ApplicationProperties applicationProperties = editorController.getApplicationProperties();
         EditorModel editorModel = editorController.getEditorModel();
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
 
+        Point3D center = coordinateSystem.getCenter();
 
-//        SpinnerNumberModel cXSpinnerModel = new SpinnerNumberModel(grid.getSegmentSplitting(), 1, 50, 1);
-//        cXSpinner.setModel(cXSpinnerModel);
-//        cXSpinner.addChangeListener(changeEvent -> editorController.onKSpinnerChanged(kSpinnerModel.getNumber().intValue()));
+        double minCrd = -200;
+        double maxCrd = 200;
+        SpinnerNumberModel cXSpinnerModel = new SpinnerNumberModel(center.getX(), minCrd, maxCrd, 1);
+        cXSpinner.setModel(cXSpinnerModel);
+        cXSpinner.addChangeListener(changeEvent -> editorController.onCXSpinnerChanged(cXSpinnerModel.getNumber().doubleValue()));
+
+        SpinnerNumberModel cYSpinnerModel = new SpinnerNumberModel(center.getY(), minCrd, maxCrd, 1);
+        cYSpinner.setModel(cYSpinnerModel);
+        cYSpinner.addChangeListener(changeEvent -> editorController.onCYSpinnerChanged(cYSpinnerModel.getNumber().doubleValue()));
+
+        SpinnerNumberModel cZSpinnerModel = new SpinnerNumberModel(center.getZ(), minCrd, maxCrd, 1);
+        cZSpinner.setModel(cZSpinnerModel);
+        cZSpinner.addChangeListener(changeEvent -> editorController.onCZSpinnerChanged(cZSpinnerModel.getNumber().doubleValue()));
     }
 
     private void initAreaSpinners() {

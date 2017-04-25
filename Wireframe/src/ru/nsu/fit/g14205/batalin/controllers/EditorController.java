@@ -129,6 +129,30 @@ public class EditorController {
         return applicationProperties;
     }
 
+    public void onCXSpinnerChanged(double value) {
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
+        Point3D center = coordinateSystem.getCenter();
+        Point3D newCenter = new Point3D(value, center.getY(), center.getZ());
+        coordinateSystem.setCenter(newCenter);
+    }
+
+    public void onCYSpinnerChanged(double value) {
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
+        Point3D center = coordinateSystem.getCenter();
+        Point3D newCenter = new Point3D(center.getX(), value, center.getZ());
+        coordinateSystem.setCenter(newCenter);
+    }
+
+    public void onCZSpinnerChanged(double value) {
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
+        CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
+        Point3D center = coordinateSystem.getCenter();
+        Point3D newCenter = new Point3D(center.getZ(), center.getY(), value);
+        coordinateSystem.setCenter(newCenter);
+    }
+
     public void onMousePressed(MouseEvent mouseEvent) {
         FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
         LineProperties lineProperties = figureProperties.getLineProperties();

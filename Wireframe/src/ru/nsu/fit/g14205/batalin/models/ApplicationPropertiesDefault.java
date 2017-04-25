@@ -137,7 +137,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
 
     private void addFigure(FigureProperties figureProperties) {
         LineProperties lineProperties = figureProperties.getLineProperties();
-        if (lineProperties == null) {
+        if (lineProperties == null || lineProperties.getControlPointsCount() < 4) {
             return;
         }
 
