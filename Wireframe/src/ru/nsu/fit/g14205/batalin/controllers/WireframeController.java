@@ -1,10 +1,12 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.*;
+import ru.nsu.fit.g14205.batalin.views.AboutView;
 import ru.nsu.fit.g14205.batalin.views.WireframeView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Point2D;
@@ -105,6 +107,13 @@ public class WireframeController {
         coordinateSystem.setTransformMatrix(transform);
 
         prevPos = pos;
+    }
+
+    public void onAboutDialogClicked(ActionEvent actionEvent) {
+        AboutView dialog = new AboutView();
+        dialog.pack();
+        dialog.setLocationRelativeTo(wireframeView);
+        dialog.setVisible(true);
     }
 
     public void onLineEditButtonClicked() {

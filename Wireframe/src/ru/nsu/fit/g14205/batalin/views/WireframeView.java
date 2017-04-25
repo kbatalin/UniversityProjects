@@ -58,7 +58,7 @@ public class WireframeView extends JFrame {
 
         buttonsManager.addItem(fileMenu, "New", "Create new", "document.png", null);
         buttonsManager.addItem(fileMenu, "Open", "Open", "folder.png", null);
-        buttonsManager.addItem(fileMenu, "Save", "Save", "folder.png", null);
+        buttonsManager.addItem(fileMenu, "Save", "Save", "save.png", null);
 
         buttonsManager.addMenuSeparator(fileMenu);
 
@@ -76,7 +76,7 @@ public class WireframeView extends JFrame {
 
     private void initHelpMenu() {
         JMenu helpMenu = buttonsManager.addMenu(null, "Help");
-        buttonsManager.addItem(helpMenu, "About", "About", "info.png", null);
+        buttonsManager.addItem(helpMenu, "About", "About", "info.png", wireframeController::onAboutDialogClicked);
     }
 
     private void initWorkSpace() {
