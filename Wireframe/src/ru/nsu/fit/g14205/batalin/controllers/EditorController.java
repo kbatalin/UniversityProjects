@@ -149,7 +149,7 @@ public class EditorController {
         FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
         CoordinateSystem coordinateSystem = figureProperties.getCoordinateSystem();
         Point3D center = coordinateSystem.getCenter();
-        Point3D newCenter = new Point3D(center.getZ(), center.getY(), value);
+        Point3D newCenter = new Point3D(center.getX(), center.getY(), value);
         coordinateSystem.setCenter(newCenter);
     }
 
