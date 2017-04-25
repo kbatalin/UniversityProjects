@@ -3,6 +3,7 @@ package ru.nsu.fit.g14205.batalin.models;
 import ru.nsu.fit.g14205.batalin.models.observe.Observable;
 import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
 
+import java.awt.*;
 import java.util.Iterator;
 import java.util.List;
 
@@ -27,6 +28,10 @@ public interface PaintedFigure extends Observable, Cloneable {
     Iterator<PaintedFigure> figures();
 
     Iterator<Segment> segments();
+
+    Color getColor();
+
+    void setColor(Color color);
 
     PaintedFigure clone() throws CloneNotSupportedException;
 

@@ -2,6 +2,7 @@ package ru.nsu.fit.g14205.batalin.models;
 
 import ru.nsu.fit.g14205.batalin.models.observe.ObservableBase;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +15,7 @@ public class Figure extends ObservableBase implements PaintedFigure {
     private List<Segment> segments = new ArrayList<>();
     private Parallelepiped outboardBox;
     private CoordinateSystem coordinateSystem;
+    private Color color;
 
     public Figure() {
         this(null, null);
@@ -28,6 +30,7 @@ public class Figure extends ObservableBase implements PaintedFigure {
         addFigures(figures);
         addSegments(segments);
         updOutboardBox();
+        color = Color.GRAY;
 
         coordinateSystem.addObserver(CoordinateSystem.Event.ROTATION_CHANGED, this::updOutboardBox);
         coordinateSystem.addObserver(CoordinateSystem.Event.CENTER_CHANGED, this::updOutboardBox);
@@ -51,6 +54,17 @@ public class Figure extends ObservableBase implements PaintedFigure {
     @Override
     public CoordinateSystem getCoordinateSystem() {
         return coordinateSystem;
+    }
+
+    @Override
+    public Color getColor() {
+        return color;
+    }
+
+    @Override
+    public void setColor(Color color) {
+        this.color = color;
+        notifyObservers(Event.FIGURE_CHANGED);
     }
 
     @Override

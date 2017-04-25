@@ -126,7 +126,7 @@ public class WorkspaceView extends JComponent {
             return;
         }
 
-        graphics.setColor(Color.GRAY);
+        graphics.setColor(figure.getColor());
         Iterator<Segment> iterator = figure.segments();
         while (iterator.hasNext()) {
             Segment segment = iterator.next();

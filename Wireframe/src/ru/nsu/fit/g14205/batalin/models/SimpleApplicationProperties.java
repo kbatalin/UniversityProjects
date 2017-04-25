@@ -214,6 +214,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
             }
         }
 
+        figure.setColor(lineProperties.getColor());
         scene.addFigure(figure);
     }
 
