@@ -1,6 +1,7 @@
 package ru.nsu.fit.g14205.batalin.controllers;
 
 import ru.nsu.fit.g14205.batalin.models.*;
+import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
 import ru.nsu.fit.g14205.batalin.models.save.FileLoader;
 import ru.nsu.fit.g14205.batalin.models.save.FileSaver;
 import ru.nsu.fit.g14205.batalin.models.save.Loader;
@@ -158,6 +159,16 @@ public class WireframeController {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(wireframeView,"Can't save image: " + e.getMessage(),"Save error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    public void onClippingButtonClicked(ActionEvent actionEvent) {
+        Object sourceObj = actionEvent.getSource();
+        if (!(sourceObj instanceof AbstractButton)) {
+            return;
+        }
+
+        AbstractButton button = (AbstractButton) sourceObj;
+        applicationProperties.setClippingEnabled(button.isSelected());
     }
 
     public void onInitButtonClicked(ActionEvent actionEvent) {

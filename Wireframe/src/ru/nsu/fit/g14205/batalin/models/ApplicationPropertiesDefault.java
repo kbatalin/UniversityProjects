@@ -19,6 +19,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
     private PaintedFigure scene;
     private Grid grid;
     private Color backgroundColor;
+    private boolean clippingEnabled;
 
     public ApplicationPropertiesDefault() {
         controlPointRadius = .3;
@@ -31,6 +32,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
         FigureProperties sceneProperties = new FigurePropertiesDefault();
         scene = new Figure(sceneProperties);
         backgroundColor = Color.BLACK;
+        clippingEnabled = true;
 
         grid.addObserver(Grid.Event.SIZE_CHANGED, this::updFigures);
         grid.addObserver(Grid.Event.SEGMENT_SPLITTING_CHANGED, this::updFigures);
@@ -50,6 +52,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
         }
         applicationProperties.grid = grid.clone();
         applicationProperties.backgroundColor = new Color(backgroundColor.getRGB());
+        applicationProperties.clippingEnabled = clippingEnabled;
         return applicationProperties;
     }
 
@@ -77,6 +80,18 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
         viewPyramidProperties.setFrontPlaneWidth(applicationProperties.getViewPyramidProperties().getFrontPlaneWidth());
 
         setBackgroundColor(applicationProperties.getBackgroundColor());
+        this.setClippingEnabled(applicationProperties.isClippingEnabled());
+    }
+
+    @Override
+    public boolean isClippingEnabled() {
+        return clippingEnabled;
+    }
+
+    @Override
+    public void setClippingEnabled(boolean clippingEnabled) {
+        this.clippingEnabled = clippingEnabled;
+        notifyObservers(Event.CLIPPING_ENABLED_CHANGED);
     }
 
     @Override

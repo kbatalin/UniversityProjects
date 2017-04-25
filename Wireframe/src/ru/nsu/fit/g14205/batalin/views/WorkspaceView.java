@@ -40,6 +40,7 @@ public class WorkspaceView extends JComponent {
         applicationProperties.getScene().addObserver(PaintedFigure.Event.FIGURE_CHANGED, this::repaint);
 
         applicationProperties.addObserver(ApplicationProperties.Event.BACKGROUND_COLOR_CHANGED, this::repaint);
+        applicationProperties.addObserver(ApplicationProperties.Event.CLIPPING_ENABLED_CHANGED, this::repaint);
 
         addMouseWheelListener(new MouseAdapter() {
             @Override
@@ -149,10 +150,15 @@ public class WorkspaceView extends JComponent {
         pos2 = csTransform.multiply(pos2);
         pos2 = pos2.divide(pos2.get(0, 3));
 
-        Segment visibleSegment = clipping(new Point3D(pos1.subMatrix(0, 0, 1, 3)),
-                new Point3D(pos2.subMatrix(0, 0, 1, 3)));
-        if (visibleSegment == null) {
-            return;
+        Segment visibleSegment = null;
+        if(wireframeController.getApplicationProperties().isClippingEnabled()) {
+            visibleSegment = clipping(new Point3D(pos1.subMatrix(0, 0, 1, 3)),
+                    new Point3D(pos2.subMatrix(0, 0, 1, 3)));
+            if (visibleSegment == null) {
+                return;
+            }
+        } else {
+            visibleSegment = new Segment(new Point3D(pos1.subMatrix(0, 0, 1, 3)), new Point3D(pos2.subMatrix(0, 0, 1, 3)));
         }
 
         pos1 = displayTransform.multiply(visibleSegment.getFirst().toMatrix4());

@@ -34,11 +34,15 @@ public interface ApplicationProperties extends Observable, Cloneable {
     Color getBackgroundColor();
     void setBackgroundColor(Color color);
 
+    boolean isClippingEnabled();
+    void setClippingEnabled(boolean enable);
+
     enum Event implements ObserveEvent {
         FIGURE_PROPERTIES_ADDED,
         FIGURE_PROPERTIES_REMOVED,
         AREA_CHANGED,
         SCENE_CHANGED,
         BACKGROUND_COLOR_CHANGED,
+        CLIPPING_ENABLED_CHANGED,
     }
 }
