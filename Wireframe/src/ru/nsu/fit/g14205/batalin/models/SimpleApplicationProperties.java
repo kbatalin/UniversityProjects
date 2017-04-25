@@ -2,6 +2,7 @@ package ru.nsu.fit.g14205.batalin.models;
 
 import ru.nsu.fit.g14205.batalin.models.observe.ObservableBase;
 
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     private CameraProperties cameraProperties;
     private ViewPyramidProperties viewPyramidProperties;
     private PaintedFigure scene;
+    private Grid grid;
 
     public SimpleApplicationProperties() {
         controlPointRadius = .3;
@@ -23,6 +25,10 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         cameraProperties = new Camera(new Point3D(-10, 0, 0), new Point3D(10, 0, 0), new Point3D(0, 1, 0));
         viewPyramidProperties = new ViewPyramid(15, 5, 10, 10);
         scene = createDefaultScene();
+        grid = new Grid(5, 6, 5);
+
+        grid.addObserver(Grid.Event.SIZE_CHANGED, this::updFigures);
+        grid.addObserver(Grid.Event.SEGMENT_SPLITTING_CHANGED, this::updFigures);
     }
 
     @Override
@@ -37,6 +43,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         for (LineProperties line : lineProperties) {
             applicationProperties.lineProperties.add(line.clone());
         }
+        applicationProperties.grid = grid.clone();
         return applicationProperties;
     }
 
@@ -51,6 +58,9 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         setArea(applicationProperties.getArea());
         setScene(applicationProperties.getScene());
 
+        grid.setCols(applicationProperties.getGrid().getCols());
+        grid.setRows(applicationProperties.getGrid().getRows());
+
         cameraProperties.setCameraPosition(applicationProperties.getCameraProperties().getCameraPosition());
         cameraProperties.setUpVector(applicationProperties.getCameraProperties().getUpVector());
         cameraProperties.setViewPoint(applicationProperties.getCameraProperties().getViewPoint());
@@ -59,6 +69,11 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
         viewPyramidProperties.setBackPlaneDistance(applicationProperties.getViewPyramidProperties().getBackPlaneDistance());
         viewPyramidProperties.setFrontPlaneHeight(applicationProperties.getViewPyramidProperties().getFrontPlaneHeight());
         viewPyramidProperties.setFrontPlaneWidth(applicationProperties.getViewPyramidProperties().getFrontPlaneWidth());
+    }
+
+    @Override
+    public Grid getGrid() {
+        return grid;
     }
 
     @Override
@@ -103,6 +118,7 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     @Override
     public void setArea(Area area) {
         this.area = area;
+        updFigures();
         notifyObservers(Event.AREA_CHANGED);
     }
 
@@ -125,6 +141,80 @@ public class SimpleApplicationProperties extends ObservableBase implements Appli
     public void addLineProperties(LineProperties properties) {
         lineProperties.add(properties);
         notifyObservers(Event.LINE_PROPERTIES_ADDED);
+    }
+
+    private void updFigures() {
+        scene.clear();
+        for (LineProperties line : lineProperties) {
+            addFigure(line);
+        }
+    }
+
+    private void addFigure(LineProperties lineProperties) {
+
+        Point2D[] funcValues = new Point2D[grid.getCols() * grid.getSegmentSplitting() + 1];
+        double u = area.first.getX();
+        double dU = area.getWidth() / (funcValues.length - 1);
+        for(int i = 0; i < funcValues.length; ++i, u += dU) {
+            if(Double.compare(u, area.second.getX()) > 0) {
+                u = area.second.getX();
+            }
+            funcValues[i] = lineProperties.getPoint(u);
+        }
+
+        double[] sinuses = new double[grid.getRows() * grid.getSegmentSplitting() + 1];
+        double[] cosines = new double[grid.getRows() * grid.getSegmentSplitting() + 1];
+        double v = area.first.getY();
+        double dV = area.getHeight() / (sinuses.length - 1);
+        for(int i = 0; i < sinuses.length; ++i, v += dV) {
+            sinuses[i] = Math.sin(v);
+            cosines[i] = Math.cos(v);
+        }
+
+        PaintedFigure figure = new Figure();
+        for(int i = 1; i < funcValues.length; i += grid.getSegmentSplitting()) {
+            for(int j = 0; j < sinuses.length; j += grid.getSegmentSplitting()) {
+                for(int q = 0; q < grid.getSegmentSplitting(); ++q) {
+                    Point3D first = new Point3D(
+                            funcValues[i - 1 + q].getY() * cosines[j],
+                            funcValues[i - 1 + q].getY() * sinuses[j],
+                            funcValues[i - 1 + q].getX()
+                    );
+
+                    Point3D second = new Point3D(
+                            funcValues[i + q].getY() * cosines[j],
+                            funcValues[i + q].getY() * sinuses[j],
+                            funcValues[i + q].getX()
+                    );
+
+                    figure.addSegment(new Segment(first, second));
+                }
+
+            }
+        }
+
+        for(int j = 1; j < sinuses.length; j += grid.getSegmentSplitting()) {
+            for(int i = 0; i < funcValues.length; i += grid.getSegmentSplitting()) {
+                for(int q = 0; q < grid.getSegmentSplitting(); ++q) {
+                    Point3D first = new Point3D(
+                            funcValues[i].getY() * cosines[j - 1 + q],
+                            funcValues[i].getY() * sinuses[j - 1 + q],
+                            funcValues[i].getX()
+                    );
+
+                    Point3D second = new Point3D(
+                            funcValues[i].getY() * cosines[j + q],
+                            funcValues[i].getY() * sinuses[j + q],
+                            funcValues[i].getX()
+                    );
+
+                    figure.addSegment(new Segment(first, second));
+                }
+
+            }
+        }
+
+        scene.addFigure(figure);
     }
 
     @Override

@@ -116,9 +116,7 @@ public class BSplineProperties extends ObservableBase implements LineProperties 
 
     @Override
     public Point2D getPoint(double t) {
-        if (Double.compare(t, 0.) < 0 || Double.compare(t, 1.) > 0) {
-            throw new IllegalArgumentException("Param t must be >= 0 and <= 1");
-        }
+        t = Math.max(0., Math.min(1., t));
 
         if (controlPoints.size() < 4) {
             return null;
@@ -145,9 +143,7 @@ public class BSplineProperties extends ObservableBase implements LineProperties 
     }
 
     private Point2D getPoint(int segment, double t) {
-        if (Double.compare(t, 0.) < 0 || Double.compare(t, 1.) > 0) {
-            throw new IllegalArgumentException("Param t must be >= 0 and <= 1");
-        }
+        t = Math.max(0., Math.min(1., t));
 
         if (segment < 1 || segment > controlPoints.size() - 3) {
             return null;

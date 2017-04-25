@@ -22,6 +22,8 @@ public interface ApplicationProperties extends Observable, Cloneable {
     CameraProperties getCameraProperties();
     ViewPyramidProperties getViewPyramidProperties();
 
+    Grid getGrid();
+
     PaintedFigure getScene();
     void setScene(PaintedFigure scene);
 

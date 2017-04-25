@@ -7,24 +7,36 @@ import ru.nsu.fit.g14205.batalin.models.observe.ObserveEvent;
 /**
  * Created by kir55rus on 12.04.17.
  */
-public class Grid extends ObservableBase implements Observable {
+public class Grid extends ObservableBase implements Observable, Cloneable {
     private int cols;
     private int rows;
+    private int segmentSplitting;
 
     public enum Event implements ObserveEvent {
         SIZE_CHANGED,
+        SEGMENT_SPLITTING_CHANGED,
     }
 
-    public Grid(int cols, int rows) {
+    public Grid() {
+    }
+
+    public Grid(int cols, int rows, int segmentSplitting) {
         if (!checkSize(cols) || !checkSize(rows)) {
             throw new IllegalArgumentException("Cols and rows must be > 0");
         }
 
         this.cols = cols;
         this.rows = rows;
+        this.segmentSplitting = segmentSplitting;
     }
 
-    public Grid() {
+    public int getSegmentSplitting() {
+        return segmentSplitting;
+    }
+
+    public void setSegmentSplitting(int segmentSplitting) {
+        this.segmentSplitting = segmentSplitting;
+        notifyObservers(Event.SEGMENT_SPLITTING_CHANGED);
     }
 
     public int getCols() {
@@ -47,5 +59,13 @@ public class Grid extends ObservableBase implements Observable {
 
     public boolean checkSize(int value) {
         return value > 0;
+    }
+
+    @Override
+    public Grid clone() throws CloneNotSupportedException {
+        Grid grid = (Grid) super.clone();
+        grid.rows = this.rows;
+        grid.cols = this.cols;
+        return grid;
     }
 }
