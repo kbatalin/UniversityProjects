@@ -16,6 +16,7 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
     private double betaAngle;
     private double thetaAngle;
     private Matrix transformMatrix;
+    private Matrix rotationMatrix;
 
     public enum Event implements ObserveEvent {
         CENTER_CHANGED,
@@ -113,13 +114,18 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
                 0, 0, 0, 1
         });
 
-        transformMatrix = offset.multiply(zRotate.multiply(yRotate.multiply(xRotate)));
+        rotationMatrix = zRotate.multiply(yRotate.multiply(xRotate));
+        transformMatrix = offset.multiply(rotationMatrix);
     }
 
     public void setCenter(Point3D center) {
         this.center = center;
         updTransformMatrix();
         notifyObservers(Event.CENTER_CHANGED);
+    }
+
+    public Matrix getRotationMatrix() {
+        return rotationMatrix;
     }
 
     public Matrix getTransformMatrix() {
