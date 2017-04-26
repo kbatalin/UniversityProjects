@@ -6,6 +6,7 @@ import ru.nsu.fit.g14205.batalin.views.LineEditorContentView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
@@ -175,6 +176,26 @@ public class EditorController {
     public void onShSpinnerChanged(double value) {
         ViewPyramidProperties viewPyramid = applicationProperties.getViewPyramidProperties();
         viewPyramid.setFrontPlaneHeight(value);
+    }
+
+    public void onShowRisksCheckBoxChanged(ActionEvent actionEvent) {
+        Object sourceObj = actionEvent.getSource();
+        if (!(sourceObj instanceof JToggleButton)) {
+            return;
+        }
+
+        JToggleButton button = (JToggleButton) sourceObj;
+        editorModel.setRisksShown(button.isSelected());
+    }
+
+    public void onShowControlPointsCheckBoxChanged(ActionEvent actionEvent) {
+        Object sourceObj = actionEvent.getSource();
+        if (!(sourceObj instanceof JToggleButton)) {
+            return;
+        }
+
+        JToggleButton button = (JToggleButton) sourceObj;
+        editorModel.setControlPointsShown(button.isSelected());
     }
 
     public void onAlphaSpinnerChanged(double value) {

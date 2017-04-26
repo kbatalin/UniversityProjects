@@ -14,11 +14,15 @@ public class EditorModel extends ObservableBase implements Observable {
     private Point2D offset;
     private int currentFigure;
     private ApplicationProperties applicationProperties;
+    private boolean isRisksShown;
+    private boolean isControlPointsShown;
 
     public enum Event implements ObserveEvent {
         ZOOM_CHANGED,
         ACTIVE_LINE_CHANGED,
         OFFSET_CHANGED,
+        RISKS_SHOWN_CHANGES,
+        CONTROL_POINTS_SHOWN_CHENGED,
     }
 
     public EditorModel(ApplicationProperties applicationProperties) {
@@ -26,6 +30,26 @@ public class EditorModel extends ObservableBase implements Observable {
         zoom = 100;
         currentFigure = 0;
         offset = new Point2D.Double(0, 0);
+        isRisksShown = true;
+        isControlPointsShown = true;
+    }
+
+    public boolean isRisksShown() {
+        return isRisksShown;
+    }
+
+    public void setRisksShown(boolean risksShown) {
+        isRisksShown = risksShown;
+        notifyObservers(Event.RISKS_SHOWN_CHANGES);
+    }
+
+    public boolean isControlPointsShown() {
+        return isControlPointsShown;
+    }
+
+    public void setControlPointsShown(boolean controlPointsShown) {
+        isControlPointsShown = controlPointsShown;
+        notifyObservers(Event.CONTROL_POINTS_SHOWN_CHENGED);
     }
 
     public Point2D getOffset() {

@@ -40,6 +40,8 @@ public class EditorDialog extends JDialog {
     private JSpinner betaSpinner;
     private JSpinner cZSpinner;
     private JSpinner thetaSpinner;
+    private JCheckBox showRisksCheckBox;
+    private JCheckBox showControlPointsCheckBox;
     private boolean result;
 
     public EditorDialog(EditorController editorController) {
@@ -204,6 +206,9 @@ public class EditorDialog extends JDialog {
         SpinnerNumberModel thetaSpinnerModel = new SpinnerNumberModel(coordinateSystem.getThetaAngle() * 180 / Math.PI, 0., 360., 0.5);
         thetaSpinner.setModel(thetaSpinnerModel);
         thetaSpinner.addChangeListener(changeEvent -> editorController.onThetaSpinnerChanged(thetaSpinnerModel.getNumber().doubleValue()));
+
+        showRisksCheckBox.addActionListener(editorController::onShowRisksCheckBoxChanged);
+        showControlPointsCheckBox.addActionListener(editorController::onShowControlPointsCheckBoxChanged);
     }
 
     private void initAreaSpinners() {

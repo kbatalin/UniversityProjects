@@ -62,6 +62,9 @@ public class LineEditorContentView extends JPanel {
                 editorController.onMouseDragged(mouseEvent);
             }
         });
+
+        editorModel.addObserver(EditorModel.Event.RISKS_SHOWN_CHANGES, this::repaint);
+        editorModel.addObserver(EditorModel.Event.CONTROL_POINTS_SHOWN_CHENGED, this::repaint);
     }
 
     @Override
@@ -75,9 +78,51 @@ public class LineEditorContentView extends JPanel {
 
         paintLine(image);
 
-        paintControlPoints(image);
+        if (editorModel.isRisksShown()) {
+            paintLineRisks(image);
+        }
+
+        if (editorModel.isControlPointsShown()) {
+            paintControlPoints(image);
+        }
 
         graphics.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), null);
+    }
+
+    private void paintLineRisks(BufferedImage image) {
+        Graphics2D graphics = image.createGraphics();
+
+        int zoom = editorModel.getZoom();
+        double ratio = editorModel.getDefaultSize() / 100. * zoom;
+        Point2D offset = editorModel.getOffset();
+        Dimension size = getSize();
+        Area area = applicationProperties.getArea();
+
+        int currentLine = editorModel.getCurrentFigure();
+        FigureProperties figureProperties = applicationProperties.getFigureProperties().get(currentLine);
+        LineProperties lineProperties = figureProperties.getLineProperties();
+
+        int riskSize = 6;
+        double dt = 1. / (lineProperties.getControlPointsCount() - 1);
+        for(double t = 0.; Double.compare(t, 1.) <= 0; t += dt) {
+            Point2D pos = lineProperties.getPoint(t);
+            if (pos == null) {
+                continue;
+            }
+            int x = (int)Math.round(pos.getX() * ratio + size.getWidth() / 2 + offset.getX() * ratio);
+            int y = (int)Math.round(size.getHeight() - pos.getY() * ratio - size.getHeight() / 2 + offset.getY() * ratio);
+            if (x < 0 || x >= image.getWidth() || y < 0 || y >= image.getHeight()) {
+                continue;
+            }
+
+            if(t < area.first.getX() || t > area.second.getX()) {
+                graphics.setPaint(Color.GRAY);
+            } else {
+                graphics.setPaint(Color.RED);
+            }
+
+            graphics.fillOval(x - riskSize / 2, y - riskSize / 2, riskSize, riskSize);
+        }
     }
 
     private void paintCoordinateAxes(BufferedImage image) {
