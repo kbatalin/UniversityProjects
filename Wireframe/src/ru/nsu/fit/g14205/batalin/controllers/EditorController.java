@@ -7,7 +7,9 @@ import ru.nsu.fit.g14205.batalin.views.LineEditorContentView;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
 /**
  * Created by kir55rus on 12.04.17.
@@ -203,18 +205,81 @@ public class EditorController {
         LineProperties lineProperties = figureProperties.getLineProperties();
         Point2D pos = pixel2Point(mouseEvent.getPoint());
         int controlPointIndex = lineProperties.getControlPointId(pos);
-        if (controlPointIndex == -1) {
-            lineProperties.addControlPoint(pos);
-            activeControlPoint = lineProperties.getControlPointsCount() - 1;
+
+        if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+            if (controlPointIndex != -1) {
+                lineProperties.delControlPoint(controlPointIndex);
+            }
             return;
         }
 
-        if(mouseEvent.getButton() == MouseEvent.BUTTON1) {
+        if (controlPointIndex != -1) {
             activeControlPoint = controlPointIndex;
-        } else if(mouseEvent.getButton() == MouseEvent.BUTTON3) {
-            activeControlPoint = -1;
-            lineProperties.delControlPoint(controlPointIndex);
+            return;
         }
+
+        Point2D prevPos = null;
+        Iterator<Point2D> controlPointIterator = lineProperties.getControlPointsIterator();
+        while (controlPointIterator.hasNext()) {
+            Point2D currentPos = controlPointIterator.next();
+
+            if (prevPos == null) {
+                prevPos = currentPos;
+                continue;
+            }
+
+            double distanceToSegment = distance(pos.getX(), pos.getY(), prevPos.getX(), prevPos.getY(), currentPos.getX(), currentPos.getY());
+            if (Double.compare(distanceToSegment, applicationProperties.getControlPointRadius()) <= 0) {
+                int index = lineProperties.getControlPointId(prevPos);
+                if (index == -1) {
+                    index = lineProperties.getControlPointId(currentPos);
+                } else {
+                    ++index;
+                }
+                if (index != -1) {
+                    lineProperties.addControlPoint(index, pos);
+                    activeControlPoint = index;
+                    return;
+                }
+            }
+            prevPos = currentPos;
+        }
+
+        lineProperties.addControlPoint(pos);
+        activeControlPoint = lineProperties.getControlPointsCount() - 1;
+    }
+
+    private double distance(double x, double y, double x1, double y1, double x2, double y2) {
+        double A = x - x1;
+        double B = y - y1;
+        double C = x2 - x1;
+        double D = y2 - y1;
+
+        double dot = A * C + B * D;
+        double len_sq = C * C + D * D;
+        double param = -1;
+        if (len_sq != 0) //in case of 0 length line
+            param = dot / len_sq;
+
+        double xx;
+        double yy;
+
+        if (param < 0) {
+            xx = x1;
+            yy = y1;
+        }
+        else if (param > 1) {
+            xx = x2;
+            yy = y2;
+        }
+        else {
+            xx = x1 + param * C;
+            yy = y1 + param * D;
+        }
+
+        double dx = x - xx;
+        double dy = y - yy;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     public void onMouseDragged(MouseEvent mouseEvent) {

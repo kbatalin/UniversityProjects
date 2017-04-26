@@ -108,6 +108,13 @@ public class BSplineProperties extends ObservableBase implements LineProperties 
     }
 
     @Override
+    public void addControlPoint(int index, Point2D pos) {
+        controlPoints.add(index, pos);
+        afterControlPointChanging();
+        notifyObservers(Event.CONTROL_POINTS_CHANGED);
+    }
+
+    @Override
     public void delControlPoint(int id) {
         controlPoints.remove(id);
         afterControlPointChanging();

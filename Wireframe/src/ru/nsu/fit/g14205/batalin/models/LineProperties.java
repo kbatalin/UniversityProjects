@@ -19,6 +19,7 @@ public interface LineProperties extends Observable, Cloneable {
     Iterator<Point2D> getControlPointsIterator();
     int getControlPointsCount();
     void addControlPoint(Point2D pos);
+    void addControlPoint(int index, Point2D pos);
     void delControlPoint(int id);
 
     Point2D getPoint(double t);
