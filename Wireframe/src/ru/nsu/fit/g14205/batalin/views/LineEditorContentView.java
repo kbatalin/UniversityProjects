@@ -102,6 +102,10 @@ public class LineEditorContentView extends JPanel {
         FigureProperties figureProperties = applicationProperties.getFigureProperties().get(currentLine);
         LineProperties lineProperties = figureProperties.getLineProperties();
 
+        if (lineProperties.getControlPointsCount() < 1) {
+            return;
+        }
+
         int riskSize = 6;
         double dt = 1. / (lineProperties.getControlPointsCount() - 1);
         for(double t = 0.; Double.compare(t, 1.) <= 0; t += dt) {
