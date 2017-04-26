@@ -4,6 +4,7 @@ import ru.nsu.fit.g14205.batalin.models.*;
 import ru.nsu.fit.g14205.batalin.views.EditorDialog;
 import ru.nsu.fit.g14205.batalin.views.LineEditorContentView;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
@@ -15,6 +16,7 @@ public class EditorController {
     private WireframeController wireframeController;
     private ApplicationProperties applicationProperties;
     private EditorModel editorModel;
+    private Point prevPos;
 
     private EditorDialog dialog;
 
@@ -192,6 +194,11 @@ public class EditorController {
     }
 
     public void onMousePressed(MouseEvent mouseEvent) {
+        if (SwingUtilities.isMiddleMouseButton(mouseEvent)) {
+            prevPos = mouseEvent.getPoint();
+            return;
+        }
+
         FigureProperties figureProperties = applicationProperties.getFigureProperties().get(editorModel.getCurrentFigure());
         LineProperties lineProperties = figureProperties.getLineProperties();
         Point2D pos = pixel2Point(mouseEvent.getPoint());
@@ -211,6 +218,23 @@ public class EditorController {
     }
 
     public void onMouseDragged(MouseEvent mouseEvent) {
+        if (SwingUtilities.isMiddleMouseButton(mouseEvent)) {
+            if (prevPos == null) {
+                prevPos = mouseEvent.getPoint();
+                return;
+            }
+            double ratio = editorModel.getDefaultSize() / 100. * editorModel.getZoom();
+            Point pos = mouseEvent.getPoint();
+            Point2D offset = editorModel.getOffset();
+            Point2D newOffset = new Point2D.Double(
+                    offset.getX() + (pos.getX() - prevPos.getX()) / ratio,
+                    offset.getY() + (pos.getY() - prevPos.getY()) / ratio
+            );
+            editorModel.setOffset(newOffset);
+            prevPos = pos;
+            return;
+        }
+
         if (activeControlPoint == -1) {
             return;
         }
@@ -222,16 +246,18 @@ public class EditorController {
     }
 
     public void onMouseReleased(MouseEvent mouseEvent) {
+        prevPos = null;
         activeControlPoint = -1;
     }
 
     private Point2D pixel2Point(Point pos) {
         int zoom = editorModel.getZoom();
         double ratio = editorModel.getDefaultSize() / 100. * zoom;
+        Point2D offset = editorModel.getOffset();
         LineEditorContentView lineEditorContentView = dialog.getLineEditorContentView();
         Dimension size = lineEditorContentView.getSize();
-        double x = (pos.getX() - size.getWidth() / 2) / ratio;
-        double y = (size.getHeight() / 2 - pos.getY()) / ratio;
+        double x = (pos.getX() - size.getWidth() / 2) / ratio - offset.getX();
+        double y = (size.getHeight() / 2 - pos.getY()) / ratio + offset.getY();
 
         return new Point2D.Double(x, y);
     }

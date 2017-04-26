@@ -42,6 +42,7 @@ public class LineEditorContentView extends JPanel {
         editorModel.addObserver(EditorModel.Event.ACTIVE_LINE_CHANGED, this::repaint);
         editorModel.addObserver(EditorModel.Event.ZOOM_CHANGED, this::repaint);
         applicationProperties.addObserver(ApplicationProperties.Event.AREA_CHANGED, this::repaint);
+        editorModel.addObserver(EditorModel.Event.OFFSET_CHANGED, this::repaint);
 
         addMouseListener(new MouseAdapter() {
             @Override
@@ -83,8 +84,11 @@ public class LineEditorContentView extends JPanel {
         Graphics2D graphics = image.createGraphics();
         graphics.setPaint(Color.GRAY);
 
-        int widthCenter = image.getWidth() / 2;
-        int heightCenter = image.getHeight() / 2;
+        double ratio = editorModel.getDefaultSize() / 100. * editorModel.getZoom();
+
+        Point2D offset = editorModel.getOffset();
+        int widthCenter = (int) Math.round(image.getWidth() / 2. + offset.getX() * ratio);
+        int heightCenter = (int) Math.round(image.getHeight() / 2. + offset.getY() * ratio);
         graphics.drawLine(0, heightCenter, image.getWidth(), heightCenter);
         graphics.drawLine(widthCenter, 0, widthCenter, image.getHeight());
 
@@ -112,14 +116,15 @@ public class LineEditorContentView extends JPanel {
 
         int lineColor = lineProperties.getColor().getRGB();
 
+        Point2D offset = editorModel.getOffset();
         double dt = 1 / (lineProperties.getLength() * ratio * 10);
         for(double t = 0.; Double.compare(t, 1.) <= 0; t += dt) {
             Point2D pos = lineProperties.getPoint(t);
             if (pos == null) {
                 continue;
             }
-            int x = (int)Math.round(pos.getX() * ratio + size.getWidth() / 2);
-            int y = (int)Math.round(size.getHeight() - pos.getY() * ratio - size.getHeight() / 2);
+            int x = (int)Math.round(pos.getX() * ratio + size.getWidth() / 2 + offset.getX() * ratio);
+            int y = (int)Math.round(size.getHeight() - pos.getY() * ratio - size.getHeight() / 2 + offset.getY() * ratio);
             if (x < 0 || x >= image.getWidth() || y < 0 || y >= image.getHeight()) {
                 continue;
             }
@@ -142,13 +147,14 @@ public class LineEditorContentView extends JPanel {
 
         Dimension size = getSize();
         double ratio = editorModel.getDefaultSize() / 100. * zoom;
+        Point2D offset = editorModel.getOffset();
 
         int ovalSize = (int)Math.round(applicationProperties.getControlPointRadius() * ratio) * 2;
         Iterator<Point2D> controlPointsIterator = lineProperties.getControlPointsIterator();
         while (controlPointsIterator.hasNext()) {
             Point2D pos = controlPointsIterator.next();
-            int x = (int)Math.round(pos.getX() * ratio + size.getWidth() / 2 - ovalSize / 2);
-            int y = (int)Math.round(size.getHeight() - pos.getY() * ratio - size.getHeight() / 2 - ovalSize / 2);
+            int x = (int)Math.round(pos.getX() * ratio + size.getWidth() / 2 - ovalSize / 2 + offset.getX() * ratio);
+            int y = (int)Math.round(size.getHeight() - pos.getY() * ratio - size.getHeight() / 2 - ovalSize / 2 + offset.getY() * ratio);
             graphics.drawOval(x, y, ovalSize, ovalSize);
         }
     }
