@@ -122,6 +122,33 @@ public class WorkspaceView extends JComponent {
 
         drawSegments(graphics, figure, transformMatrix, displayTransform);
         drawAxes(graphics, transformMatrix, displayTransform);
+//        drawOutboardBox(graphics, figure, csTransform, displayTransform);
+    }
+
+    private void drawOutboardBox(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
+        Parallelepiped box = figure.getOutboardBox();
+        Point3D a = box.getPos();
+        Point3D b = new Point3D(a.getX(), a.getY() + box.getHeight(), a.getZ());
+        Point3D c = new Point3D(b.getX() + box.getWidth(), b.getY(), b.getZ());
+        Point3D d = new Point3D(a.getX() + box.getWidth(), a.getY(), a.getZ());
+        Point3D e = new Point3D(a.getX(), a.getY(), a.getZ() + box.getDepth());
+        Point3D f = new Point3D(b.getX(), b.getY(), b.getZ() + box.getDepth());
+        Point3D g = new Point3D(c.getX(), c.getY(), c.getZ() + box.getDepth());
+        Point3D h = new Point3D(d.getX(), d.getY(), d.getZ() + box.getDepth());
+
+        graphics.setColor(Color.GRAY);
+        drawSegment(graphics, new Segment(a, b), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(a, d), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(b, c), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(d, c), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(a, e), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(b, f), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(c, g), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(d, h), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(e, h), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(e, f), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(g, f), csTransform, displayTransform);
+        drawSegment(graphics, new Segment(g, h), csTransform, displayTransform);
     }
 
     private void drawSegments(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
