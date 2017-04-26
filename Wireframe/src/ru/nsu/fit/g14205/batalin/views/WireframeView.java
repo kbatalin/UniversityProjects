@@ -74,7 +74,7 @@ public class WireframeView extends JFrame {
         JMenu viewMenu = buttonsManager.addMenu(null, "View");
         buttonsManager.addItem(viewMenu, "Reset", "Reset", "document.png", wireframeController::onInitButtonClicked);
         buttonsManager.addToggleItem(viewMenu, "Clipping", "Clipping", "view.png", true, wireframeController::onClippingButtonClicked);
-//        buttonsManager.addToggleItem(viewMenu, "Show outboard box", "Show outboard box", "archive.png", false, wireframeController::onShowOutboardBoxButtonClicked);
+        buttonsManager.addToggleItem(viewMenu, "Show outboard box", "Show outboard box", "archive.png", false, wireframeController::onShowOutboardBoxButtonClicked);
 
     }
 
