@@ -139,7 +139,7 @@ public class LineEditorContentView extends JPanel {
 
     private void paintControlPoints(BufferedImage image) {
         Graphics2D graphics = image.createGraphics();
-        graphics.setColor(Color.WHITE);
+        graphics.setColor(Color.CYAN);
         int zoom = editorModel.getZoom();
         int currentLine = editorModel.getCurrentFigure();
         FigureProperties figureProperties = applicationProperties.getFigureProperties().get(currentLine);
@@ -149,12 +149,19 @@ public class LineEditorContentView extends JPanel {
         double ratio = editorModel.getDefaultSize() / 100. * zoom;
         Point2D offset = editorModel.getOffset();
 
+        Point prevPos = null;
         int ovalSize = (int)Math.round(applicationProperties.getControlPointRadius() * ratio) * 2;
         Iterator<Point2D> controlPointsIterator = lineProperties.getControlPointsIterator();
         while (controlPointsIterator.hasNext()) {
             Point2D pos = controlPointsIterator.next();
             int x = (int)Math.round(pos.getX() * ratio + size.getWidth() / 2 - ovalSize / 2 + offset.getX() * ratio);
             int y = (int)Math.round(size.getHeight() - pos.getY() * ratio - size.getHeight() / 2 - ovalSize / 2 + offset.getY() * ratio);
+
+            if (prevPos != null) {
+                graphics.drawLine(x + ovalSize / 2, y + ovalSize / 2, prevPos.x + ovalSize / 2, prevPos.y + ovalSize / 2);
+            }
+            prevPos = new Point(x, y);
+
             graphics.drawOval(x, y, ovalSize, ovalSize);
         }
     }
