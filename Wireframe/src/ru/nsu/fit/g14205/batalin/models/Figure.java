@@ -120,6 +120,10 @@ public class Figure extends ObservableBase implements PaintedFigure {
 
             Point3D a = box.getPos();
             Point3D b = new Point3D(a.getX() + box.getWidth(), a.getY() + box.getHeight(), a.getZ() + box.getDepth());
+            Matrix transformMatrix = figure.getFigureProperties().getCoordinateSystem().getTransformMatrix();
+            a = new Point3D(transformMatrix.multiply(a.toMatrix4()).subMatrix(0, 0, 1, 3));
+            b = new Point3D(transformMatrix.multiply(b.toMatrix4()).subMatrix(0, 0, 1, 3));
+
             Point3D figureMin = Point3D.createMin(a, b);
             Point3D figureMax = Point3D.createMax(a, b);
             min = Point3D.createMin(figureMin, min);

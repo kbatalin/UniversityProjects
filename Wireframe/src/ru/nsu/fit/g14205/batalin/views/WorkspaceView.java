@@ -122,7 +122,7 @@ public class WorkspaceView extends JComponent {
 
         drawSegments(graphics, figure, transformMatrix, displayTransform);
         drawAxes(graphics, transformMatrix, displayTransform);
-//        drawOutboardBox(graphics, figure, csTransform, displayTransform);
+        drawOutboardBox(graphics, figure, transformMatrix, displayTransform);
     }
 
     private void drawOutboardBox(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
