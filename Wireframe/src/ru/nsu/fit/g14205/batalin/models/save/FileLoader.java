@@ -78,7 +78,7 @@ public class FileLoader implements Loader {
                     r31, r32, r33, 0,
                     0, 0, 0, 1
             });
-            applicationProperties.getScene().getFigureProperties().getCoordinateSystem().setTransformMatrix(sceneMatrix);
+            applicationProperties.getScene().getFigureProperties().getCoordinateSystem().setRotationMatrix(sceneMatrix);
 
             strData = nextData(scanner);
             int red = Integer.parseInt(strData[0]);
@@ -134,19 +134,13 @@ public class FileLoader implements Loader {
                 FigureProperties figureProperties = new FigurePropertiesDefault(lineProperties);
                 figureProperties.getCoordinateSystem().setCenter(new Point3D(cX, cY, cZ));
 
-                Matrix transformMatrix = new Matrix(4, 4, new double[]{
+                Matrix rotationMatrix = new Matrix(4, 4, new double[]{
                         r11, r12, r13, 0,
                         r21, r22, r23, 0,
                         r31, r32, r33, 0,
                         0, 0, 0, 1
                 });
-                transformMatrix = new Matrix(4, 4, new double[]{
-                        1, 0, 0, cX,
-                        0, 1, 0, cY,
-                        0, 0, 1, cZ,
-                        0, 0, 0, 1,
-                }).multiply(transformMatrix);
-                figureProperties.getCoordinateSystem().setTransformMatrix(transformMatrix);
+                figureProperties.getCoordinateSystem().setRotationMatrix(rotationMatrix);
 
                 applicationProperties.addFigureProperties(figureProperties);
             }

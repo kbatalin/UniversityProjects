@@ -132,8 +132,33 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
         return transformMatrix;
     }
 
-    public void setTransformMatrix(Matrix transformMatrix) {
-        this.transformMatrix = transformMatrix;
+    private void updCorners() {
+        if (rotationMatrix == null) {
+            alphaAngle = 0;
+            betaAngle = 0;
+            thetaAngle = 0;
+            return;
+        }
+
+        alphaAngle = Math.atan2(rotationMatrix.get(1, 2), rotationMatrix.get(2, 2));
+        betaAngle = Math.atan2(-rotationMatrix.get(0, 2),
+                Math.sqrt(
+                        rotationMatrix.get(1, 2) * rotationMatrix.get(1, 2)
+                                + rotationMatrix.get(2, 2) * rotationMatrix.get(2, 2)));
+        thetaAngle = Math.atan2(rotationMatrix.get(0, 1), rotationMatrix.get(0, 0));
+    }
+
+    public void setRotationMatrix(Matrix rotationMatrix) {
+        this.rotationMatrix = rotationMatrix;
+        updCorners();
+        Matrix offset = new Matrix(4, 4, new double[]{
+                1, 0, 0, center.getX(),
+                0, 1, 0, center.getY(),
+                0, 0, 1, center.getZ(),
+                0, 0, 0, 1
+        });
+        transformMatrix = offset.multiply(rotationMatrix);
+
         notifyObservers(Event.ROTATION_CHANGED);
     }
 }

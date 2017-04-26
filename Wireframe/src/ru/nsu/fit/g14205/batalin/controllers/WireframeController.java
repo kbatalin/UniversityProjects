@@ -116,11 +116,11 @@ public class WireframeController {
             });
         }
 
-        Matrix rotation = rotateY.multiply(rotateX);
+        Matrix mouseRotation = rotateY.multiply(rotateX);
         CoordinateSystem coordinateSystem = applicationProperties.getScene().getFigureProperties().getCoordinateSystem();
-        Matrix transform = coordinateSystem.getTransformMatrix();
-        transform = rotation.multiply(transform);
-        coordinateSystem.setTransformMatrix(transform);
+        Matrix csRotation = coordinateSystem.getRotationMatrix();
+        csRotation = mouseRotation.multiply(csRotation);
+        coordinateSystem.setRotationMatrix(csRotation);
 
         prevPos = pos;
     }
@@ -172,7 +172,7 @@ public class WireframeController {
     }
 
     public void onInitButtonClicked(ActionEvent actionEvent) {
-        applicationProperties.getScene().getFigureProperties().getCoordinateSystem().setTransformMatrix(new Matrix(4, 4, new double[]{
+        applicationProperties.getScene().getFigureProperties().getCoordinateSystem().setRotationMatrix(new Matrix(4, 4, new double[]{
                 1, 0, 0, 0,
                 0, 1, 0, 0,
                 0, 0, 1, 0,

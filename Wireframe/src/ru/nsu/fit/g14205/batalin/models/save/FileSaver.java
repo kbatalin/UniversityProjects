@@ -45,7 +45,7 @@ public class FileSaver implements Saver {
             writer.write(String.valueOf(pyramid.getFrontPlaneWidth()) + " " + pyramid.getFrontPlaneHeight() + lineSeparator);
 
             //scene matrix
-            Matrix sceneMatrix = applicationProperties.getScene().getFigureProperties().getCoordinateSystem().getTransformMatrix();
+            Matrix sceneMatrix = applicationProperties.getScene().getFigureProperties().getCoordinateSystem().getRotationMatrix();
             writer.write(String.valueOf(sceneMatrix.get(0,0)) + " " + sceneMatrix.get(1,0) + " " + sceneMatrix.get(2,0) + lineSeparator);
             writer.write(String.valueOf(sceneMatrix.get(0,1)) + " " + sceneMatrix.get(1,1) + " " + sceneMatrix.get(2,1) + lineSeparator);
             writer.write(String.valueOf(sceneMatrix.get(0,2)) + " " + sceneMatrix.get(1,2) + " " + sceneMatrix.get(2,2) + lineSeparator);
