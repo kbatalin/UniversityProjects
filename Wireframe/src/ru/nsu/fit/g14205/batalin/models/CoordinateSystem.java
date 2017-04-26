@@ -29,9 +29,9 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
 
     public CoordinateSystem(Point3D center, double alphaAngle, double betaAngle, double thetaAngle) {
         this.center = center;
-        this.alphaAngle = alphaAngle;
-        this.betaAngle = betaAngle;
-        this.thetaAngle = thetaAngle;
+        this.alphaAngle = alphaAngle + 0.;
+        this.betaAngle = betaAngle + 0.;
+        this.thetaAngle = thetaAngle + 0.;
         updTransformMatrix();
     }
 
@@ -54,7 +54,7 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
     }
 
     public void setAlphaAngle(double alphaAngle) {
-        this.alphaAngle = alphaAngle;
+        this.alphaAngle = alphaAngle + 0.;
         updTransformMatrix();
         notifyObservers(Event.ROTATION_CHANGED);
     }
@@ -64,7 +64,7 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
     }
 
     public void setBetaAngle(double betaAngle) {
-        this.betaAngle = betaAngle;
+        this.betaAngle = betaAngle + 0.;
         updTransformMatrix();
         notifyObservers(Event.ROTATION_CHANGED);
     }
@@ -74,7 +74,7 @@ public class CoordinateSystem extends ObservableBase implements Observable, Clon
     }
 
     public void setThetaAngle(double thetaAngle) {
-        this.thetaAngle = thetaAngle;
+        this.thetaAngle = thetaAngle + 0.;
         updTransformMatrix();
         notifyObservers(Event.ROTATION_CHANGED);
     }

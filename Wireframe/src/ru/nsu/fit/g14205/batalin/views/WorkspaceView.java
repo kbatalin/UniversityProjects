@@ -195,7 +195,13 @@ public class WorkspaceView extends JComponent {
         int y0 = (int) Math.round(pos1.get(0, 1));
         int x1 = (int) Math.round(pos2.get(0, 0));
         int y1 = (int) Math.round(pos2.get(0, 1));
-        graphics.drawLine(x0, y0, x1, y1);
+        if (checkDisplayPos(x0, y0) || checkDisplayPos(x1, y1)) {
+            graphics.drawLine(x0, y0, x1, y1);
+        }
+    }
+
+    private boolean checkDisplayPos(int x, int y) {
+        return x >= 0 && y >= 0 && x < getWidth() && y < getHeight();
     }
 
     private Segment clipping(Point3D pos1, Point3D pos2) {
