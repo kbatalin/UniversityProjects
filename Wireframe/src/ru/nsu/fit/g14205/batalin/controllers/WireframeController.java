@@ -125,6 +125,16 @@ public class WireframeController {
         prevPos = pos;
     }
 
+    public void onShowOutboardBoxButtonClicked(ActionEvent actionEvent) {
+        Object sourceObj = actionEvent.getSource();
+        if (!(sourceObj instanceof AbstractButton)) {
+            return;
+        }
+
+        AbstractButton button = (AbstractButton) sourceObj;
+        applicationProperties.setOutboardBoxShown(button.isSelected());
+    }
+
     public void onOpenButtonClicked(ActionEvent actionEvent) {
         int result = fileChooser.showOpenDialog(wireframeView);
 

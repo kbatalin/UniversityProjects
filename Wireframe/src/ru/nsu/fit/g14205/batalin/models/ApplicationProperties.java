@@ -37,6 +37,9 @@ public interface ApplicationProperties extends Observable, Cloneable {
     boolean isClippingEnabled();
     void setClippingEnabled(boolean enable);
 
+    boolean isOutboardBoxShown();
+    void setOutboardBoxShown(boolean visible);
+
     enum Event implements ObserveEvent {
         FIGURE_PROPERTIES_ADDED,
         FIGURE_PROPERTIES_REMOVED,
@@ -44,5 +47,6 @@ public interface ApplicationProperties extends Observable, Cloneable {
         SCENE_CHANGED,
         BACKGROUND_COLOR_CHANGED,
         CLIPPING_ENABLED_CHANGED,
+        OUTBOARD_BOX_SHOWN_CHANGED,
     }
 }

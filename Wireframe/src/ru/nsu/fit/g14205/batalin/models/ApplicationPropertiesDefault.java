@@ -20,6 +20,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
     private Grid grid;
     private Color backgroundColor;
     private boolean clippingEnabled;
+    private boolean outboardBox;
 
     public ApplicationPropertiesDefault() {
         controlPointRadius = .3;
@@ -33,6 +34,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
         scene = new Figure(sceneProperties);
         backgroundColor = Color.BLACK;
         clippingEnabled = true;
+        outboardBox = false;
 
         grid.addObserver(Grid.Event.SIZE_CHANGED, this::updFigures);
         grid.addObserver(Grid.Event.SEGMENT_SPLITTING_CHANGED, this::updFigures);
@@ -53,6 +55,7 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
         applicationProperties.grid = grid.clone();
         applicationProperties.backgroundColor = new Color(backgroundColor.getRGB());
         applicationProperties.clippingEnabled = clippingEnabled;
+        applicationProperties.outboardBox = outboardBox;
         return applicationProperties;
     }
 
@@ -81,6 +84,18 @@ public class ApplicationPropertiesDefault extends ObservableBase implements Appl
 
         setBackgroundColor(applicationProperties.getBackgroundColor());
         this.setClippingEnabled(applicationProperties.isClippingEnabled());
+        setOutboardBoxShown(applicationProperties.isOutboardBoxShown());
+    }
+
+    @Override
+    public boolean isOutboardBoxShown() {
+        return outboardBox;
+    }
+
+    @Override
+    public void setOutboardBoxShown(boolean outboardBox) {
+        this.outboardBox = outboardBox;
+        notifyObservers(Event.OUTBOARD_BOX_SHOWN_CHANGED);
     }
 
     @Override

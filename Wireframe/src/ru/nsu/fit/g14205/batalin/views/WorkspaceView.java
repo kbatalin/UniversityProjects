@@ -41,6 +41,7 @@ public class WorkspaceView extends JComponent {
 
         applicationProperties.addObserver(ApplicationProperties.Event.BACKGROUND_COLOR_CHANGED, this::repaint);
         applicationProperties.addObserver(ApplicationProperties.Event.CLIPPING_ENABLED_CHANGED, this::repaint);
+        applicationProperties.addObserver(ApplicationProperties.Event.OUTBOARD_BOX_SHOWN_CHANGED, this::repaint);
 
         addMouseWheelListener(new MouseAdapter() {
             @Override
@@ -122,7 +123,10 @@ public class WorkspaceView extends JComponent {
 
         drawSegments(graphics, figure, transformMatrix, displayTransform);
         drawAxes(graphics, transformMatrix, displayTransform);
-        drawOutboardBox(graphics, figure, transformMatrix, displayTransform);
+
+        if(wireframeController.getApplicationProperties().isOutboardBoxShown()) {
+            drawOutboardBox(graphics, figure, transformMatrix, displayTransform);
+        }
     }
 
     private void drawOutboardBox(Graphics graphics, PaintedFigure figure, Matrix csTransform, Matrix displayTransform) {
