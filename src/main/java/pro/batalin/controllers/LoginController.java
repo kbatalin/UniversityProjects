@@ -1,8 +1,7 @@
 package pro.batalin.controllers;
 
 import pro.batalin.models.properties.ApplicationProperties;
-import pro.batalin.models.properties.LoginProperties;
-import pro.batalin.views.LoginFrame;
+import pro.batalin.views.LoginDialog;
 
 /**
  * Created by Kirill Batalin (kir55rus).
@@ -11,7 +10,7 @@ public class LoginController {
     private ApplicationProperties applicationProperties;
     private boolean result;
 
-    private LoginFrame loginFrame;
+    private LoginDialog loginDialog;
 
     public LoginController(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
@@ -19,6 +18,9 @@ public class LoginController {
     }
 
     public void run() {
-        loginFrame = new LoginFrame(this);
+        loginDialog = new LoginDialog();
+        loginDialog.pack();
+        loginDialog.setLocationRelativeTo(null);
+        loginDialog.setVisible(true);
     }
 }
