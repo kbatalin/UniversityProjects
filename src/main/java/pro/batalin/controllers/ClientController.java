@@ -22,8 +22,16 @@ public class ClientController {
             return;
         }
 
-//        LoginController loginController = new LoginController(applicationProperties);
-//        loginController.run();
+        //todo: remove
+        applicationProperties.getLoginProperties().setUsername("TEST_USER");
+        applicationProperties.getLoginProperties().setPassword("TEST_PASS");
+
+        LoginController loginController = new LoginController(applicationProperties);
+        loginController.run();
+
+        if (!loginController.isAuthorized()) {
+            return;
+        }
 
         clientGUI = new ClientGUI();
         clientGUI.pack();

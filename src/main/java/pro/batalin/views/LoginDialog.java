@@ -42,6 +42,8 @@ public class LoginDialog extends JDialog {
         hostField.setText(loginProperties.getHostname());
         portField.setText(loginProperties.getPort());
         sidField.setText(loginProperties.getSid());
+        usernameField.setText(loginProperties.getUsername());
+        passwordField.setText(loginProperties.getPassword());
     }
 
     public String getHost() {

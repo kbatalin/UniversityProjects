@@ -5,7 +5,6 @@ import pro.batalin.models.properties.LoginProperties;
 import pro.batalin.views.LoginDialog;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -14,13 +13,13 @@ import java.sql.SQLException;
  */
 public class LoginController {
     private ApplicationProperties applicationProperties;
-    private boolean result;
+    private boolean isAuthorized;
 
     private LoginDialog loginDialog;
 
     public LoginController(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
-        result = false;
+        isAuthorized = false;
     }
 
     public void run() {
@@ -32,6 +31,10 @@ public class LoginController {
 
     public ApplicationProperties getApplicationProperties() {
         return applicationProperties;
+    }
+
+    public boolean isAuthorized() {
+        return isAuthorized;
     }
 
     public void onLoginButtonClicked() {
@@ -46,7 +49,7 @@ public class LoginController {
             Connection connection = loginProperties.getConnection();
 
             if(connection != null) {
-                result = true;
+                isAuthorized = true;
                 loginDialog.dispose();
                 return;
             }
@@ -56,11 +59,11 @@ public class LoginController {
             JOptionPane.showMessageDialog(loginDialog,"Connection error: " + e.getMessage(),"Connection error", JOptionPane.ERROR_MESSAGE);
         }
 
-        result = false;
+        isAuthorized = false;
     }
 
     public void onCancelButtonClicked() {
-        result = false;
+        isAuthorized = false;
         loginDialog.dispose();
     }
 }
