@@ -22,5 +22,7 @@ public class LoginController {
         loginDialog.pack();
         loginDialog.setLocationRelativeTo(null);
         loginDialog.setVisible(true);
+
+
     }
 }

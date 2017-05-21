@@ -12,7 +12,12 @@ public class ClientController {
     private ApplicationProperties applicationProperties;
 
     public void run() {
-        applicationProperties = new ApplicationPropertiesImpl(new LoginPropertiesImpl());
+        try {
+            applicationProperties = new ApplicationPropertiesImpl(new LoginPropertiesImpl());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            return;
+        }
 
         LoginController loginController = new LoginController(applicationProperties);
         loginController.run();
