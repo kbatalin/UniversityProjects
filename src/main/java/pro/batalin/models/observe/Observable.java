@@ -1,4 +1,4 @@
-package ru.nsu.fit.g14205.batalin.models.observe;
+package pro.batalin.models.observe;
 
 /**
  * Created by kir55rus on 27.02.17.

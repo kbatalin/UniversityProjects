@@ -15,6 +15,7 @@ public class ClientController {
         applicationProperties = new ApplicationPropertiesImpl(new LoginPropertiesImpl());
 
         LoginController loginController = new LoginController(applicationProperties);
+        loginController.run();
     }
 
     public ApplicationProperties getApplicationProperties() {
