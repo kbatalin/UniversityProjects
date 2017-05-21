@@ -1,5 +1,9 @@
 package pro.batalin.models.properties;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 /**
  * Created by Kirill Batalin (kir55rus).
  */
@@ -10,15 +14,19 @@ public class LoginPropertiesImpl implements LoginProperties {
     private String username;
     private String password;
 
-    public LoginPropertiesImpl() {
+    public LoginPropertiesImpl() throws ClassNotFoundException {
+        this("localhost", "1521", "xe", null, null);
     }
 
-    public LoginPropertiesImpl(String hostname, String port, String sid, String username, String password) {
+    public LoginPropertiesImpl(String hostname, String port, String sid, String username, String password) throws ClassNotFoundException {
         this.hostname = hostname;
         this.port = port;
         this.sid = sid;
         this.username = username;
         this.password = password;
+
+        //db
+        Class.forName("oracle.jdbc.driver.OracleDriver");
     }
 
     @Override
@@ -74,5 +82,11 @@ public class LoginPropertiesImpl implements LoginProperties {
     @Override
     public String getConnectionString() {
         return "jdbc:oracle:thin:@" + hostname + ":" + port + ":" + sid;
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        String url = getConnectionString();
+        return DriverManager.getConnection(url, username, password);
     }
 }

@@ -8,6 +8,4 @@ import java.sql.SQLException;
  */
 public interface ApplicationProperties {
     LoginProperties getLoginProperties();
-
-    Connection getConnection() throws SQLException;
 }

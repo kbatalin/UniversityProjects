@@ -1,5 +1,8 @@
 package pro.batalin.views;
 
+import pro.batalin.controllers.LoginController;
+import pro.batalin.models.properties.LoginProperties;
+
 import javax.swing.*;
 import java.awt.event.*;
 
@@ -13,37 +16,51 @@ public class LoginDialog extends JDialog {
     private JTextField usernameField;
     private JTextField passwordField;
 
-    public LoginDialog() {
+    public LoginDialog(LoginController loginController) {
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonLogin);
 
-        buttonLogin.addActionListener(e -> onOK());
+        buttonLogin.addActionListener(e -> loginController.onLoginButtonClicked());
 
-        buttonCancel.addActionListener(e -> onCancel());
+        buttonCancel.addActionListener(e -> loginController.onCancelButtonClicked());
 
         // call onCancel() when cross is clicked
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                onCancel();
+                loginController.onCancelButtonClicked();
             }
         });
 
         // call onCancel() on ESCAPE
-        contentPane.registerKeyboardAction(e -> onCancel(),
+        contentPane.registerKeyboardAction(e -> loginController.onCancelButtonClicked(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        LoginProperties loginProperties = loginController.getApplicationProperties().getLoginProperties();
+        hostField.setText(loginProperties.getHostname());
+        portField.setText(loginProperties.getPort());
+        sidField.setText(loginProperties.getSid());
     }
 
-    private void onOK() {
-        // add your code here
-        dispose();
+    public String getHost() {
+        return hostField.getText();
     }
 
-    private void onCancel() {
-        // add your code here if necessary
-        dispose();
+    public String getPort() {
+        return portField.getText();
     }
 
+    public String getSID() {
+        return sidField.getText();
+    }
+
+    public String getUsername() {
+        return usernameField.getText();
+    }
+
+    public String getPassword() {
+        return passwordField.getText();
+    }
 }

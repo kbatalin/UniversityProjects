@@ -10,24 +10,12 @@ import java.sql.SQLException;
 public class ApplicationPropertiesImpl implements ApplicationProperties {
     private LoginProperties loginProperties;
 
-    public ApplicationPropertiesImpl(LoginProperties loginProperties) throws ClassNotFoundException {
+    public ApplicationPropertiesImpl(LoginProperties loginProperties) {
         this.loginProperties = loginProperties;
-
-        //db
-        Class.forName("oracle.jdbc.driver.OracleDriver");
     }
 
     @Override
     public LoginProperties getLoginProperties() {
         return loginProperties;
-    }
-
-    @Override
-    public Connection getConnection() throws SQLException {
-        String url = loginProperties.getConnectionString();
-        String username = loginProperties.getUsername();
-        String password = loginProperties.getPassword();
-
-        return DriverManager.getConnection(url, username, password);
     }
 }

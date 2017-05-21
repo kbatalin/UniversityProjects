@@ -1,5 +1,8 @@
 package pro.batalin.models.properties;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
  * Created by Kirill Batalin (kir55rus).
  */
@@ -25,4 +28,6 @@ public interface LoginProperties {
     void setPassword(String password);
 
     String getConnectionString();
+
+    Connection getConnection() throws SQLException;
 }
