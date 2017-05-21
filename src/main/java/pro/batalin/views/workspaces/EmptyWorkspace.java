@@ -11,12 +11,4 @@ public class EmptyWorkspace extends JPanel {
 
     public EmptyWorkspace() {
     }
-
-    @Override
-    protected void paintComponent(Graphics graphics) {
-        super.paintComponent(graphics);
-
-        graphics.setColor(Color.BLUE);
-        graphics.fillRect(0, 0, getWidth(), getHeight());
-    }
 }
