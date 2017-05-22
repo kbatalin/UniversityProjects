@@ -35,8 +35,7 @@ public class ClientGUI extends JFrame {
         schemasComboBox.removeAllItems();
 
         try {
-            Platform platform = clientController.getApplicationProperties().getPlatform();
-            for (Schema schema : platform.loadSchemas()) {
+            for (Schema schema : clientController.getApplicationProperties().getSchemas().getSchemas()) {
                 schemasComboBox.addItem(schema);
             };
 

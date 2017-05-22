@@ -5,6 +5,7 @@ import pro.batalin.ddl4j.DatabaseOperationException;
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.platforms.Platform;
 import pro.batalin.ddl4j.platforms.PlatformFactoryException;
+import pro.batalin.models.db.Schemas;
 import pro.batalin.models.observe.Observable;
 
 import java.sql.Connection;
@@ -17,7 +18,7 @@ import java.util.List;
 public interface ApplicationProperties extends Observable {
     LoginProperties getLoginProperties();
 
-    List<Schema> getAllSchemas() throws DatabaseOperationException;
+    Schemas getSchemas();
 
     Platform getPlatform() throws PlatformFactoryException, SQLException;
 

@@ -5,6 +5,7 @@ import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.platforms.Platform;
 import pro.batalin.ddl4j.platforms.PlatformFactory;
 import pro.batalin.ddl4j.platforms.PlatformFactoryException;
+import pro.batalin.models.db.Schemas;
 import pro.batalin.models.observe.ObservableBase;
 
 import java.sql.Connection;
@@ -19,9 +20,11 @@ public class ApplicationPropertiesImpl extends ObservableBase implements Applica
     private LoginProperties loginProperties;
     private Platform platform;
     private Connection connection;
+    private Schemas schemas;
 
     public ApplicationPropertiesImpl(LoginProperties loginProperties) throws ClassNotFoundException {
         this.loginProperties = loginProperties;
+        this.schemas = new Schemas(this);
 
         //DB
         Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -33,8 +36,8 @@ public class ApplicationPropertiesImpl extends ObservableBase implements Applica
     }
 
     @Override
-    public List<Schema> getAllSchemas() throws DatabaseOperationException {
-        return null;
+    public Schemas getSchemas() {
+        return schemas;
     }
 
     @Override

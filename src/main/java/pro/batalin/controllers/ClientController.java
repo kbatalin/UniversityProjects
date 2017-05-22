@@ -1,5 +1,6 @@
 package pro.batalin.controllers;
 
+import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.models.properties.ApplicationPropertiesImpl;
 import pro.batalin.models.properties.LoginProperties;
@@ -48,6 +49,19 @@ public class ClientController {
     }
 
     public void onSchemasComboBoxSelected(ActionEvent actionEvent) {
+        Object source = actionEvent.getSource();
+        if (!(source instanceof JComboBox)) {
+            return;
+        }
 
+        JComboBox comboBox = (JComboBox) source;
+        Object selected = comboBox.getSelectedItem();
+        if (!(selected instanceof Schema)) {
+            return;
+        }
+
+        Schema schema = (Schema) selected;
+
+        System.out.println(schema);
     }
 }
