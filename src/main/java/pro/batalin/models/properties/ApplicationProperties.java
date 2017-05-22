@@ -6,6 +6,7 @@ import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.platforms.Platform;
 import pro.batalin.ddl4j.platforms.PlatformFactoryException;
 import pro.batalin.models.db.Schemas;
+import pro.batalin.models.db.Tables;
 import pro.batalin.models.observe.Observable;
 
 import java.sql.Connection;
@@ -19,6 +20,8 @@ public interface ApplicationProperties extends Observable {
     LoginProperties getLoginProperties();
 
     Schemas getSchemas();
+
+    Tables getTables();
 
     Platform getPlatform() throws PlatformFactoryException, SQLException;
 

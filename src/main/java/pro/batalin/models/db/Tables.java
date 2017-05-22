@@ -18,12 +18,12 @@ import java.util.List;
  */
 public class Tables extends ObservableBase implements Observable {
     private ApplicationProperties applicationProperties;
-    private List<String> tables;
+    private List<String> tablesNames;
     private Schema schema;
 
     public Tables(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
-        this.tables = new ArrayList<>();
+        this.tablesNames = new ArrayList<>();
     }
 
     public enum Event implements ObserveEvent {
@@ -32,21 +32,27 @@ public class Tables extends ObservableBase implements Observable {
     }
 
     public void update() throws SQLException, PlatformFactoryException {
-        Platform platform = applicationProperties.getPlatform();
-        List<String> tables = platform.loadTables(schema.getName());
+        if (schema == null) {
+            return;
+        }
 
-        boolean hasChanges = !ListUtils.hasSameItems(tables, this.tables);
+        Platform platform = applicationProperties.getPlatform();
+        List<String> tablesNames = platform.loadTables(schema.getName());
+
+        boolean hasChanges = !ListUtils.hasSameItems(tablesNames, this.tablesNames);
+
+        tablesNames.stream().forEach(System.out::println);
 
         if (!hasChanges) {
             return;
         }
 
-        this.tables = tables;
+        this.tablesNames = tablesNames;
         notifyObservers(Event.TABLES_LIST_CHANGED);
     }
 
     public void update(Schema schema) throws SQLException, PlatformFactoryException {
-        if (!schema.getName().equals(this.schema.getName())) {
+        if (this.schema == null || !schema.getName().equals(this.schema.getName())) {
             this.schema = schema;
             notifyObservers(Event.SCHEMA_CHANGED);
         }
@@ -54,8 +60,9 @@ public class Tables extends ObservableBase implements Observable {
         update();
     }
 
-    public List<String> getTables() {
-        return tables;
+    public List<String> getTablesNames() throws SQLException, PlatformFactoryException {
+        update();
+        return tablesNames;
     }
 
     public Schema getSchema() {

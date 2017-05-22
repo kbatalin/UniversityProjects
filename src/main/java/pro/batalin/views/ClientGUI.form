@@ -58,7 +58,15 @@
             </constraints>
             <properties/>
             <border type="none"/>
-            <children/>
+            <children>
+              <component id="23134" class="javax.swing.JList" binding="tableList">
+                <constraints/>
+                <properties>
+                  <model/>
+                  <selectionMode value="0"/>
+                </properties>
+              </component>
+            </children>
           </scrollpane>
         </children>
       </grid>

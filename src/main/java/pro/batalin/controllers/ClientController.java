@@ -1,6 +1,7 @@
 package pro.batalin.controllers;
 
 import pro.batalin.ddl4j.model.Schema;
+import pro.batalin.ddl4j.platforms.PlatformFactoryException;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.models.properties.ApplicationPropertiesImpl;
 import pro.batalin.models.properties.LoginProperties;
@@ -9,6 +10,7 @@ import pro.batalin.views.ClientGUI;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.sql.SQLException;
 
 /**
  * Created by Kirill Batalin (kir55rus).
@@ -62,6 +64,10 @@ public class ClientController {
 
         Schema schema = (Schema) selected;
 
-        System.out.println(schema);
+        try {
+            applicationProperties.getTables().update(schema);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
