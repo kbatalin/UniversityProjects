@@ -1,5 +1,7 @@
 package pro.batalin.models.properties;
 
+import pro.batalin.models.observe.ObservableBase;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,7 +9,7 @@ import java.sql.SQLException;
 /**
  * Created by Kirill Batalin (kir55rus).
  */
-public class LoginPropertiesImpl implements LoginProperties {
+public class LoginPropertiesImpl extends ObservableBase implements LoginProperties {
     private String hostname;
     private String port;
     private String sid;
@@ -24,9 +26,6 @@ public class LoginPropertiesImpl implements LoginProperties {
         this.sid = sid;
         this.username = username;
         this.password = password;
-
-        //db
-        Class.forName("oracle.jdbc.driver.OracleDriver");
     }
 
     @Override
@@ -84,9 +83,5 @@ public class LoginPropertiesImpl implements LoginProperties {
         return "jdbc:oracle:thin:@" + hostname + ":" + port + ":" + sid;
     }
 
-    @Override
-    public Connection getConnection() throws SQLException {
-        String url = getConnectionString();
-        return DriverManager.getConnection(url, username, password);
-    }
+
 }

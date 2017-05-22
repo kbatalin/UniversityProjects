@@ -6,6 +6,9 @@ import pro.batalin.models.properties.LoginProperties;
 import pro.batalin.models.properties.LoginPropertiesImpl;
 import pro.batalin.views.ClientGUI;
 
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+
 /**
  * Created by Kirill Batalin (kir55rus).
  */
@@ -17,7 +20,8 @@ public class ClientController {
     public void run() {
         try {
             applicationProperties = new ApplicationPropertiesImpl(new LoginPropertiesImpl());
-        } catch (ClassNotFoundException e) {
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null,"Startup error: " + e.getMessage(),"Startup error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             return;
         }
@@ -33,7 +37,7 @@ public class ClientController {
             return;
         }
 
-        clientGUI = new ClientGUI();
+        clientGUI = new ClientGUI(this);
         clientGUI.pack();
         clientGUI.setLocationRelativeTo(null);
         clientGUI.setVisible(true);
@@ -41,5 +45,9 @@ public class ClientController {
 
     public ApplicationProperties getApplicationProperties() {
         return applicationProperties;
+    }
+
+    public void onSchemasComboBoxSelected(ActionEvent actionEvent) {
+
     }
 }

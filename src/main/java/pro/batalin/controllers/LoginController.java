@@ -46,7 +46,7 @@ public class LoginController {
         loginProperties.setPassword(loginDialog.getPassword());
 
         try {
-            Connection connection = loginProperties.getConnection();
+            Connection connection = applicationProperties.getConnection();
 
             if(connection != null) {
                 isAuthorized = true;

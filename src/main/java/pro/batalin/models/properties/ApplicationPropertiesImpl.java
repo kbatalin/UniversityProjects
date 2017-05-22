@@ -1,21 +1,69 @@
 package pro.batalin.models.properties;
 
+import pro.batalin.ddl4j.DatabaseOperationException;
+import pro.batalin.ddl4j.model.Schema;
+import pro.batalin.ddl4j.platforms.Platform;
+import pro.batalin.ddl4j.platforms.PlatformFactory;
+import pro.batalin.ddl4j.platforms.PlatformFactoryException;
+import pro.batalin.models.observe.ObservableBase;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Created by Kirill Batalin (kir55rus).
  */
-public class ApplicationPropertiesImpl implements ApplicationProperties {
+public class ApplicationPropertiesImpl extends ObservableBase implements ApplicationProperties {
     private LoginProperties loginProperties;
+    private Platform platform;
+    private Connection connection;
 
-    public ApplicationPropertiesImpl(LoginProperties loginProperties) {
+    public ApplicationPropertiesImpl(LoginProperties loginProperties) throws ClassNotFoundException {
         this.loginProperties = loginProperties;
+
+        //DB
+        Class.forName("oracle.jdbc.driver.OracleDriver");
     }
 
     @Override
     public LoginProperties getLoginProperties() {
         return loginProperties;
+    }
+
+    @Override
+    public List<Schema> getAllSchemas() throws DatabaseOperationException {
+        return null;
+    }
+
+    @Override
+    public Connection getConnection() throws SQLException {
+        if(connection == null) {
+            synchronized (ApplicationProperties.class) {
+                if (connection == null) {
+                    String url = loginProperties.getConnectionString();
+                    String username = loginProperties.getUsername();
+                    String password = loginProperties.getPassword();
+                    connection = DriverManager.getConnection(url, username, password);
+                }
+            }
+        }
+
+        return connection;
+    }
+
+    @Override
+    public Platform getPlatform() throws SQLException, PlatformFactoryException {
+        if(platform == null) {
+            synchronized (Platform.class) {
+                if (platform == null) {
+                    PlatformFactory factory = new PlatformFactory();
+                    platform = factory.create("ORACLE", getConnection());
+                }
+            }
+        }
+
+        return platform;
     }
 }
