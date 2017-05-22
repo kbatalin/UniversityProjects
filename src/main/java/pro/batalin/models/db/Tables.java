@@ -41,8 +41,6 @@ public class Tables extends ObservableBase implements Observable {
 
         boolean hasChanges = !ListUtils.hasSameItems(tablesNames, this.tablesNames);
 
-        tablesNames.stream().forEach(System.out::println);
-
         if (!hasChanges) {
             return;
         }
