@@ -9,6 +9,7 @@ import pro.batalin.models.properties.LoginPropertiesImpl;
 import pro.batalin.views.ClientGUI;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
 import java.awt.event.ActionEvent;
 import java.sql.SQLException;
 
@@ -64,10 +65,23 @@ public class ClientController {
 
         Schema schema = (Schema) selected;
 
-        try {
-            applicationProperties.getTables().update(schema);
-        } catch (Exception e) {
-            e.printStackTrace();
+        applicationProperties.getSchemas().setSelected(schema);
+    }
+
+    public void onTableSelected(ListSelectionEvent listSelectionEvent) {
+        Object source = listSelectionEvent.getSource();
+        if (!(source instanceof JList)) {
+            return;
         }
+
+        JList jList = (JList) source;
+
+        Object selected = jList.getSelectedValue();
+        if (!(selected instanceof String)) {
+            return;
+        }
+
+        String table = (String) selected;
+        applicationProperties.getTables().setSelected(table);
     }
 }

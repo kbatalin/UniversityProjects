@@ -6,6 +6,7 @@ import pro.batalin.models.db.Schemas;
 import pro.batalin.models.db.Tables;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.views.workspaces.EmptyWorkspace;
+import pro.batalin.views.workspaces.TableViewWorkspace;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,23 +30,20 @@ public class ClientGUI extends JFrame {
 
         setMinimumSize(new Dimension(1000, 700));
 
-        workspacePanel.add(new EmptyWorkspace());
+//        workspacePanel.add(new EmptyWorkspace());
+        workspacePanel.add(new TableViewWorkspace(clientController));
 
         initSchemasComboBox();
         initTableList();
 
         ApplicationProperties applicationProperties = clientController.getApplicationProperties();
-        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMAS_LIST_UPDATED, () -> {
-            initSchemasComboBox();
-            repaint();
-        });
-        applicationProperties.getTables().addObserver(Tables.Event.TABLES_LIST_CHANGED, () -> {
-            initTableList();
-            repaint();
-        });
+
+        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMAS_LIST_CHANGED, this::initSchemasComboBox);
+        applicationProperties.getTables().addObserver(Tables.Event.TABLES_LIST_CHANGED, this::initTableList);
 
 
         schemasComboBox.addActionListener(clientController::onSchemasComboBoxSelected);
+        tableList.addListSelectionListener(clientController::onTableSelected);
     }
 
     private void initSchemasComboBox() {

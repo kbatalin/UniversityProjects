@@ -2,10 +2,12 @@ package pro.batalin.models.properties;
 
 import pro.batalin.ddl4j.DatabaseOperationException;
 import pro.batalin.ddl4j.model.Schema;
+import pro.batalin.ddl4j.model.Table;
 import pro.batalin.ddl4j.platforms.Platform;
 import pro.batalin.ddl4j.platforms.PlatformFactory;
 import pro.batalin.ddl4j.platforms.PlatformFactoryException;
 import pro.batalin.models.db.Schemas;
+import pro.batalin.models.db.TableReport;
 import pro.batalin.models.db.Tables;
 import pro.batalin.models.observe.ObservableBase;
 
@@ -23,11 +25,13 @@ public class ApplicationPropertiesImpl extends ObservableBase implements Applica
     private Connection connection;
     private Schemas schemas;
     private Tables tables;
+    private TableReport tableReport;
 
     public ApplicationPropertiesImpl(LoginProperties loginProperties) throws ClassNotFoundException {
         this.loginProperties = loginProperties;
         this.schemas = new Schemas(this);
         this.tables = new Tables(this);
+        this.tableReport = new TableReport(this);
 
         //DB
         Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -46,6 +50,11 @@ public class ApplicationPropertiesImpl extends ObservableBase implements Applica
     @Override
     public Tables getTables() {
         return tables;
+    }
+
+    @Override
+    public TableReport getTableReport() {
+        return tableReport;
     }
 
     @Override

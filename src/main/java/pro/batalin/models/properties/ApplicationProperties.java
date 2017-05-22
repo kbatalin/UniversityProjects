@@ -3,11 +3,14 @@ package pro.batalin.models.properties;
 
 import pro.batalin.ddl4j.DatabaseOperationException;
 import pro.batalin.ddl4j.model.Schema;
+import pro.batalin.ddl4j.model.Table;
 import pro.batalin.ddl4j.platforms.Platform;
 import pro.batalin.ddl4j.platforms.PlatformFactoryException;
 import pro.batalin.models.db.Schemas;
+import pro.batalin.models.db.TableReport;
 import pro.batalin.models.db.Tables;
 import pro.batalin.models.observe.Observable;
+import pro.batalin.models.observe.ObserveEvent;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,10 +26,12 @@ public interface ApplicationProperties extends Observable {
 
     Tables getTables();
 
+    TableReport getTableReport();
+
     Platform getPlatform() throws PlatformFactoryException, SQLException;
 
     Connection getConnection() throws SQLException;
 
-    enum Event {
+    enum Event implements ObserveEvent {
     }
 }

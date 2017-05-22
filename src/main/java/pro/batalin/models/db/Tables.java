@@ -19,20 +19,36 @@ import java.util.List;
 public class Tables extends ObservableBase implements Observable {
     private ApplicationProperties applicationProperties;
     private List<String> tablesNames;
-    private Schema schema;
+    private String selected;
 
     public Tables(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
         this.tablesNames = new ArrayList<>();
+
+        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, () -> {
+            try {
+                update();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public enum Event implements ObserveEvent {
         TABLES_LIST_CHANGED,
-        SCHEMA_CHANGED,
+        TABLE_SELECTED,
     }
 
     public void update() throws SQLException, PlatformFactoryException {
+        Schema schema = applicationProperties.getSchemas().getSelected();
+        update(schema);
+    }
+
+    public void update(Schema schema) throws SQLException, PlatformFactoryException {
         if (schema == null) {
+            tablesNames.clear();
+            selected = null;
+            notifyObservers(Event.TABLES_LIST_CHANGED);
             return;
         }
 
@@ -49,21 +65,18 @@ public class Tables extends ObservableBase implements Observable {
         notifyObservers(Event.TABLES_LIST_CHANGED);
     }
 
-    public void update(Schema schema) throws SQLException, PlatformFactoryException {
-        if (this.schema == null || !schema.getName().equals(this.schema.getName())) {
-            this.schema = schema;
-            notifyObservers(Event.SCHEMA_CHANGED);
-        }
-
-        update();
-    }
-
     public List<String> getTablesNames() throws SQLException, PlatformFactoryException {
-        update();
         return tablesNames;
     }
 
-    public Schema getSchema() {
-        return schema;
+    public String getSelected() {
+        return selected;
+    }
+
+    public void setSelected(String selected) {
+        if (this.selected == null || !this.selected.equals(selected)) {
+            this.selected = selected;
+            notifyObservers(Event.TABLE_SELECTED);
+        }
     }
 }
