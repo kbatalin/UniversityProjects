@@ -29,7 +29,7 @@ namespace Batalin.Nsudotnet.Enigma
 
         void Run(string[] args)
         {
-            if (args.Length < 2)
+            if (args.Length < 1)
             {
                 Console.WriteLine("encrypt/decrypt");
                 return;
