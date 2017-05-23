@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Calendar
 {
@@ -30,11 +31,15 @@ namespace Calendar
         {
             Console.BackgroundColor = ConsoleColor.White;
 
-            foreach (var dayWeek in new[] {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"})
+            DayOfWeek week = DayOfWeek.Sunday;
+            CultureInfo ci = new CultureInfo("en-US");
+            string[] names = ci.DateTimeFormat.AbbreviatedDayNames;
+            do
             {
-                Console.ForegroundColor = dayWeek == "Sun" || dayWeek == "Sat" ? ConsoleColor.Red : ConsoleColor.Black;
-                Console.Write("{0, 3} ", dayWeek);
-            }
+                Console.ForegroundColor = week == DayOfWeek.Sunday || week == DayOfWeek.Saturday ? ConsoleColor.Red : ConsoleColor.Black;
+                Console.Write("{0, 3} ", names[(int)week]);
+                week = (DayOfWeek) (((int)week + 1) % 7);
+            } while (week != DayOfWeek.Sunday);
             Console.WriteLine();
 
             var startDate = new DateTime(selectedDate.Year, selectedDate.Month, 1);
