@@ -44,8 +44,6 @@ public class TableReportView extends WorkspaceBase {
             return;
         }
 
-        System.out.println("Table loaded");
-
         Object[] titles = tableStructure.getColumns().stream()
                 .map(Column::getName)
                 .collect(Collectors.toList())
