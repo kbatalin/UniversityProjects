@@ -69,24 +69,26 @@ namespace Batalin.Nsudotnet.Enigma
                 return;
             }
 
-            SymmetricAlgorithm algorithm = _cryptAlgorithms[alg]();
-            algorithm.GenerateKey();
-            algorithm.GenerateIV();
-            ICryptoTransform encryptor = algorithm.CreateEncryptor();
-
-            using (FileStream fsInput = new FileStream(input, FileMode.Open, FileAccess.Read))
-            using (FileStream fsCiphered = new FileStream(output, FileMode.Create, FileAccess.Write))
-            using (CryptoStream cryptoStream = new CryptoStream(fsCiphered, encryptor, CryptoStreamMode.Write))
+            using (SymmetricAlgorithm algorithm = _cryptAlgorithms[alg]())
             {
-                fsInput.CopyTo(cryptoStream);
-            }
+                algorithm.GenerateKey();
+                algorithm.GenerateIV();
 
-            using (FileStream fsKey = new FileStream(input + ".key", FileMode.Create, FileAccess.Write))
-            using (StreamWriter writer = new StreamWriter(fsKey))
-            {
-                writer.Write(System.Convert.ToBase64String(algorithm.Key));
-                writer.Write("\n");
-                writer.Write(System.Convert.ToBase64String(algorithm.IV));
+                using (ICryptoTransform encryptor = algorithm.CreateEncryptor())
+                using (FileStream fsInput = new FileStream(input, FileMode.Open, FileAccess.Read))
+                using (FileStream fsCiphered = new FileStream(output, FileMode.Create, FileAccess.Write))
+                using (CryptoStream cryptoStream = new CryptoStream(fsCiphered, encryptor, CryptoStreamMode.Write))
+                {
+                    fsInput.CopyTo(cryptoStream);
+                }
+
+                using (FileStream fsKey = new FileStream(input + ".key", FileMode.Create, FileAccess.Write))
+                using (StreamWriter writer = new StreamWriter(fsKey))
+                {
+                    writer.Write(System.Convert.ToBase64String(algorithm.Key));
+                    writer.Write("\n");
+                    writer.Write(System.Convert.ToBase64String(algorithm.IV));
+                }
             }
         }
 
@@ -99,28 +101,28 @@ namespace Batalin.Nsudotnet.Enigma
                 return;
             }
 
-            SymmetricAlgorithm algorithm = _cryptAlgorithms[alg]();
-
-            using (FileStream fsKey = new FileStream(keyFile, FileMode.Open, FileAccess.Read))
-            using (StreamReader reader = new StreamReader(fsKey))
+            using (SymmetricAlgorithm algorithm = _cryptAlgorithms[alg]())
             {
-                string line = reader.ReadLine();
-                byte[] key = Convert.FromBase64String(line);
+                using (FileStream fsKey = new FileStream(keyFile, FileMode.Open, FileAccess.Read))
+                using (StreamReader reader = new StreamReader(fsKey))
+                {
+                    string line = reader.ReadLine();
+                    byte[] key = Convert.FromBase64String(line);
 
-                line = reader.ReadLine();
-                byte[] IV = Convert.FromBase64String(line);
+                    line = reader.ReadLine();
+                    byte[] IV = Convert.FromBase64String(line);
 
-                algorithm.Key = key;
-                algorithm.IV = IV;
-            }
+                    algorithm.Key = key;
+                    algorithm.IV = IV;
+                }
 
-            ICryptoTransform decryptor = algorithm.CreateDecryptor();
-
-            using (FileStream fsInput = new FileStream(input, FileMode.Open, FileAccess.Read))
-            using (FileStream fsCiphered = new FileStream(output, FileMode.Create, FileAccess.Write))
-            using (CryptoStream cryptoStream = new CryptoStream(fsCiphered, decryptor, CryptoStreamMode.Write))
-            {
-                fsInput.CopyTo(cryptoStream);
+                using(ICryptoTransform decryptor = algorithm.CreateDecryptor())
+                using (FileStream fsInput = new FileStream(input, FileMode.Open, FileAccess.Read))
+                using (FileStream fsCiphered = new FileStream(output, FileMode.Create, FileAccess.Write))
+                using (CryptoStream cryptoStream = new CryptoStream(fsCiphered, decryptor, CryptoStreamMode.Write))
+                {
+                    fsInput.CopyTo(cryptoStream);
+                }
             }
         }
     }
