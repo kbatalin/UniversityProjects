@@ -91,26 +91,20 @@ namespace NumberGuesser
                     return false;
                 }
 
-                try
-                {
-                    int number = Int32.Parse(str);
-                    _currentHistory.AddAttempt(number);
-
-                    var result = _currentGame.TryAnswer(number);
-                    isRightAnswer = _handlers[result]();
-
-                    if (!isRightAnswer && _currentGame.AttemptCount % 4 == 0)
-                    {
-                        Console.WriteLine(jokeManager.GetJoke());
-                    }
-                }
-                catch (FormatException)
+                int number;
+                if (!Int32.TryParse(str, out number))
                 {
                     Console.WriteLine("Bad number format");
+                    continue;
                 }
-                catch (OverflowException)
+                _currentHistory.AddAttempt(number);
+
+                var result = _currentGame.TryAnswer(number);
+                isRightAnswer = _handlers[result]();
+
+                if (!isRightAnswer && _currentGame.AttemptCount % 4 == 0)
                 {
-                    Console.WriteLine("Number is too big");
+                    Console.WriteLine(jokeManager.GetJoke());
                 }
             }
             while (!isRightAnswer);
