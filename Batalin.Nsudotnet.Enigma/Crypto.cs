@@ -41,7 +41,7 @@ namespace Batalin.Nsudotnet.Enigma
                 string input = args[1];
                 string alg = args[2].ToLower();
                 string output = args[3];
-                encrypt(input, alg, output);
+                Encrypt(input, alg, output);
             }
             else if (action.Equals("decrypt"))
             {
@@ -49,7 +49,7 @@ namespace Batalin.Nsudotnet.Enigma
                 string alg = args[2].ToLower();
                 string key = args[3];
                 string output = args[4];
-                decrypt(input, alg, key, output);
+                Decrypt(input, alg, key, output);
             }
             else
             {
@@ -58,7 +58,7 @@ namespace Batalin.Nsudotnet.Enigma
         }
 
         //encrypt Crypto.cs rc2 output.bin
-        void encrypt(string input, string alg, string output)
+        void Encrypt(string input, string alg, string output)
         {
             if (!cryptAlgorithms.ContainsKey(alg))
             {
@@ -88,7 +88,7 @@ namespace Batalin.Nsudotnet.Enigma
         }
 
         //decrypt output.bin rc2 Crypto.cs.key CryptoRestored.cs
-        void decrypt(string input, string alg, string keyFile, string output)
+        void Decrypt(string input, string alg, string keyFile, string output)
         {
             if (!cryptAlgorithms.ContainsKey(alg))
             {
