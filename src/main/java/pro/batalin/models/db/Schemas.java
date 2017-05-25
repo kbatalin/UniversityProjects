@@ -1,15 +1,12 @@
 package pro.batalin.models.db;
 
 import pro.batalin.ddl4j.model.Schema;
-import pro.batalin.ddl4j.platforms.Platform;
-import pro.batalin.ddl4j.platforms.PlatformFactoryException;
 import pro.batalin.models.observe.Observable;
 import pro.batalin.models.observe.ObservableBase;
 import pro.batalin.models.observe.ObserveEvent;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.models.util.ListUtils;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,31 +23,19 @@ public class Schemas extends ObservableBase implements Observable {
     }
 
     public enum Event implements ObserveEvent {
-        SCHEMAS_LIST_CHANGED,
+        SCHEMAS_LIST_LOADED,
         SCHEMA_SELECTED,
     }
 
     public void update() {
         applicationProperties.getDBThread().addTask(platform -> {
-            List<Schema> schemas = platform.loadSchemas();
-
-            boolean hasChanges = !ListUtils.hasSameItems(schemas, this.schemas);
-
-            if (!hasChanges) {
-                return;
-            }
-
-            this.schemas = schemas;
-            notifyObservers(Event.SCHEMAS_LIST_CHANGED);
+            this.schemas = platform.loadSchemas();
+            notifyObservers(Event.SCHEMAS_LIST_LOADED);
         });
     }
 
     public List<Schema> getSchemas() {
         return schemas;
-    }
-
-    public void setSchemas(List<Schema> schemas) {
-        this.schemas = schemas;
     }
 
     public Schema getSelected() {

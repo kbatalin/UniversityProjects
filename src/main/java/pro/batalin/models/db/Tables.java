@@ -1,9 +1,7 @@
 package pro.batalin.models.db;
 
 import pro.batalin.ddl4j.model.Schema;
-import pro.batalin.ddl4j.platforms.Platform;
 import pro.batalin.ddl4j.platforms.PlatformFactoryException;
-import pro.batalin.models.ThrowableConsumer;
 import pro.batalin.models.observe.Observable;
 import pro.batalin.models.observe.ObservableBase;
 import pro.batalin.models.observe.ObserveEvent;
@@ -13,7 +11,6 @@ import pro.batalin.models.util.ListUtils;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Kirill Batalin (kir55rus)
@@ -32,7 +29,7 @@ public class Tables extends ObservableBase implements Observable {
     }
 
     public enum Event implements ObserveEvent {
-        TABLES_LIST_CHANGED,
+        TABLES_LIST_LOADED,
         TABLE_SELECTED,
     }
 
@@ -43,20 +40,12 @@ public class Tables extends ObservableBase implements Observable {
             if (schema == null) {
                 tablesNames.clear();
                 selectedTable = null;
-                notifyObservers(Event.TABLES_LIST_CHANGED);
+                notifyObservers(Event.TABLES_LIST_LOADED);
                 return;
             }
 
-            List<String> tablesNames = platform.loadTables(schema.getName());
-
-            boolean hasChanges = !ListUtils.hasSameItems(tablesNames, this.tablesNames);
-
-            if (!hasChanges) {
-                return;
-            }
-
-            this.tablesNames = tablesNames;
-            notifyObservers(Event.TABLES_LIST_CHANGED);
+            this.tablesNames = platform.loadTables(schema.getName());
+            notifyObservers(Event.TABLES_LIST_LOADED);
         });
     }
 

@@ -35,7 +35,7 @@ public class ClientController {
         loginController.run();
 
         if (!loginController.isAuthorized()) {
-            return;
+            System.exit(0);
         }
 
         applicationProperties.getSchemas().update();

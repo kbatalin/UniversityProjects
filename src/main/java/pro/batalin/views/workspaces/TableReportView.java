@@ -31,7 +31,7 @@ public class TableReportView extends WorkspaceBase {
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        tableReport.addObserver(TableReport.Event.TABLE_CHANGED, this::initTable);
+        tableReport.addObserver(TableReport.Event.TABLE_LOADED, this::initTable);
 
         initTable();
         setVisible(true);

@@ -2,8 +2,6 @@ package pro.batalin.models.db;
 
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.model.Table;
-import pro.batalin.ddl4j.platforms.Platform;
-import pro.batalin.ddl4j.platforms.PlatformFactoryException;
 import pro.batalin.models.observe.Observable;
 import pro.batalin.models.observe.ObservableBase;
 import pro.batalin.models.observe.ObserveEvent;
@@ -12,7 +10,6 @@ import pro.batalin.models.properties.ApplicationProperties;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +31,7 @@ public class TableReport extends ObservableBase implements Observable {
     }
 
     public enum Event implements ObserveEvent {
-        TABLE_CHANGED,
+        TABLE_LOADED,
     }
 
     public Table getTableStructure() {
@@ -51,7 +48,7 @@ public class TableReport extends ObservableBase implements Observable {
 
             if (tableStructure == null) {
                 tableStructure = null;
-                notifyObservers(Event.TABLE_CHANGED);
+                notifyObservers(Event.TABLE_LOADED);
                 return;
             }
 
@@ -70,7 +67,7 @@ public class TableReport extends ObservableBase implements Observable {
                 data.add(line);
             }
 
-            notifyObservers(Event.TABLE_CHANGED);
+            notifyObservers(Event.TABLE_LOADED);
         });
     }
 
