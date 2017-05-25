@@ -66,7 +66,6 @@ public class TableReport extends ObservableBase implements Observable {
 
         Connection connection = applicationProperties.getConnection();
         PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + schema.getName() + "." + table);
-//        statement.setString(1, table);
         ResultSet resultSet = statement.executeQuery();
 
         int columnCount = this.table.getColumns().size();
