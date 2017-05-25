@@ -85,7 +85,7 @@ namespace NumberGuesser
             {
                 Console.Write("Enter the number: ");
                 string str = Console.ReadLine();
-                if (str == null || "q".Equals(str))
+                if (str == "q")
                 {
                     _currentGame.StopGame();
                     return false;
