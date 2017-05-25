@@ -18,48 +18,50 @@ public class TableReportView extends WorkspaceBase {
     private JScrollPane scrollPane;
     private JTable table;
 
-    private ClientController clientController;
-    private TableReport tableReport;
+    private final ClientController clientController;
 
     public TableReportView(ClientController clientController) {
         super(WorkspaceType.TABLE_REPORT);
 
         this.clientController = clientController;
-        this.tableReport = clientController.getApplicationProperties().getTableReport();
+        TableReport tableReport = clientController.getApplicationProperties().getTableReport();
 
         setLayout(new BorderLayout());
         add(contentPanel);
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-        initTable();
 
         tableReport.addObserver(TableReport.Event.TABLE_CHANGED, this::initTable);
 
+        initTable();
         setVisible(true);
     }
 
     private void initTable() {
-        Table tableStructure = tableReport.getTableStructure();
-        if (tableStructure == null) {
-            return;
-        }
+        SwingUtilities.invokeLater(() -> {
+            TableReport tableReport = clientController.getApplicationProperties().getTableReport();
+            Table tableStructure = tableReport.getTableStructure();
+            if (tableStructure == null) {
+                return;
+            }
 
-        Object[] titles = tableStructure.getColumns().stream()
-                .map(Column::getName)
-                .collect(Collectors.toList())
-                .toArray();
+            Object[] titles = tableStructure.getColumns().stream()
+                    .map(Column::getName)
+                    .collect(Collectors.toList())
+                    .toArray();
 
-        DefaultTableModel tableModel = new DefaultTableModel(titles, 0) {
-           @Override
-           public boolean isCellEditable(int row, int column) {
-               return false;
-           }
-        };
+            DefaultTableModel tableModel = new DefaultTableModel(titles, 0) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
+                }
+            };
 
-        for (String[] line : tableReport.getData()) {
-            tableModel.addRow(line);
-        }
+            for (String[] line : tableReport.getData()) {
+                tableModel.addRow(line);
+            }
 
-        table.setModel(tableModel);
+            table.setModel(tableModel);
+        });
     }
 }

@@ -49,9 +49,6 @@ public class ClientGUI extends JFrame {
         workspace = new EmptyWorkspace();
         workspacePanel.add(workspace, workspaceLayoutConstraints);
 
-        initSchemasComboBox();
-        initTableList();
-
         ApplicationProperties applicationProperties = clientController.getApplicationProperties();
 
         applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMAS_LIST_CHANGED, this::initSchemasComboBox);
@@ -62,22 +59,29 @@ public class ClientGUI extends JFrame {
 
         schemasComboBox.addActionListener(clientController::onSchemasComboBoxSelected);
         tableList.addListSelectionListener(clientController::onTableSelected);
+
+        initSchemasComboBox();
+        initTableList();
     }
 
     private void onSchemaSelected() {
-        if (workspace.getWorkspaceType() == WorkspaceType.EMPTY) {
-            return;
-        }
+        SwingUtilities.invokeLater(() -> {
+            if (workspace.getWorkspaceType() == WorkspaceType.EMPTY) {
+                return;
+            }
 
-        replaceWorkspace(new EmptyWorkspace());
+            replaceWorkspace(new EmptyWorkspace());
+        });
     }
 
     private void onTableSelected() {
-        if (workspace.getWorkspaceType() == WorkspaceType.TABLE_REPORT) {
-            return;
-        }
+        SwingUtilities.invokeLater(() -> {
+            if (workspace.getWorkspaceType() == WorkspaceType.TABLE_REPORT) {
+                return;
+            }
 
-        replaceWorkspace(new TableReportView(clientController));
+            replaceWorkspace(new TableReportView(clientController));
+        });
     }
 
     private void replaceWorkspace(WorkspaceBase workspace) {
@@ -89,23 +93,26 @@ public class ClientGUI extends JFrame {
     }
 
     private void initSchemasComboBox() {
-        try {
-            DefaultComboBoxModel<Schema> comboBoxModel = new DefaultComboBoxModel<>();
-            clientController.getApplicationProperties().getSchemas().getSchemas().forEach(comboBoxModel::addElement);
-            schemasComboBox.setModel(comboBoxModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                DefaultComboBoxModel<Schema> comboBoxModel = new DefaultComboBoxModel<>();
+                clientController.getApplicationProperties().getSchemas().getSchemas().forEach(comboBoxModel::addElement);
+                schemasComboBox.setModel(comboBoxModel);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void initTableList() {
-        try {
-            DefaultListModel<String> listModel = new DefaultListModel<>();
-            clientController.getApplicationProperties().getTables().getTablesNames().forEach(listModel::addElement);
-            tableList.setModel(listModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        SwingUtilities.invokeLater(() -> {
+            try {
+                DefaultListModel<String> listModel = new DefaultListModel<>();
+                clientController.getApplicationProperties().getTables().getTablesNames().forEach(listModel::addElement);
+                tableList.setModel(listModel);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

@@ -1,6 +1,5 @@
 package pro.batalin.models.db;
 
-import pro.batalin.ddl4j.DatabaseOperationException;
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.model.Table;
 import pro.batalin.ddl4j.platforms.Platform;
@@ -22,20 +21,16 @@ import java.util.List;
  */
 public class TableReport extends ObservableBase implements Observable {
     private ApplicationProperties applicationProperties;
-    private Table table;
+    private String table;
+    private Schema schema;
+    private Table tableStructure;
     private List<String[]> data;
 
     public TableReport(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
         data = new ArrayList<>();
 
-        applicationProperties.getTables().addObserver(Tables.Event.TABLE_SELECTED, () -> {
-            try {
-                update();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        applicationProperties.getTables().addObserver(Tables.Event.TABLE_SELECTED, this::update);
     }
 
     public enum Event implements ObserveEvent {
@@ -43,43 +38,40 @@ public class TableReport extends ObservableBase implements Observable {
     }
 
     public Table getTableStructure() {
-        return table;
+        return tableStructure;
     }
 
-    public void update() throws SQLException, PlatformFactoryException {
-        Schema schema = applicationProperties.getSchemas().getSelected();
-        String table = applicationProperties.getTables().getSelected();
+    public void update() {
+        schema = applicationProperties.getSchemas().getSelected();
+        table = applicationProperties.getTables().getSelectedTable();
 
-        update(schema, table);
-    }
+        applicationProperties.getDBThread().addTask(platform -> {
+            tableStructure = platform.loadTable(schema, table);
+            data.clear();
 
-    public void update(Schema schema, String table) throws SQLException, PlatformFactoryException {
-        Platform platform = applicationProperties.getPlatform();
-        this.table = platform.loadTable(schema, table);
-        data.clear();
-
-        if (this.table == null) {
-            this.table = null;
-            notifyObservers(Event.TABLE_CHANGED);
-            return;
-        }
-
-        Connection connection = applicationProperties.getConnection();
-        PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + schema.getName() + "." + table);
-        ResultSet resultSet = statement.executeQuery();
-
-        int columnCount = this.table.getColumns().size();
-        while (resultSet.next()) {
-            String[] line = new String[columnCount];
-
-            for(int i = 0; i < columnCount; ++i) {
-                line[i] = resultSet.getString(i + 1);
+            if (tableStructure == null) {
+                tableStructure = null;
+                notifyObservers(Event.TABLE_CHANGED);
+                return;
             }
 
-            data.add(line);
-        }
+            Connection connection = platform.getConnection();
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + schema.getName() + "." + table);
+            ResultSet resultSet = statement.executeQuery();
 
-        notifyObservers(Event.TABLE_CHANGED);
+            int columnCount = tableStructure.getColumns().size();
+            while (resultSet.next()) {
+                String[] line = new String[columnCount];
+
+                for(int i = 0; i < columnCount; ++i) {
+                    line[i] = resultSet.getString(i + 1);
+                }
+
+                data.add(line);
+            }
+
+            notifyObservers(Event.TABLE_CHANGED);
+        });
     }
 
     public List<String[]> getData() {

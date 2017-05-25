@@ -1,17 +1,14 @@
 package pro.batalin.controllers;
 
 import pro.batalin.ddl4j.model.Schema;
-import pro.batalin.ddl4j.platforms.PlatformFactoryException;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.models.properties.ApplicationPropertiesImpl;
-import pro.batalin.models.properties.LoginProperties;
 import pro.batalin.models.properties.LoginPropertiesImpl;
 import pro.batalin.views.ClientGUI;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.event.ActionEvent;
-import java.sql.SQLException;
 
 /**
  * Created by Kirill Batalin (kir55rus).
@@ -40,6 +37,8 @@ public class ClientController {
         if (!loginController.isAuthorized()) {
             return;
         }
+
+        applicationProperties.getSchemas().update();
 
         clientGUI = new ClientGUI(this);
         clientGUI.pack();
@@ -82,6 +81,6 @@ public class ClientController {
         }
 
         String table = (String) selected;
-        applicationProperties.getTables().setSelected(table);
+        applicationProperties.getTables().setSelectedTable(table);
     }
 }

@@ -46,20 +46,13 @@ public class LoginController {
         loginProperties.setPassword(loginDialog.getPassword());
 
         try {
-            Connection connection = applicationProperties.getConnection();
-
-            if(connection != null) {
-                isAuthorized = true;
-                loginDialog.dispose();
-                return;
-            }
-
-            JOptionPane.showMessageDialog(loginDialog,"Can't connect","Connection error", JOptionPane.ERROR_MESSAGE);
-        } catch (SQLException e) {
+            applicationProperties.getDBThread().connect(loginProperties);
+            isAuthorized = true;
+            loginDialog.dispose();
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(loginDialog,"Connection error: " + e.getMessage(),"Connection error", JOptionPane.ERROR_MESSAGE);
+            isAuthorized = false;
         }
-
-        isAuthorized = false;
     }
 
     public void onCancelButtonClicked() {

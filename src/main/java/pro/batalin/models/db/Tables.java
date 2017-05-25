@@ -3,6 +3,7 @@ package pro.batalin.models.db;
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.platforms.Platform;
 import pro.batalin.ddl4j.platforms.PlatformFactoryException;
+import pro.batalin.models.ThrowableConsumer;
 import pro.batalin.models.observe.Observable;
 import pro.batalin.models.observe.ObservableBase;
 import pro.batalin.models.observe.ObserveEvent;
@@ -12,6 +13,7 @@ import pro.batalin.models.util.ListUtils;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Kirill Batalin (kir55rus)
@@ -19,19 +21,14 @@ import java.util.List;
 public class Tables extends ObservableBase implements Observable {
     private ApplicationProperties applicationProperties;
     private List<String> tablesNames;
-    private String selected;
+    private Schema schema;
+    private String selectedTable;
 
     public Tables(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
         this.tablesNames = new ArrayList<>();
 
-        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, () -> {
-            try {
-                update();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, this::update);
     }
 
     public enum Event implements ObserveEvent {
@@ -39,43 +36,45 @@ public class Tables extends ObservableBase implements Observable {
         TABLE_SELECTED,
     }
 
-    public void update() throws SQLException, PlatformFactoryException {
-        Schema schema = applicationProperties.getSchemas().getSelected();
-        update(schema);
-    }
+    public void update() {
+        schema = applicationProperties.getSchemas().getSelected();
 
-    public void update(Schema schema) throws SQLException, PlatformFactoryException {
-        if (schema == null) {
-            tablesNames.clear();
-            selected = null;
+        applicationProperties.getDBThread().addTask(platform -> {
+            if (schema == null) {
+                tablesNames.clear();
+                selectedTable = null;
+                notifyObservers(Event.TABLES_LIST_CHANGED);
+                return;
+            }
+
+            List<String> tablesNames = platform.loadTables(schema.getName());
+
+            boolean hasChanges = !ListUtils.hasSameItems(tablesNames, this.tablesNames);
+
+            if (!hasChanges) {
+                return;
+            }
+
+            this.tablesNames = tablesNames;
             notifyObservers(Event.TABLES_LIST_CHANGED);
-            return;
-        }
-
-        Platform platform = applicationProperties.getPlatform();
-        List<String> tablesNames = platform.loadTables(schema.getName());
-
-        boolean hasChanges = !ListUtils.hasSameItems(tablesNames, this.tablesNames);
-
-        if (!hasChanges) {
-            return;
-        }
-
-        this.tablesNames = tablesNames;
-        notifyObservers(Event.TABLES_LIST_CHANGED);
+        });
     }
 
     public List<String> getTablesNames() throws SQLException, PlatformFactoryException {
         return tablesNames;
     }
 
-    public String getSelected() {
-        return selected;
+    public Schema getSchema() {
+        return schema;
     }
 
-    public void setSelected(String selected) {
-        if (this.selected == null || !this.selected.equals(selected)) {
-            this.selected = selected;
+    public String getSelectedTable() {
+        return selectedTable;
+    }
+
+    public void setSelectedTable(String selectedTable) {
+        if (this.selectedTable == null || !this.selectedTable.equals(selectedTable)) {
+            this.selectedTable = selectedTable;
             notifyObservers(Event.TABLE_SELECTED);
         }
     }

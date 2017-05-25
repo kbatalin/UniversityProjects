@@ -18,12 +18,11 @@ import java.util.List;
  */
 public class Schemas extends ObservableBase implements Observable {
     private ApplicationProperties applicationProperties;
-    private List<Schema> schemas;
+    private List<Schema> schemas = new ArrayList<>();;
     private Schema selected;
 
     public Schemas(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
-        schemas = new ArrayList<>();
     }
 
     public enum Event implements ObserveEvent {
@@ -31,22 +30,22 @@ public class Schemas extends ObservableBase implements Observable {
         SCHEMA_SELECTED,
     }
 
-    public void update() throws SQLException, PlatformFactoryException {
-        Platform platform = applicationProperties.getPlatform();
-        List<Schema> schemas = platform.loadSchemas();
+    public void update() {
+        applicationProperties.getDBThread().addTask(platform -> {
+            List<Schema> schemas = platform.loadSchemas();
 
-        boolean hasChanges = !ListUtils.hasSameItems(schemas, this.schemas);
+            boolean hasChanges = !ListUtils.hasSameItems(schemas, this.schemas);
 
-        if (!hasChanges) {
-            return;
-        }
+            if (!hasChanges) {
+                return;
+            }
 
-        this.schemas = schemas;
-        notifyObservers(Event.SCHEMAS_LIST_CHANGED);
+            this.schemas = schemas;
+            notifyObservers(Event.SCHEMAS_LIST_CHANGED);
+        });
     }
 
-    public List<Schema> getSchemas() throws SQLException, PlatformFactoryException {
-        update();
+    public List<Schema> getSchemas() {
         return schemas;
     }
 
