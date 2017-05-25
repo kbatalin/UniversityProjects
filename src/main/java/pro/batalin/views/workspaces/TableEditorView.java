@@ -6,22 +6,21 @@ import pro.batalin.ddl4j.model.Table;
 import pro.batalin.models.db.TableData;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.stream.Collectors;
 
 /**
  * @author Kirill Batalin (kir55rus)
  */
-public class TableReportView extends WorkspaceBase {
+public class TableEditorView extends WorkspaceBase {
     private JPanel contentPanel;
-    private JScrollPane scrollPane;
     private JTable table;
 
     private final ClientController clientController;
 
-    public TableReportView(ClientController clientController) {
-        super(WorkspaceType.TABLE_REPORT);
+    public TableEditorView(ClientController clientController) {
+        super(WorkspaceType.TABLE_EDITOR);
 
         this.clientController = clientController;
         TableData tableData = clientController.getApplicationProperties().getTableData();
@@ -50,16 +49,15 @@ public class TableReportView extends WorkspaceBase {
                     .collect(Collectors.toList())
                     .toArray();
 
-            DefaultTableModel tableModel = new DefaultTableModel(titles, 0) {
-                @Override
-                public boolean isCellEditable(int row, int column) {
-                    return false;
-                }
-            };
+            DefaultTableModel tableModel = new DefaultTableModel(titles, 0);
 
             for (String[] line : tableData.getData()) {
                 tableModel.addRow(line);
             }
+
+            Object[] addLine = new Object[titles.length];
+            addLine[0] = "...";
+            tableModel.addRow(addLine);
 
             table.setModel(tableModel);
         });

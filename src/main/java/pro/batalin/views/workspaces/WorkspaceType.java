@@ -6,4 +6,5 @@ package pro.batalin.views.workspaces;
 public enum WorkspaceType {
     EMPTY,
     TABLE_REPORT,
+    TABLE_EDITOR,
 }

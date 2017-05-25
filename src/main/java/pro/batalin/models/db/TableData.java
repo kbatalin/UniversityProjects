@@ -16,14 +16,14 @@ import java.util.List;
 /**
  * @author Kirill Batalin (kir55rus)
  */
-public class TableReport extends ObservableBase implements Observable {
+public class TableData extends ObservableBase implements Observable {
     private ApplicationProperties applicationProperties;
     private String table;
     private Schema schema;
     private Table tableStructure;
     private List<String[]> data;
 
-    public TableReport(ApplicationProperties applicationProperties) {
+    public TableData(ApplicationProperties applicationProperties) {
         this.applicationProperties = applicationProperties;
         data = new ArrayList<>();
 

@@ -3,7 +3,7 @@ package pro.batalin.views;
 import pro.batalin.controllers.ClientController;
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.models.db.Schemas;
-import pro.batalin.models.db.TableReport;
+import pro.batalin.models.db.TableData;
 import pro.batalin.models.db.Tables;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.views.status_bar.StatusBar;
@@ -63,7 +63,7 @@ public class ClientGUI extends JFrame {
         applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, this::onSchemaSelected);
         applicationProperties.getTables().addObserver(Tables.Event.TABLES_LIST_LOADED, this::onTablesListLoaded);
         applicationProperties.getTables().addObserver(Tables.Event.TABLE_SELECTED, this::onTableSelected);
-        applicationProperties.getTableReport().addObserver(TableReport.Event.TABLE_LOADED, this::onTableLoaded);
+        applicationProperties.getTableData().addObserver(TableData.Event.TABLE_LOADED, this::onTableLoaded);
 
         schemasComboBox.addActionListener(clientController::onSchemasComboBoxSelected);
         tableList.addListSelectionListener(clientController::onTableSelected);
