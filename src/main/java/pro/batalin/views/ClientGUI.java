@@ -13,6 +13,7 @@ import pro.batalin.views.workspaces.WorkspaceType;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Arrays;
 
 /**
  * Created by Kirill Batalin (kir55rus).
@@ -24,6 +25,7 @@ public class ClientGUI extends JFrame {
     private JList<String> tableList;
     private ClientController clientController;
     private WorkspaceBase workspace;
+    private GridBagConstraints workspaceLayoutConstraints;
 
     public ClientGUI(ClientController clientController) {
         this.clientController = clientController;
@@ -33,7 +35,7 @@ public class ClientGUI extends JFrame {
 
         setMinimumSize(new Dimension(1000, 700));
 
-        GridBagConstraints workspaceLayoutConstraints = new GridBagConstraints();
+        workspaceLayoutConstraints = new GridBagConstraints();
         workspaceLayoutConstraints.gridx = 0;
         workspaceLayoutConstraints.gridy = 0;
         workspaceLayoutConstraints.gridwidth = 1;
@@ -63,8 +65,11 @@ public class ClientGUI extends JFrame {
     }
 
     private void onSchemaSelected() {
-        workspace = new EmptyWorkspace();
-        repaint();
+        if (workspace.getWorkspaceType() == WorkspaceType.EMPTY) {
+            return;
+        }
+
+        replaceWorkspace(new EmptyWorkspace());
     }
 
     private void onTableSelected() {
@@ -72,8 +77,15 @@ public class ClientGUI extends JFrame {
             return;
         }
 
-        workspace = new TableReportView(clientController);
-        repaint();
+        replaceWorkspace(new TableReportView(clientController));
+    }
+
+    private void replaceWorkspace(WorkspaceBase workspace) {
+        workspacePanel.removeAll();
+        this.workspace = workspace;
+        workspacePanel.add(workspace, workspaceLayoutConstraints);
+        workspacePanel.revalidate();
+        workspacePanel.repaint();
     }
 
     private void initSchemasComboBox() {
