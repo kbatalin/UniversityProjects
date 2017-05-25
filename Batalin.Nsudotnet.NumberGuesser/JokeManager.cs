@@ -4,17 +4,18 @@ namespace NumberGuesser
 {
     public class JokeManager
     {
-        private const int JokesCount = 4;
-
-        private readonly string[] _jokes = new string[JokesCount];
+        private readonly string[] _jokes;
         private readonly Random _random = new Random();
 
         public JokeManager(string name)
         {
-            _jokes[0] = String.Format("Stone smarter than you, {0}", name);
-            _jokes[1] = String.Format("{0}, your intuition is bad", name);
-            _jokes[2] = String.Format("-_____-, who manage better than {0}? Each!", name);
-            _jokes[3] = String.Format("{0}, say you're kidding, please", name);
+            _jokes = new[]
+            {
+                $"Stone smarter than you, {name}",
+                $"{name}, your intuition is bad",
+                $"-_____-, who manage better than {name}? Each!",
+                $"{name}, say you're kidding, please",
+            };
         }
 
         public string GetJoke()
