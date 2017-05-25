@@ -2,6 +2,7 @@ package pro.batalin.models.observe;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by kir55rus on 01.03.17.
@@ -14,12 +15,12 @@ public class ObservableBase implements Observable {
     }
 
     private void clear() {
-        observers = new HashMap<>();
+        observers = new ConcurrentHashMap<>();
     }
 
     @Override
     public int addObserver(ObserveEvent event, ObserverHandler handler) {
-        Map<Integer, ObserverHandler> list = observers.computeIfAbsent(event, k -> new HashMap<>());
+        Map<Integer, ObserverHandler> list = observers.computeIfAbsent(event, k -> new ConcurrentHashMap<>());
         list.put(handler.hashCode(), handler);
 
         return handler.hashCode();
