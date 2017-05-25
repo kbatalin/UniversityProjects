@@ -10,7 +10,7 @@ namespace Batalin.Nsudotnet.Enigma
 {
     class Crypto
     {
-        private Dictionary<string, SymmetricAlgorithm> cryptAlgorithms;
+        private readonly Dictionary<string, Func<SymmetricAlgorithm>> _cryptAlgorithms;
 
         static void Main(string[] args)
         {
@@ -19,12 +19,15 @@ namespace Batalin.Nsudotnet.Enigma
 
         Crypto()
         {
-            cryptAlgorithms = new Dictionary<string, SymmetricAlgorithm>();
+            _cryptAlgorithms =
+                new Dictionary<string, Func<SymmetricAlgorithm>>
+                {
+                    ["aes"] = () => new AesCryptoServiceProvider(),
+                    ["des"] = () => new DESCryptoServiceProvider(),
+                    ["rc2"] = () => new RC2CryptoServiceProvider(),
+                    ["rijndeal"] = () => new RijndaelManaged()
+                };
 
-            cryptAlgorithms["aes"] = new AesCryptoServiceProvider();
-            cryptAlgorithms["des"] = new DESCryptoServiceProvider();
-            cryptAlgorithms["rc2"] = new RC2CryptoServiceProvider();
-            cryptAlgorithms["rijndeal"] = new RijndaelManaged();
         }
 
         void Run(string[] args)
@@ -60,13 +63,13 @@ namespace Batalin.Nsudotnet.Enigma
         //encrypt Crypto.cs rc2 output.bin
         void Encrypt(string input, string alg, string output)
         {
-            if (!cryptAlgorithms.ContainsKey(alg))
+            if (!_cryptAlgorithms.ContainsKey(alg))
             {
                 Console.WriteLine("Bad alg");
                 return;
             }
 
-            SymmetricAlgorithm algorithm = cryptAlgorithms[alg];
+            SymmetricAlgorithm algorithm = _cryptAlgorithms[alg]();
             algorithm.GenerateKey();
             algorithm.GenerateIV();
             ICryptoTransform encryptor = algorithm.CreateEncryptor();
@@ -90,13 +93,13 @@ namespace Batalin.Nsudotnet.Enigma
         //decrypt output.bin rc2 Crypto.cs.key CryptoRestored.cs
         void Decrypt(string input, string alg, string keyFile, string output)
         {
-            if (!cryptAlgorithms.ContainsKey(alg))
+            if (!_cryptAlgorithms.ContainsKey(alg))
             {
                 Console.WriteLine("Bad alg");
                 return;
             }
 
-            SymmetricAlgorithm algorithm = cryptAlgorithms[alg];
+            SymmetricAlgorithm algorithm = _cryptAlgorithms[alg]();
 
             using (FileStream fsKey = new FileStream(keyFile, FileMode.Open, FileAccess.Read))
             using (StreamReader reader = new StreamReader(fsKey))
