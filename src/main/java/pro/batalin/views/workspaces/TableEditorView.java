@@ -4,10 +4,16 @@ import pro.batalin.controllers.ClientController;
 import pro.batalin.ddl4j.model.Column;
 import pro.batalin.ddl4j.model.Table;
 import pro.batalin.models.db.TableData;
+import pro.batalin.models.db.constraints.Constraint;
+import pro.batalin.models.db.constraints.EqualsConstraint;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -32,8 +38,55 @@ public class TableEditorView extends WorkspaceBase {
 
         tableData.addObserver(TableData.Event.TABLE_LOADED, this::initTable);
 
+        InputMap inputMap = table.getInputMap(WHEN_FOCUSED);
+        ActionMap actionMap = table.getActionMap();
+
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
+        actionMap.put("delete", new AbstractAction() {
+            public void actionPerformed(ActionEvent evt) {
+                onDeleteRow(evt);
+            }
+        });
+
         initTable();
         setVisible(true);
+    }
+
+    private void onDeleteRow(ActionEvent actionEvent) {
+        int[] rows = table.getSelectedRows();
+
+        for (int row : rows) {
+            if (row < 0) {
+                continue;
+            }
+
+            row = table.convertRowIndexToModel(row);
+            DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+            Vector rowVector = (Vector) model.getDataVector().get(row);
+
+            java.util.List<Constraint> data = new ArrayList<>();
+            for(int i = 0; i < rowVector.size(); ++i) {
+                String name = model.getColumnName(i);
+                String value = (String) rowVector.get(i);
+                data.add(new EqualsConstraint(name, value));
+            }
+
+            clientController.onDeleteDataRow(data);
+        }
+    }
+
+    private void onTableEdit(TableModelEvent tableModelEvent) {
+//        tableModelEvent.
+//        int row = e.getFirstRow();
+//        int column = e.getColumn();
+//        TableModel model = (TableModel)e.getSource();
+//        String columnName = model.getColumnName(column);
+//        Object data = model.getValueAt(row, column);
+
+        System.out.println(tableModelEvent.getFirstRow() + " : " + tableModelEvent.getLastRow());
+        System.out.println(tableModelEvent.getType());
+//        tableModelEvent.getType()
     }
 
     private void initTable() {
@@ -55,10 +108,7 @@ public class TableEditorView extends WorkspaceBase {
                 tableModel.addRow(line);
             }
 
-            Object[] addLine = new Object[titles.length];
-            addLine[0] = "...";
-            tableModel.addRow(addLine);
-
+            tableModel.addTableModelListener(this::onTableEdit);
             table.setModel(tableModel);
         });
     }

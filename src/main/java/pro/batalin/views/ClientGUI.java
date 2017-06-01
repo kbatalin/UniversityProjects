@@ -8,13 +8,13 @@ import pro.batalin.models.db.Tables;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.views.status_bar.StatusBar;
 import pro.batalin.views.status_bar.indicators.LoadingIndicator;
-import pro.batalin.views.workspaces.EmptyWorkspace;
-import pro.batalin.views.workspaces.TableReportView;
-import pro.batalin.views.workspaces.WorkspaceBase;
-import pro.batalin.views.workspaces.WorkspaceType;
+import pro.batalin.views.workspaces.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * Created by Kirill Batalin (kir55rus).
@@ -28,7 +28,8 @@ public class ClientGUI extends JFrame {
     private ClientController clientController;
     private WorkspaceBase workspace;
     private GridBagConstraints workspaceLayoutConstraints;
-    private StatusBar statusBar;
+    private final StatusBar statusBar;
+    private JPopupMenu tableOptionsPopupMenu;
 
     public ClientGUI(ClientController clientController) {
         this.clientController = clientController;
@@ -57,6 +58,8 @@ public class ClientGUI extends JFrame {
         statusBarPanel.setLayout(new BorderLayout());
         statusBarPanel.add(statusBar);
 
+        initPopupMenu();
+
         ApplicationProperties applicationProperties = clientController.getApplicationProperties();
 
         applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMAS_LIST_LOADED, this::onSchemasListLoaded);
@@ -72,14 +75,103 @@ public class ClientGUI extends JFrame {
         initTableList();
     }
 
-    private void onSchemaSelected() {
-        statusBar.setIndicatorVisible("loading", true);
+    private void initPopupMenu() {
+        tableOptionsPopupMenu = new JPopupMenu("Actions");
+        JMenuItem reportMenu = new JMenuItem("Show report");
+        reportMenu.addActionListener(this::onReportMenuClicked);
+        tableOptionsPopupMenu.add(reportMenu);
 
+        JMenuItem editDataMenu = new JMenuItem("Edit data");
+        editDataMenu.addActionListener(this::onEditDataMenuClicked);
+        tableOptionsPopupMenu.add(editDataMenu);
+
+        JMenuItem editTableMenu = new JMenuItem("Edit table");
+        editTableMenu.addActionListener(this::onEditTableMenuClicked);
+        tableOptionsPopupMenu.add(editTableMenu);
+
+        JMenuItem dropMenu = new JMenuItem("Drop table");
+        dropMenu.addActionListener(this::onDropTableMenuClicked);
+        tableOptionsPopupMenu.add(dropMenu);
+
+//        tableOptionsPopupMenu.add(new JPopupMenu.Separator());
+
+        JMenuItem createMenu = new JMenuItem("Create table");
+        createMenu.addActionListener(this::onCreateTableMenuClicked);
+        tableOptionsPopupMenu.add(createMenu);
+
+        tableList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                onTableListMouseClicked(mouseEvent);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent mouseEvent) {
+                onTableListMousePressed(mouseEvent);
+            }
+        });
+    }
+
+    private void onReportMenuClicked(ActionEvent actionEvent) {
+        onTableSelected();
+    }
+
+    private void onEditDataMenuClicked(ActionEvent actionEvent) {
+        SwingUtilities.invokeLater(() -> {
+            if (workspace.getWorkspaceType() == WorkspaceType.TABLE_EDITOR) {
+                return;
+            }
+
+            synchronized (statusBar) {
+                if(clientController.getApplicationProperties().getTableData().isLoading()) {
+                    statusBar.setIndicatorVisible("loading", true);
+                }
+            }
+            replaceWorkspace(new TableEditorView(clientController));
+        });
+    }
+
+    private void onEditTableMenuClicked(ActionEvent actionEvent) {
+
+    }
+
+    private void onDropTableMenuClicked(ActionEvent actionEvent) {
+
+    }
+
+    private void onCreateTableMenuClicked(ActionEvent actionEvent) {
+
+    }
+
+    private void onTableListMouseClicked(MouseEvent mouseEvent) {
+        if(!SwingUtilities.isRightMouseButton(mouseEvent)
+                || tableList.isSelectionEmpty()) {
+            return;
+        }
+
+        tableOptionsPopupMenu.show(tableList, mouseEvent.getX(), mouseEvent.getY());
+    }
+
+    private void onTableListMousePressed(MouseEvent mouseEvent) {
+        if (!SwingUtilities.isLeftMouseButton(mouseEvent) && !SwingUtilities.isRightMouseButton(mouseEvent)) {
+            return;
+        }
+
+        int row = tableList.locationToIndex(mouseEvent.getPoint());
+        if (row == -1) {
+            return;
+        }
+
+        tableList.setSelectedIndex(row);
+    }
+
+    private void onSchemaSelected() {
         SwingUtilities.invokeLater(() -> {
             if (workspace.getWorkspaceType() == WorkspaceType.EMPTY) {
                 return;
             }
 
+            statusBar.setIndicatorVisible("loading", true);
             replaceWorkspace(new EmptyWorkspace());
         });
     }
@@ -97,13 +189,16 @@ public class ClientGUI extends JFrame {
     }
 
     private void onTableSelected() {
-        statusBar.setIndicatorVisible("loading", true);
-
         SwingUtilities.invokeLater(() -> {
             if (workspace.getWorkspaceType() == WorkspaceType.TABLE_REPORT) {
                 return;
             }
 
+            synchronized (statusBar) {
+                if (clientController.getApplicationProperties().getTableData().isLoading()) {
+                    statusBar.setIndicatorVisible("loading", true);
+                }
+            }
             replaceWorkspace(new TableReportView(clientController));
         });
     }
