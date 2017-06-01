@@ -62,9 +62,7 @@ public class Tables extends ObservableBase implements Observable {
     }
 
     public void setSelectedTable(String selectedTable) {
-        if (this.selectedTable == null || !this.selectedTable.equals(selectedTable)) {
-            this.selectedTable = selectedTable;
-            notifyObservers(Event.TABLE_SELECTED);
-        }
+        this.selectedTable = selectedTable;
+        notifyObservers(Event.TABLE_SELECTED);
     }
 }
