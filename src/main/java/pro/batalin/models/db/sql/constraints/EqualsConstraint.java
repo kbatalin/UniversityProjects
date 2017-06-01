@@ -1,20 +1,19 @@
-package pro.batalin.models.db.constraints;
+package pro.batalin.models.db.sql.constraints;
 
 /**
  * @author Kirill Batalin (kir55rus)
  */
 public class EqualsConstraint implements Constraint {
     private String column;
-    private String value;
+    private Object value;
 
     public EqualsConstraint() {
     }
 
-    public EqualsConstraint(String column, String value) {
+    public EqualsConstraint(String column, Object value) {
         this.column = column;
         this.value = value;
     }
-
 
     @Override
     public String getColumn() {
@@ -26,11 +25,11 @@ public class EqualsConstraint implements Constraint {
     }
 
     @Override
-    public String getValue() {
+    public Object getValue() {
         return value;
     }
 
-    public void setValue(String value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 
