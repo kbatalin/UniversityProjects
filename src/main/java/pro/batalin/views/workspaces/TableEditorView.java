@@ -66,11 +66,12 @@ public class TableEditorView extends WorkspaceBase {
 
             Vector rowVector = (Vector) model.getDataVector().get(row);
 
+            Table table = clientController.getApplicationProperties().getTableData().getTableStructure();
             java.util.List<Constraint> data = new ArrayList<>();
             for(int i = 0; i < rowVector.size(); ++i) {
                 String name = model.getColumnName(i);
                 Object value = rowVector.get(i);
-                data.add(new EqualsConstraint(name, value));
+                data.add(new EqualsConstraint(table.getSchema(), table.getName(), name, value));
             }
 
             clientController.onDeleteDataRow(data);
@@ -81,14 +82,16 @@ public class TableEditorView extends WorkspaceBase {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
         Vector rowVector = (Vector) model.getDataVector().get(row);
 
+        Table table = clientController.getApplicationProperties().getTableData().getTableStructure();
+
         java.util.List<Constraint> constraints = new ArrayList<>();
         for(int i = 0; i < rowVector.size(); ++i) {
             String name = model.getColumnName(i);
             Object value = rowVector.get(i);
-            constraints.add(new EqualsConstraint(name, value));
+            constraints.add(new EqualsConstraint(table.getSchema(), table.getName(), name, value));
         }
 
-        Table table = clientController.getApplicationProperties().getTableData().getTableStructure();
+
         List<Assignment> data = new ArrayList<>();
         data.add(new Assignment(table.getSchema(), table.getName(), model.getColumnName(column), newValue));
 
