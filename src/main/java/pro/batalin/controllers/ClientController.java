@@ -1,6 +1,7 @@
 package pro.batalin.controllers;
 
 import pro.batalin.ddl4j.model.Schema;
+import pro.batalin.models.db.constraints.Constraint;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.models.properties.ApplicationPropertiesImpl;
 import pro.batalin.models.properties.LoginPropertiesImpl;
@@ -9,6 +10,8 @@ import pro.batalin.views.ClientGUI;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.event.ActionEvent;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Kirill Batalin (kir55rus).
@@ -82,5 +85,13 @@ public class ClientController {
 
         String table = (String) selected;
         applicationProperties.getTables().setSelectedTable(table);
+    }
+
+    public void onInsertNewDataRow(String[] data) {
+
+    }
+
+    public void onDeleteDataRow(List<Constraint> constrains) {
+        applicationProperties.getTableData().deleteRow(constrains);
     }
 }
