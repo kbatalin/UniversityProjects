@@ -57,7 +57,7 @@ public class TableReportView extends WorkspaceBase {
                 }
             };
 
-            for (String[] line : tableData.getData()) {
+            for (Object[] line : tableData.getData()) {
                 tableModel.addRow(line);
             }
 

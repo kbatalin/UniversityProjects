@@ -1,7 +1,8 @@
 package pro.batalin.controllers;
 
 import pro.batalin.ddl4j.model.Schema;
-import pro.batalin.models.db.constraints.Constraint;
+import pro.batalin.models.db.sql.Assignment;
+import pro.batalin.models.db.sql.constraints.Constraint;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.models.properties.ApplicationPropertiesImpl;
 import pro.batalin.models.properties.LoginPropertiesImpl;
@@ -11,7 +12,6 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.event.ActionEvent;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Kirill Batalin (kir55rus).
@@ -92,6 +92,10 @@ public class ClientController {
     }
 
     public void onDeleteDataRow(List<Constraint> constrains) {
-        applicationProperties.getTableData().deleteRow(constrains);
+        applicationProperties.getTableData().delete(constrains);
+    }
+
+    public void onEditData(List<Assignment> data, List<Constraint> constrains) {
+        applicationProperties.getTableData().edit(data, constrains);
     }
 }

@@ -2,7 +2,9 @@ package pro.batalin.models.db;
 
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.model.Table;
-import pro.batalin.models.db.constraints.Constraint;
+import pro.batalin.models.db.sql.Assignment;
+import pro.batalin.models.db.sql.Pattern;
+import pro.batalin.models.db.sql.constraints.Constraint;
 import pro.batalin.models.observe.Observable;
 import pro.batalin.models.observe.ObservableBase;
 import pro.batalin.models.observe.ObserveEvent;
@@ -25,7 +27,7 @@ public class TableData extends ObservableBase implements Observable {
     private String table;
     private Schema schema;
     private Table tableStructure;
-    private List<String[]> data;
+    private List<Object[]> data;
     private AtomicBoolean loading = new AtomicBoolean(false);
 
     public TableData(ApplicationProperties applicationProperties) {
@@ -60,15 +62,17 @@ public class TableData extends ObservableBase implements Observable {
             }
 
             Connection connection = platform.getConnection();
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + schema.getName() + "." + table);
+
+            String sql = String.format("SELECT * FROM %s.%s", schema.getName(), table);
+            PreparedStatement statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
 
             int columnCount = tableStructure.getColumns().size();
             while (resultSet.next()) {
-                String[] line = new String[columnCount];
+                Object[] line = new Object[columnCount];
 
                 for(int i = 0; i < columnCount; ++i) {
-                    line[i] = resultSet.getString(i + 1);
+                    line[i] = resultSet.getObject(i + 1);
                 }
 
                 data.add(line);
@@ -79,7 +83,7 @@ public class TableData extends ObservableBase implements Observable {
         });
     }
 
-    public List<String[]> getData() {
+    public List<Object[]> getData() {
         return data;
     }
 
@@ -87,11 +91,11 @@ public class TableData extends ObservableBase implements Observable {
         return loading.get();
     }
 
-    public void deleteRow(List<Constraint> constraints) {
+    public void delete(List<Constraint> constraints) {
         Schema schema = this.schema;
         String tableName = this.table;
         applicationProperties.getDBThread().addTask(platform -> {
-            if (tableName == null || tableName.isEmpty()) {
+            if (tableName == null || tableName.isEmpty() || schema == null) {
                 return;
             }
 
@@ -104,10 +108,46 @@ public class TableData extends ObservableBase implements Observable {
             Connection connection = platform.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
             for(int i = 0; i < constraints.size(); ++i) {
-                statement.setString(i + 1, constraints.get(i).getValue());
+                statement.setObject(i + 1, constraints.get(i).getValue());
             }
 
-            statement.executeQuery();
+            statement.executeUpdate();
+            update();
+        });
+    }
+
+    public void edit(List<Assignment> data, List<Constraint> constraints) {
+        Schema schema = this.schema;
+        String tableName = this.table;
+        applicationProperties.getDBThread().addTask(platform -> {
+            if (tableName == null || tableName.isEmpty() || schema == null) {
+                return;
+            }
+
+            String updatedData = data.stream()
+                    .map(Pattern::getPattern)
+                    .collect(Collectors.joining(", "));
+
+            String constraintsPattern = constraints.stream()
+                    .map(Constraint::getPattern)
+                    .collect(Collectors.joining(" AND "));
+
+            String sql = String.format("UPDATE %s.%s SET %s WHERE %s",
+                    schema.getName(),
+                    tableName,
+                    updatedData,
+                    constraintsPattern);
+
+            Connection connection = platform.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            for(int i = 0; i < data.size(); ++i) {
+                statement.setObject(i + 1, data.get(i).getValue());
+            }
+            for(int i = 0; i < constraints.size(); ++i) {
+                statement.setObject(i + data.size() + 1, constraints.get(i).getValue());
+            }
+
+            statement.executeUpdate();
             update();
         });
     }

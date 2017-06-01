@@ -4,16 +4,17 @@ import pro.batalin.controllers.ClientController;
 import pro.batalin.ddl4j.model.Column;
 import pro.batalin.ddl4j.model.Table;
 import pro.batalin.models.db.TableData;
-import pro.batalin.models.db.constraints.Constraint;
-import pro.batalin.models.db.constraints.EqualsConstraint;
+import pro.batalin.models.db.sql.Assignment;
+import pro.batalin.models.db.sql.constraints.Constraint;
+import pro.batalin.models.db.sql.constraints.EqualsConstraint;
 
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -68,7 +69,7 @@ public class TableEditorView extends WorkspaceBase {
             java.util.List<Constraint> data = new ArrayList<>();
             for(int i = 0; i < rowVector.size(); ++i) {
                 String name = model.getColumnName(i);
-                String value = (String) rowVector.get(i);
+                Object value = rowVector.get(i);
                 data.add(new EqualsConstraint(name, value));
             }
 
@@ -76,17 +77,22 @@ public class TableEditorView extends WorkspaceBase {
         }
     }
 
-    private void onTableEdit(TableModelEvent tableModelEvent) {
-//        tableModelEvent.
-//        int row = e.getFirstRow();
-//        int column = e.getColumn();
-//        TableModel model = (TableModel)e.getSource();
-//        String columnName = model.getColumnName(column);
-//        Object data = model.getValueAt(row, column);
+    private void onEditCell(Object newValue, int row, int column) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        Vector rowVector = (Vector) model.getDataVector().get(row);
 
-        System.out.println(tableModelEvent.getFirstRow() + " : " + tableModelEvent.getLastRow());
-        System.out.println(tableModelEvent.getType());
-//        tableModelEvent.getType()
+        java.util.List<Constraint> constraints = new ArrayList<>();
+        for(int i = 0; i < rowVector.size(); ++i) {
+            String name = model.getColumnName(i);
+            Object value = rowVector.get(i);
+            constraints.add(new EqualsConstraint(name, value));
+        }
+
+        Table table = clientController.getApplicationProperties().getTableData().getTableStructure();
+        List<Assignment> data = new ArrayList<>();
+        data.add(new Assignment(table.getSchema(), table.getName(), model.getColumnName(column), newValue));
+
+        clientController.onEditData(data, constraints);
     }
 
     private void initTable() {
@@ -102,13 +108,17 @@ public class TableEditorView extends WorkspaceBase {
                     .collect(Collectors.toList())
                     .toArray();
 
-            DefaultTableModel tableModel = new DefaultTableModel(titles, 0);
+            DefaultTableModel tableModel = new DefaultTableModel(titles, 0) {
+                @Override
+                public void setValueAt(Object value, int row, int column) {
+                    onEditCell(value, row, column);
+                }
+            };
 
-            for (String[] line : tableData.getData()) {
+            for (Object[] line : tableData.getData()) {
                 tableModel.addRow(line);
             }
 
-            tableModel.addTableModelListener(this::onTableEdit);
             table.setModel(tableModel);
         });
     }
