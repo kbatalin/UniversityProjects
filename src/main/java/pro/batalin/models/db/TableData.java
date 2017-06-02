@@ -40,6 +40,10 @@ public class TableData extends ObservableBase implements Observable {
 
     public enum Event implements ObserveEvent {
         TABLE_LOADED,
+        DELETE_ERROR,
+        EDIT_ERROR,
+        UPDATE_ERROR,
+        INSERT_ERROR,
     }
 
     public Table getTableStructure() {
@@ -114,6 +118,9 @@ public class TableData extends ObservableBase implements Observable {
 
             statement.executeUpdate();
             update();
+        }, exception -> {
+            notifyObservers(Event.DELETE_ERROR);
+            update();
         });
     }
 
@@ -150,6 +157,8 @@ public class TableData extends ObservableBase implements Observable {
 
             statement.executeUpdate();
             update();
+        }, exception -> {
+            notifyObservers(Event.EDIT_ERROR);
         });
     }
 
@@ -183,6 +192,8 @@ public class TableData extends ObservableBase implements Observable {
 
             statement.executeUpdate();
             update();
+        }, exception -> {
+            notifyObservers(Event.INSERT_ERROR);
         });
     }
 }

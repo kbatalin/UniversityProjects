@@ -11,6 +11,7 @@ import java.util.Date;
  * @author Kirill Batalin (kir55rus)
  */
 public class DateEditor extends DefaultCellEditor {
+    //todo: add yyyy-MM-dd format
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");;
 
     public DateEditor() {

@@ -78,12 +78,9 @@ public class DBThread extends Thread {
                 if (task.getErrorConsumer() != null) {
                     task.getErrorConsumer().accept(e);
                 }
-                e.printStackTrace();
-                System.out.println(e.getSQLState());
-                System.out.println(e.getErrorCode());
-                System.out.println(e.getMessage());
             }
 
+            //todo: remove
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {

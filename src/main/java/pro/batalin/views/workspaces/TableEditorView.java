@@ -43,6 +43,9 @@ public class TableEditorView extends WorkspaceBase {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
         tableData.addObserver(TableData.Event.TABLE_LOADED, this::initTable);
+        tableData.addObserver(TableData.Event.EDIT_ERROR, () -> onError("Edit error"));
+        tableData.addObserver(TableData.Event.INSERT_ERROR, () -> onError("Insert error"));
+        tableData.addObserver(TableData.Event.DELETE_ERROR, () -> onError("Delete error"));
 
         table.setDefaultRenderer(java.sql.Timestamp.class, new DateRenderer());
         table.setDefaultEditor(java.sql.Timestamp.class, new DateEditor());
@@ -66,6 +69,13 @@ public class TableEditorView extends WorkspaceBase {
 
         initTable();
         setVisible(true);
+    }
+
+    private void onError(String msg) {
+        JOptionPane.showMessageDialog(this,
+                msg,
+                "Database operation error",
+                JOptionPane.ERROR_MESSAGE);
     }
 
     private void onDeleteRow(ActionEvent actionEvent) {
