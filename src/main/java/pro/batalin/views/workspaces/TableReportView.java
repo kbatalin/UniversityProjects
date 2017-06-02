@@ -3,7 +3,9 @@ package pro.batalin.views.workspaces;
 import pro.batalin.controllers.ClientController;
 import pro.batalin.ddl4j.model.Column;
 import pro.batalin.ddl4j.model.Table;
+import pro.batalin.models.Types;
 import pro.batalin.models.db.TableData;
+import pro.batalin.views.workspaces.tables.DateRenderer;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -31,6 +33,8 @@ public class TableReportView extends WorkspaceBase {
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
+        table.setDefaultRenderer(java.sql.Timestamp.class, new DateRenderer());
+
         tableData.addObserver(TableData.Event.TABLE_LOADED, this::initTable);
 
         initTable();
@@ -54,6 +58,18 @@ public class TableReportView extends WorkspaceBase {
                 @Override
                 public boolean isCellEditable(int row, int column) {
                     return false;
+                }
+
+                @Override
+                public Class<?> getColumnClass(int i) {
+                    Column column = tableStructure.getColumns().get(i);
+                    Class clazz = Types.toJava(column.getType().getType());
+
+                    if (clazz == null) {
+                        System.err.println("Type not found!!!!");
+                    }
+
+                    return clazz;
                 }
             };
 
