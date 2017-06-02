@@ -3,15 +3,20 @@ package pro.batalin.views.workspaces;
 import pro.batalin.controllers.ClientController;
 import pro.batalin.ddl4j.model.Column;
 import pro.batalin.ddl4j.model.Table;
+import pro.batalin.models.Types;
 import pro.batalin.models.db.TableData;
-import pro.batalin.models.db.sql.Assignment;
+import pro.batalin.models.db.sql.InsertPattern;
+import pro.batalin.models.db.sql.UpdatePattern;
 import pro.batalin.models.db.sql.constraints.Constraint;
 import pro.batalin.models.db.sql.constraints.EqualsConstraint;
+import pro.batalin.views.workspaces.tables.DateEditor;
+import pro.batalin.views.workspaces.tables.DateRenderer;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.*;
 import java.util.List;
@@ -39,6 +44,9 @@ public class TableEditorView extends WorkspaceBase {
 
         tableData.addObserver(TableData.Event.TABLE_LOADED, this::initTable);
 
+        table.setDefaultRenderer(java.sql.Timestamp.class, new DateRenderer());
+        table.setDefaultEditor(java.sql.Timestamp.class, new DateEditor());
+
         InputMap inputMap = table.getInputMap(WHEN_FOCUSED);
         ActionMap actionMap = table.getActionMap();
 
@@ -49,12 +57,20 @@ public class TableEditorView extends WorkspaceBase {
             }
         });
 
+        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK), "insert");
+        actionMap.put("insert", new AbstractAction() {
+            public void actionPerformed(ActionEvent evt) {
+                onInsertRow(evt);
+            }
+        });
+
         initTable();
         setVisible(true);
     }
 
     private void onDeleteRow(ActionEvent actionEvent) {
         int[] rows = table.getSelectedRows();
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
 
         for (int row : rows) {
             if (row < 0) {
@@ -62,7 +78,10 @@ public class TableEditorView extends WorkspaceBase {
             }
 
             row = table.convertRowIndexToModel(row);
-            DefaultTableModel model = (DefaultTableModel) table.getModel();
+
+            if (row == model.getRowCount() - 1) { //insert-line
+                continue;
+            }
 
             Vector rowVector = (Vector) model.getDataVector().get(row);
 
@@ -76,6 +95,25 @@ public class TableEditorView extends WorkspaceBase {
 
             clientController.onDeleteDataRow(data);
         }
+    }
+
+    private void onInsertRow(ActionEvent actionEvent) {
+        DefaultTableModel model = (DefaultTableModel) table.getModel();
+        if (model.getColumnCount() < 1) {
+            return;
+        }
+
+        Vector rowVector = (Vector) model.getDataVector().get(model.getColumnCount() - 1);
+
+        Table table = clientController.getApplicationProperties().getTableData().getTableStructure();
+        java.util.List<InsertPattern> data = new ArrayList<>();
+        for(int i = 0; i < rowVector.size(); ++i) {
+            String name = model.getColumnName(i);
+            Object value = rowVector.get(i);
+            data.add(new InsertPattern(table.getSchema(), table.getName(), name, value));
+        }
+
+        clientController.onInsertData(data);
     }
 
     private void onEditCell(Object newValue, int row, int column) {
@@ -92,8 +130,8 @@ public class TableEditorView extends WorkspaceBase {
         }
 
 
-        List<Assignment> data = new ArrayList<>();
-        data.add(new Assignment(table.getSchema(), table.getName(), model.getColumnName(column), newValue));
+        List<UpdatePattern> data = new ArrayList<>();
+        data.add(new UpdatePattern(table.getSchema(), table.getName(), model.getColumnName(column), newValue));
 
         clientController.onEditData(data, constraints);
     }
@@ -111,16 +149,38 @@ public class TableEditorView extends WorkspaceBase {
                     .collect(Collectors.toList())
                     .toArray();
 
+            List<Object[]> data = tableData.getData();
+
             DefaultTableModel tableModel = new DefaultTableModel(titles, 0) {
                 @Override
                 public void setValueAt(Object value, int row, int column) {
-                    onEditCell(value, row, column);
+                    if (row < data.size()) {
+                        onEditCell(value, row, column);
+                    } else {
+                        super.setValueAt(value, row, column);
+                    }
+                }
+
+                @Override
+                public Class<?> getColumnClass(int i) {
+                    Column column = tableStructure.getColumns().get(i);
+                    Class clazz = Types.toJava(column.getType().getType());
+
+                    if (clazz == null) {
+                        System.err.println("Type not found!!!!");
+                    }
+
+                    return clazz;
                 }
             };
 
-            for (Object[] line : tableData.getData()) {
+            for (Object[] line : data) {
                 tableModel.addRow(line);
             }
+
+            Object[] newDataLine = new Object[titles.length];
+            newDataLine[0] = "...";
+            tableModel.addRow(newDataLine);
 
             table.setModel(tableModel);
         });

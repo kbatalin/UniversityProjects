@@ -2,7 +2,8 @@ package pro.batalin.models.db;
 
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.model.Table;
-import pro.batalin.models.db.sql.Assignment;
+import pro.batalin.models.db.sql.InsertPattern;
+import pro.batalin.models.db.sql.UpdatePattern;
 import pro.batalin.models.db.sql.Pattern;
 import pro.batalin.models.db.sql.constraints.Constraint;
 import pro.batalin.models.observe.Observable;
@@ -15,9 +16,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Kirill Batalin (kir55rus)
@@ -116,7 +117,7 @@ public class TableData extends ObservableBase implements Observable {
         });
     }
 
-    public void edit(List<Assignment> data, List<Constraint> constraints) {
+    public void edit(List<UpdatePattern> data, List<Constraint> constraints) {
         Schema schema = this.schema;
         String tableName = this.table;
         applicationProperties.getDBThread().addTask(platform -> {
@@ -145,6 +146,39 @@ public class TableData extends ObservableBase implements Observable {
             }
             for(int i = 0; i < constraints.size(); ++i) {
                 statement.setObject(i + data.size() + 1, constraints.get(i).getValue());
+            }
+
+            statement.executeUpdate();
+            update();
+        });
+    }
+
+    public void insert(List<InsertPattern> data) {
+        Schema schema = this.schema;
+        String tableName = this.table;
+        applicationProperties.getDBThread().addTask(platform -> {
+            if (tableName == null || tableName.isEmpty() || schema == null) {
+                return;
+            }
+
+            String insertData = data.stream()
+                    .map(Pattern::getPattern)
+                    .collect(Collectors.joining(", "));
+
+            String insertPattern = Stream.generate(() -> "?")
+                    .limit(data.size())
+                    .collect(Collectors.joining(", "));
+
+            String sql = String.format("INSERT INTO %s.%s (%s) VALUES (%s)",
+                    schema.getName(),
+                    tableName,
+                    insertData,
+                    insertPattern);
+
+            Connection connection = platform.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql);
+            for(int i = 0; i < data.size(); ++i) {
+                statement.setObject(i + 1, data.get(i).getValue());
             }
 
             statement.executeUpdate();

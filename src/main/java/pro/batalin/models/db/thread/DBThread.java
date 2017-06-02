@@ -75,7 +75,13 @@ public class DBThread extends Thread {
             try {
                 task.getTask().accept(platform);
             } catch (SQLException e) {
-                task.getErrorConsumer().accept(e);
+                if (task.getErrorConsumer() != null) {
+                    task.getErrorConsumer().accept(e);
+                }
+                e.printStackTrace();
+                System.out.println(e.getSQLState());
+                System.out.println(e.getErrorCode());
+                System.out.println(e.getMessage());
             }
 
             try {

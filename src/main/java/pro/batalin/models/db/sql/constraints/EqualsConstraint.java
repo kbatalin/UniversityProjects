@@ -1,13 +1,12 @@
 package pro.batalin.models.db.sql.constraints;
 
 import pro.batalin.ddl4j.model.Schema;
+import pro.batalin.models.db.sql.PatternImpl;
 
 /**
  * @author Kirill Batalin (kir55rus)
  */
-public class EqualsConstraint implements Constraint {
-    private Schema schema;
-    private String table;
+public class EqualsConstraint extends PatternImpl implements Constraint {
     private String column;
     private Object value;
 
@@ -15,8 +14,7 @@ public class EqualsConstraint implements Constraint {
     }
 
     public EqualsConstraint(Schema schema, String table, String column, Object value) {
-        this.schema = schema;
-        this.table = table;
+        super(schema, table);
         this.column = column;
         this.value = value;
     }
@@ -39,25 +37,9 @@ public class EqualsConstraint implements Constraint {
         this.value = value;
     }
 
-    public Schema getSchema() {
-        return schema;
-    }
-
-    public void setSchema(Schema schema) {
-        this.schema = schema;
-    }
-
-    public String getTable() {
-        return table;
-    }
-
-    public void setTable(String table) {
-        this.table = table;
-    }
-
     @Override
     public String getPattern() {
-        return String.format("%s = ?", column);
+        return String.format("%s.%s.%s = ?", getSchema(), getTable(), column);
     }
 
     @Override

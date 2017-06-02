@@ -1,7 +1,8 @@
 package pro.batalin.controllers;
 
 import pro.batalin.ddl4j.model.Schema;
-import pro.batalin.models.db.sql.Assignment;
+import pro.batalin.models.db.sql.InsertPattern;
+import pro.batalin.models.db.sql.UpdatePattern;
 import pro.batalin.models.db.sql.constraints.Constraint;
 import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.models.properties.ApplicationPropertiesImpl;
@@ -95,7 +96,11 @@ public class ClientController {
         applicationProperties.getTableData().delete(constrains);
     }
 
-    public void onEditData(List<Assignment> data, List<Constraint> constrains) {
+    public void onEditData(List<UpdatePattern> data, List<Constraint> constrains) {
         applicationProperties.getTableData().edit(data, constrains);
+    }
+
+    public void onInsertData(List<InsertPattern> data) {
+        applicationProperties.getTableData().insert(data);
     }
 }
