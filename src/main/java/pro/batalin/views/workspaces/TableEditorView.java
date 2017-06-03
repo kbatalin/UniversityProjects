@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,10 +43,10 @@ public class TableEditorView extends WorkspaceBase {
 
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 
-        tableData.addObserver(TableData.Event.TABLE_LOADED, this::initTable);
-        tableData.addObserver(TableData.Event.EDIT_ERROR, () -> onError("Edit error"));
-        tableData.addObserver(TableData.Event.INSERT_ERROR, () -> onError("Insert error"));
-        tableData.addObserver(TableData.Event.DELETE_ERROR, () -> onError("Delete error"));
+        tableData.addObserver(TableData.Event.TABLE_LOADED, e -> initTable());
+        tableData.addObserver(TableData.Event.EDIT_ERROR, this::onEditError);
+        tableData.addObserver(TableData.Event.INSERT_ERROR, this::onInsertError);
+        tableData.addObserver(TableData.Event.DELETE_ERROR, this::onDeleteError);
 
         table.setDefaultRenderer(java.sql.Timestamp.class, new DateRenderer());
         table.setDefaultEditor(java.sql.Timestamp.class, new DateEditor());
@@ -71,7 +72,33 @@ public class TableEditorView extends WorkspaceBase {
         setVisible(true);
     }
 
-    private void onError(String msg) {
+    private void onDeleteError(Object args) {
+        if (!(args instanceof SQLException)) {
+            return;
+        }
+
+        onError("Delete error", (SQLException) args);
+    }
+
+    private void onInsertError(Object args) {
+        if (!(args instanceof SQLException)) {
+            return;
+        }
+
+        onError("Insert error", (SQLException) args);
+    }
+
+    private void onEditError(Object args) {
+        if (!(args instanceof SQLException)) {
+            return;
+        }
+
+        onError("Edit error", (SQLException) args);
+    }
+
+    private void onError(String type, SQLException exception) {
+        String msg = String.format("%s%n%s", type, exception.getLocalizedMessage());
+
         JOptionPane.showMessageDialog(this,
                 msg,
                 "Database operation error",

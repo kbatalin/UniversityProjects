@@ -25,7 +25,7 @@ public class Tables extends ObservableBase implements Observable {
         this.applicationProperties = applicationProperties;
         this.tablesNames = new ArrayList<>();
 
-        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, this::update);
+        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, e -> update());
     }
 
     public enum Event implements ObserveEvent {

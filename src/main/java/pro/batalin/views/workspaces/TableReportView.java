@@ -35,7 +35,7 @@ public class TableReportView extends WorkspaceBase {
 
         table.setDefaultRenderer(java.sql.Timestamp.class, new DateRenderer());
 
-        tableData.addObserver(TableData.Event.TABLE_LOADED, this::initTable);
+        tableData.addObserver(TableData.Event.TABLE_LOADED, e -> initTable());
 
         initTable();
         setVisible(true);

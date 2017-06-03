@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,7 +36,7 @@ public class TableData extends ObservableBase implements Observable {
         this.applicationProperties = applicationProperties;
         data = new ArrayList<>();
 
-        applicationProperties.getTables().addObserver(Tables.Event.TABLE_SELECTED, this::update);
+        applicationProperties.getTables().addObserver(Tables.Event.TABLE_SELECTED, e -> update());
     }
 
     public enum Event implements ObserveEvent {
@@ -104,7 +105,11 @@ public class TableData extends ObservableBase implements Observable {
                 return;
             }
 
-            String constraintsPattern = constraints.stream()
+            List<Constraint> notNullConstraints = constraints.stream()
+                    .filter(e -> e.getValue() != null)
+                    .collect(Collectors.toList());
+
+            String constraintsPattern = notNullConstraints.stream()
                     .map(Constraint::getPattern)
                     .collect(Collectors.joining(" AND "));
 
@@ -112,14 +117,14 @@ public class TableData extends ObservableBase implements Observable {
 
             Connection connection = platform.getConnection();
             PreparedStatement statement = connection.prepareStatement(sql);
-            for(int i = 0; i < constraints.size(); ++i) {
-                statement.setObject(i + 1, constraints.get(i).getValue());
+            for(int i = 0; i < notNullConstraints.size(); ++i) {
+                statement.setObject(i + 1, notNullConstraints.get(i).getValue());
             }
 
             statement.executeUpdate();
             update();
         }, exception -> {
-            notifyObservers(Event.DELETE_ERROR);
+            notifyObservers(Event.DELETE_ERROR, exception);
             update();
         });
     }
@@ -136,7 +141,11 @@ public class TableData extends ObservableBase implements Observable {
                     .map(Pattern::getPattern)
                     .collect(Collectors.joining(", "));
 
-            String constraintsPattern = constraints.stream()
+            List<Constraint> notNullConstraints = constraints.stream()
+                    .filter(e -> e.getValue() != null)
+                    .collect(Collectors.toList());
+
+            String constraintsPattern = notNullConstraints.stream()
                     .map(Constraint::getPattern)
                     .collect(Collectors.joining(" AND "));
 
@@ -151,14 +160,14 @@ public class TableData extends ObservableBase implements Observable {
             for(int i = 0; i < data.size(); ++i) {
                 statement.setObject(i + 1, data.get(i).getValue());
             }
-            for(int i = 0; i < constraints.size(); ++i) {
-                statement.setObject(i + data.size() + 1, constraints.get(i).getValue());
+            for(int i = 0; i < notNullConstraints.size(); ++i) {
+                statement.setObject(i + data.size() + 1, notNullConstraints.get(i).getValue());
             }
 
             statement.executeUpdate();
             update();
         }, exception -> {
-            notifyObservers(Event.EDIT_ERROR);
+            notifyObservers(Event.EDIT_ERROR, exception);
         });
     }
 
@@ -193,7 +202,7 @@ public class TableData extends ObservableBase implements Observable {
             statement.executeUpdate();
             update();
         }, exception -> {
-            notifyObservers(Event.INSERT_ERROR);
+            notifyObservers(Event.INSERT_ERROR, exception);
         });
     }
 }

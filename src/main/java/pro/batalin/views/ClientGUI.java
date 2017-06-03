@@ -62,11 +62,11 @@ public class ClientGUI extends JFrame {
 
         ApplicationProperties applicationProperties = clientController.getApplicationProperties();
 
-        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMAS_LIST_LOADED, this::onSchemasListLoaded);
-        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, this::onSchemaSelected);
-        applicationProperties.getTables().addObserver(Tables.Event.TABLES_LIST_LOADED, this::onTablesListLoaded);
-        applicationProperties.getTables().addObserver(Tables.Event.TABLE_SELECTED, this::onTableSelected);
-        applicationProperties.getTableData().addObserver(TableData.Event.TABLE_LOADED, this::onTableLoaded);
+        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMAS_LIST_LOADED, e -> onSchemasListLoaded());
+        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, e -> onSchemaSelected());
+        applicationProperties.getTables().addObserver(Tables.Event.TABLES_LIST_LOADED, e -> onTablesListLoaded());
+        applicationProperties.getTables().addObserver(Tables.Event.TABLE_SELECTED, e -> onTableSelected());
+        applicationProperties.getTableData().addObserver(TableData.Event.TABLE_LOADED, e -> onTableLoaded());
 
         schemasComboBox.addActionListener(clientController::onSchemasComboBoxSelected);
         tableList.addListSelectionListener(clientController::onTableSelected);

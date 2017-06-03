@@ -38,13 +38,18 @@ public class ObservableBase implements Observable {
 
     @Override
     public void notifyObservers(ObserveEvent event) {
+        notifyObservers(event, null);
+    }
+
+    @Override
+    public void notifyObservers(ObserveEvent event, Object args) {
         Map<Integer, ObserverHandler> handlers = observers.get(event);
         if (handlers == null) {
             return;
         }
 
         for (ObserverHandler handler : handlers.values()) {
-            handler.perform();
+            handler.perform(args);
         }
     }
 
