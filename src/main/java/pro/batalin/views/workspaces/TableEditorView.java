@@ -109,11 +109,11 @@ public class TableEditorView extends WorkspaceBase {
 
     private void onInsertRow(ActionEvent actionEvent) {
         DefaultTableModel model = (DefaultTableModel) table.getModel();
-        if (model.getColumnCount() < 1) {
+        if (model.getRowCount() < 1) {
             return;
         }
 
-        Vector rowVector = (Vector) model.getDataVector().get(model.getColumnCount() - 1);
+        Vector rowVector = (Vector) model.getDataVector().get(model.getRowCount() - 1);
 
         Table table = clientController.getApplicationProperties().getTableData().getTableStructure();
         java.util.List<InsertPattern> data = new ArrayList<>();
