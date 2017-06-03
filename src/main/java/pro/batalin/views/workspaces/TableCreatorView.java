@@ -39,13 +39,10 @@ public class TableCreatorView extends WorkspaceBase {
 
         setLayout(new BorderLayout());
         add(contentPanel);
+        getRootPane().setDefaultButton(executeButton);
         columns.setLayout(new BoxLayout(columns, BoxLayout.Y_AXIS));
 
         columnViewList = new ArrayList<>();
-//        columnViewList.add(new TableColumnView());
-//        columnViewList.add(new TableColumnView());
-//
-//        columnViewList.forEach(columns::add);
 
         initPopupMenus();
     }
@@ -67,6 +64,14 @@ public class TableCreatorView extends WorkspaceBase {
                 onColumnsMouseClicked(mouseEvent);
             }
         });
+    }
+
+    private void onExecuteButtonClicked(ActionEvent actionEvent) {
+
+    }
+
+    private void onCancelButtonClicked(ActionEvent actionEvent) {
+
     }
 
     private void onAddColumnMenuClicked(ActionEvent actionEvent) {

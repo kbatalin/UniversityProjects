@@ -20,4 +20,24 @@ public class TableColumnView extends JPanel {
 
         setMaximumSize(new Dimension(Integer.MAX_VALUE, getMinimumSize().height));
     }
+
+    public String getColumnName() {
+        return columnNameField.getText();
+    }
+
+    public String getType() {
+        return typeField.getText();
+    }
+
+    public String getDefaultValue() {
+        return defaultValueFiled.getText();
+    }
+
+    public boolean isNotNull() {
+        return notNullCheckBox.isSelected();
+    }
+
+    public boolean isUnique() {
+        return uniqueCheckBox.isSelected();
+    }
 }

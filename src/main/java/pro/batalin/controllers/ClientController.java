@@ -103,4 +103,12 @@ public class ClientController {
     public void onInsertData(List<InsertPattern> data) {
         applicationProperties.getTableData().insert(data);
     }
+
+    public void onCreateTableButtonClicked(ActionEvent actionEvent) {
+
+    }
+
+    public void onCancelCreateTableButtonClicked(ActionEvent actionEvent) {
+
+    }
 }
