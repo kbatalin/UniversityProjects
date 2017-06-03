@@ -1,4 +1,4 @@
-package pro.batalin.views.workspaces;
+package pro.batalin.views.workspaces.templates;
 
 import javax.swing.*;
 import java.awt.*;

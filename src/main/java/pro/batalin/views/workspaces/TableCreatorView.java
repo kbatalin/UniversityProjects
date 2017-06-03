@@ -1,6 +1,7 @@
 package pro.batalin.views.workspaces;
 
 import pro.batalin.controllers.ClientController;
+import pro.batalin.views.workspaces.templates.TableColumnView;
 
 import javax.swing.*;
 import java.awt.*;
