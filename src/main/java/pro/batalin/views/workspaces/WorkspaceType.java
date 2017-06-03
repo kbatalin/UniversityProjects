@@ -7,4 +7,5 @@ public enum WorkspaceType {
     EMPTY,
     TABLE_REPORT,
     TABLE_EDITOR,
+    TABLE_CREATOR,
 }
