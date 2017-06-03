@@ -29,7 +29,13 @@ public class ClientGUI extends JFrame {
     private WorkspaceBase workspace;
     private GridBagConstraints workspaceLayoutConstraints;
     private final StatusBar statusBar;
+
     private JPopupMenu tableOptionsPopupMenu;
+    private JMenuItem reportMenu;
+    private JMenuItem editDataMenu;
+    private JMenuItem editTableMenu;
+    private JMenuItem dropMenu;
+    private JMenuItem createMenu;
 
     public ClientGUI(ClientController clientController) {
         this.clientController = clientController;
@@ -77,25 +83,25 @@ public class ClientGUI extends JFrame {
 
     private void initPopupMenu() {
         tableOptionsPopupMenu = new JPopupMenu("Actions");
-        JMenuItem reportMenu = new JMenuItem("Show report");
+        reportMenu = new JMenuItem("Show report");
         reportMenu.addActionListener(this::onReportMenuClicked);
         tableOptionsPopupMenu.add(reportMenu);
 
-        JMenuItem editDataMenu = new JMenuItem("Edit data");
+        editDataMenu = new JMenuItem("Edit data");
         editDataMenu.addActionListener(this::onEditDataMenuClicked);
         tableOptionsPopupMenu.add(editDataMenu);
 
-        JMenuItem editTableMenu = new JMenuItem("Edit table");
+        editTableMenu = new JMenuItem("Edit table");
         editTableMenu.addActionListener(this::onEditTableMenuClicked);
         tableOptionsPopupMenu.add(editTableMenu);
 
-        JMenuItem dropMenu = new JMenuItem("Drop table");
+        dropMenu = new JMenuItem("Drop table");
         dropMenu.addActionListener(this::onDropTableMenuClicked);
         tableOptionsPopupMenu.add(dropMenu);
 
 //        tableOptionsPopupMenu.add(new JPopupMenu.Separator());
 
-        JMenuItem createMenu = new JMenuItem("Create table");
+        createMenu = new JMenuItem("Create table");
         createMenu.addActionListener(this::onCreateTableMenuClicked);
         tableOptionsPopupMenu.add(createMenu);
 
@@ -140,14 +146,32 @@ public class ClientGUI extends JFrame {
     }
 
     private void onCreateTableMenuClicked(ActionEvent actionEvent) {
+        SwingUtilities.invokeLater(() -> {
+            if (workspace.getWorkspaceType() == WorkspaceType.TABLE_CREATOR) {
+                return;
+            }
 
+            replaceWorkspace(new TableCreatorView(clientController));
+        });
     }
 
     private void onTableListMouseClicked(MouseEvent mouseEvent) {
-        if(!SwingUtilities.isRightMouseButton(mouseEvent)
-                || tableList.isSelectionEmpty()) {
+        if(!SwingUtilities.isRightMouseButton(mouseEvent)) {
             return;
         }
+
+        if (!tableList.isSelectionEmpty()) {
+            reportMenu.setEnabled(true);
+            editDataMenu.setEnabled(true);
+            editTableMenu.setEnabled(true);
+            dropMenu.setEnabled(true);
+        } else {
+            reportMenu.setEnabled(false);
+            editDataMenu.setEnabled(false);
+            editTableMenu.setEnabled(false);
+            dropMenu.setEnabled(false);
+        }
+        createMenu.setEnabled(true);
 
         tableOptionsPopupMenu.show(tableList, mouseEvent.getX(), mouseEvent.getY());
     }
