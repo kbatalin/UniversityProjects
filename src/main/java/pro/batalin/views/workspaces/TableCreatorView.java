@@ -2,6 +2,7 @@ package pro.batalin.views.workspaces;
 
 import pro.batalin.controllers.ClientController;
 import pro.batalin.views.workspaces.templates.TableColumnView;
+import pro.batalin.views.workspaces.templates.TableForeignKeyView;
 import pro.batalin.views.workspaces.templates.TablePrimaryKeyView;
 
 import javax.swing.*;
@@ -25,10 +26,13 @@ public class TableCreatorView extends WorkspaceBase {
     private JButton cancelButton;
     private JPanel primaryKeys;
     private JScrollPane pkScrollPane;
+    private JScrollPane fkScrollPane;
+    private JPanel foreignKeys;
     private ClientController clientController;
 
     private TableColumnView selectedColumn = null;
     private TablePrimaryKeyView selectedPk = null;
+    private TableForeignKeyView selectedFk = null;
 
     private JPopupMenu columnsPopupMenu;
     private JMenuItem addColumnMenu;
@@ -38,8 +42,13 @@ public class TableCreatorView extends WorkspaceBase {
     private JMenuItem addPkMenu;
     private JMenuItem delPkMenu;
 
+    private JPopupMenu fkPopupMenu;
+    private JMenuItem addFkMenu;
+    private JMenuItem delFkMenu;
+
     private List<TableColumnView> columnViewList;
     private List<TablePrimaryKeyView> primaryKeyViewList;
+    private List<TableForeignKeyView> foreignKeyViewList;
 
     public TableCreatorView(ClientController clientController) {
         super(WorkspaceType.TABLE_CREATOR);
@@ -50,9 +59,11 @@ public class TableCreatorView extends WorkspaceBase {
         add(contentPanel);
         columns.setLayout(new BoxLayout(columns, BoxLayout.Y_AXIS));
         primaryKeys.setLayout(new BoxLayout(primaryKeys, BoxLayout.Y_AXIS));
+        foreignKeys.setLayout(new BoxLayout(foreignKeys, BoxLayout.Y_AXIS));
 
         columnViewList = new ArrayList<>();
         primaryKeyViewList = new ArrayList<>();
+        foreignKeyViewList = new ArrayList<>();
 
         executeButton.addActionListener(clientController::onCreateTableButtonClicked);
         cancelButton.addActionListener(clientController::onCancelCreateTableButtonClicked);
@@ -66,6 +77,10 @@ public class TableCreatorView extends WorkspaceBase {
 
     public List<TablePrimaryKeyView> getPrimaryKeyViewList() {
         return primaryKeyViewList;
+    }
+
+    public List<TableForeignKeyView> getForeignKeyViewList() {
+        return foreignKeyViewList;
     }
 
     public String getTableName() {
@@ -104,6 +119,23 @@ public class TableCreatorView extends WorkspaceBase {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 onPrimaryKeysMouseClicked(mouseEvent);
+            }
+        });
+
+        fkPopupMenu = new JPopupMenu();
+
+        addFkMenu = new JMenuItem("Add key");
+        addFkMenu.addActionListener(this::onAddFkMenuClicked);
+        fkPopupMenu.add(addFkMenu);
+
+        delFkMenu = new JMenuItem("Delete key");
+        delFkMenu.addActionListener(this::onDelFkMenuClicked);
+        fkPopupMenu.add(delFkMenu);
+
+        foreignKeys.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                onForeignKeysMouseClicked(mouseEvent);
             }
         });
     }
@@ -180,5 +212,42 @@ public class TableCreatorView extends WorkspaceBase {
         }
 
         pkPopupMenu.show(primaryKeys, mouseEvent.getX(), mouseEvent.getY());
+    }
+
+    private void onAddFkMenuClicked(ActionEvent actionEvent) {
+        TableForeignKeyView foreignKeyView = new TableForeignKeyView();
+        foreignKeyViewList.add(foreignKeyView);
+        foreignKeys.add(foreignKeyView);
+
+        fkScrollPane.revalidate();
+        fkScrollPane.repaint();
+    }
+
+    private void onDelFkMenuClicked(ActionEvent actionEvent) {
+        if (selectedFk == null) {
+            return;
+        }
+
+        foreignKeyViewList.remove(selectedFk);
+        foreignKeys.remove(selectedFk);
+
+        fkScrollPane.revalidate();
+        fkScrollPane.repaint();
+    }
+
+    private void onForeignKeysMouseClicked(MouseEvent mouseEvent) {
+        if (!SwingUtilities.isRightMouseButton(mouseEvent)) {
+            return;
+        }
+
+        Component c = foreignKeys.getComponentAt(mouseEvent.getPoint());
+        if (c instanceof TableForeignKeyView) {
+            selectedFk = (TableForeignKeyView) c;
+            delFkMenu.setEnabled(true);
+        } else {
+            delFkMenu.setEnabled(false);
+        }
+
+        fkPopupMenu.show(foreignKeys, mouseEvent.getX(), mouseEvent.getY());
     }
 }

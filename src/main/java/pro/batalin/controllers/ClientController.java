@@ -5,6 +5,7 @@ import pro.batalin.ddl4j.model.DBType;
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.model.Table;
 import pro.batalin.ddl4j.model.alters.Alter;
+import pro.batalin.ddl4j.model.alters.constraint.AddConstraintForeignKeyAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintPrimaryAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintUniqueAlter;
 import pro.batalin.models.db.sql.InsertPattern;
@@ -16,6 +17,7 @@ import pro.batalin.models.properties.LoginPropertiesImpl;
 import pro.batalin.views.ClientGUI;
 import pro.batalin.views.workspaces.*;
 import pro.batalin.views.workspaces.templates.TableColumnView;
+import pro.batalin.views.workspaces.templates.TableForeignKeyView;
 import pro.batalin.views.workspaces.templates.TablePrimaryKeyView;
 
 import javax.swing.*;
@@ -168,6 +170,24 @@ public class ClientController {
         if (!primaryKey.isEmpty()) {
             String pkName = String.format("pk_%s_%s", schema.getName(), tableName);
             alters.add(new AddConstraintPrimaryAlter(table, pkName, primaryKey));
+        }
+
+        for (TableForeignKeyView foreignKeyView : creatorView.getForeignKeyViewList()) {
+            String columnName = foreignKeyView.getFromColumn();
+            String refTableName = foreignKeyView.getToTable();
+            String refColumnName = foreignKeyView.getToColumn();
+
+            Column column = new Column();
+            column.setName(columnName);
+
+            Table refTable = new Table();
+            refTable.setName(refTableName);
+            Column refColumn = new Column();
+            refColumn.setName(refColumnName);
+            refTable.addColumn(refColumn);
+
+            String alterName = String.format("fk_%s_%s_%s_%s", table.getName(), column.getName(), refTable.getName(), refColumn.getName());
+            alters.add(new AddConstraintForeignKeyAlter(table, column, refTable, refColumn, alterName));
         }
 
         applicationProperties.getDBThread().addTask(platform -> {
