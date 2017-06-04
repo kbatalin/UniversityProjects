@@ -110,7 +110,9 @@ public class ClientController {
     }
 
     public void onCancelCreateTableButtonClicked(ActionEvent actionEvent) {
-
+        SwingUtilities.invokeLater(() -> {
+            clientGUI.replaceWorkspace(new EmptyWorkspace());
+        });
     }
 
     public void onReportMenuClicked(ActionEvent actionEvent) {

@@ -43,6 +43,9 @@ public class TableCreatorView extends WorkspaceBase {
 
         columnViewList = new ArrayList<>();
 
+        executeButton.addActionListener(clientController::onCreateTableButtonClicked);
+        cancelButton.addActionListener(clientController::onCancelCreateTableButtonClicked);
+
         initPopupMenus();
     }
 
@@ -63,14 +66,6 @@ public class TableCreatorView extends WorkspaceBase {
                 onColumnsMouseClicked(mouseEvent);
             }
         });
-    }
-
-    private void onExecuteButtonClicked(ActionEvent actionEvent) {
-
-    }
-
-    private void onCancelButtonClicked(ActionEvent actionEvent) {
-
     }
 
     private void onAddColumnMenuClicked(ActionEvent actionEvent) {
