@@ -8,6 +8,7 @@ import pro.batalin.models.properties.ApplicationProperties;
 import pro.batalin.models.properties.ApplicationPropertiesImpl;
 import pro.batalin.models.properties.LoginPropertiesImpl;
 import pro.batalin.views.ClientGUI;
+import pro.batalin.views.workspaces.*;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -110,5 +111,41 @@ public class ClientController {
 
     public void onCancelCreateTableButtonClicked(ActionEvent actionEvent) {
 
+    }
+
+    public void onReportMenuClicked(ActionEvent actionEvent) {
+        onTableSelected();
+    }
+
+    public void onEditDataMenuClicked(ActionEvent actionEvent) {
+        SwingUtilities.invokeLater(() -> {
+            clientGUI.replaceWorkspace(new TableEditorView(this));
+        });
+    }
+
+    public void onEditTableMenuClicked(ActionEvent actionEvent) {
+
+    }
+
+    public void onDropTableMenuClicked(ActionEvent actionEvent) {
+
+    }
+
+    public void onCreateTableMenuClicked(ActionEvent actionEvent) {
+        SwingUtilities.invokeLater(() -> {
+            clientGUI.replaceWorkspace(new TableCreatorView(this));
+        });
+    }
+
+    public void onSchemaSelected() {
+        SwingUtilities.invokeLater(() -> {
+            clientGUI.replaceWorkspace(new EmptyWorkspace());
+        });
+    }
+
+    public void onTableSelected() {
+        SwingUtilities.invokeLater(() -> {
+            clientGUI.replaceWorkspace(new TableReportView(this));
+        });
     }
 }

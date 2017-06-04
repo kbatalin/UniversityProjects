@@ -69,9 +69,9 @@ public class ClientGUI extends JFrame {
         ApplicationProperties applicationProperties = clientController.getApplicationProperties();
 
         applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMAS_LIST_LOADED, e -> onSchemasListLoaded());
-        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, e -> onSchemaSelected());
+        applicationProperties.getSchemas().addObserver(Schemas.Event.SCHEMA_SELECTED, e -> clientController.onSchemaSelected());
         applicationProperties.getTables().addObserver(Tables.Event.TABLES_LIST_LOADED, e -> onTablesListLoaded());
-        applicationProperties.getTables().addObserver(Tables.Event.TABLE_SELECTED, e -> onTableSelected());
+        applicationProperties.getTables().addObserver(Tables.Event.TABLE_SELECTED, e -> clientController.onTableSelected());
         applicationProperties.getTableData().addObserver(TableData.Event.TABLE_LOADED, e -> onTableLoaded());
 
         schemasComboBox.addActionListener(clientController::onSchemasComboBoxSelected);
@@ -84,25 +84,25 @@ public class ClientGUI extends JFrame {
     private void initPopupMenu() {
         tableOptionsPopupMenu = new JPopupMenu("Actions");
         reportMenu = new JMenuItem("Show report");
-        reportMenu.addActionListener(this::onReportMenuClicked);
+        reportMenu.addActionListener(clientController::onReportMenuClicked);
         tableOptionsPopupMenu.add(reportMenu);
 
         editDataMenu = new JMenuItem("Edit data");
-        editDataMenu.addActionListener(this::onEditDataMenuClicked);
+        editDataMenu.addActionListener(clientController::onEditDataMenuClicked);
         tableOptionsPopupMenu.add(editDataMenu);
 
         editTableMenu = new JMenuItem("Edit table");
-        editTableMenu.addActionListener(this::onEditTableMenuClicked);
+        editTableMenu.addActionListener(clientController::onEditTableMenuClicked);
         tableOptionsPopupMenu.add(editTableMenu);
 
         dropMenu = new JMenuItem("Drop table");
-        dropMenu.addActionListener(this::onDropTableMenuClicked);
+        dropMenu.addActionListener(clientController::onDropTableMenuClicked);
         tableOptionsPopupMenu.add(dropMenu);
 
 //        tableOptionsPopupMenu.add(new JPopupMenu.Separator());
 
         createMenu = new JMenuItem("Create table");
-        createMenu.addActionListener(this::onCreateTableMenuClicked);
+        createMenu.addActionListener(clientController::onCreateTableMenuClicked);
         tableOptionsPopupMenu.add(createMenu);
 
         tableList.addMouseListener(new MouseAdapter() {
@@ -115,43 +115,6 @@ public class ClientGUI extends JFrame {
             public void mousePressed(MouseEvent mouseEvent) {
                 onTableListMousePressed(mouseEvent);
             }
-        });
-    }
-
-    private void onReportMenuClicked(ActionEvent actionEvent) {
-        onTableSelected();
-    }
-
-    private void onEditDataMenuClicked(ActionEvent actionEvent) {
-        SwingUtilities.invokeLater(() -> {
-            if (workspace.getWorkspaceType() == WorkspaceType.TABLE_EDITOR) {
-                return;
-            }
-
-            synchronized (statusBar) {
-                if(clientController.getApplicationProperties().getTableData().isLoading()) {
-                    statusBar.setIndicatorVisible("loading", true);
-                }
-            }
-            replaceWorkspace(new TableEditorView(clientController));
-        });
-    }
-
-    private void onEditTableMenuClicked(ActionEvent actionEvent) {
-
-    }
-
-    private void onDropTableMenuClicked(ActionEvent actionEvent) {
-
-    }
-
-    private void onCreateTableMenuClicked(ActionEvent actionEvent) {
-        SwingUtilities.invokeLater(() -> {
-            if (workspace.getWorkspaceType() == WorkspaceType.TABLE_CREATOR) {
-                return;
-            }
-
-            replaceWorkspace(new TableCreatorView(clientController));
         });
     }
 
@@ -189,16 +152,6 @@ public class ClientGUI extends JFrame {
         tableList.setSelectedIndex(row);
     }
 
-    private void onSchemaSelected() {
-        SwingUtilities.invokeLater(() -> {
-            if (workspace.getWorkspaceType() == WorkspaceType.EMPTY) {
-                return;
-            }
-
-            statusBar.setIndicatorVisible("loading", true);
-            replaceWorkspace(new EmptyWorkspace());
-        });
-    }
 
     private void onSchemasListLoaded() {
         SwingUtilities.invokeLater(this::initSchemasComboBox);
@@ -212,26 +165,11 @@ public class ClientGUI extends JFrame {
         });
     }
 
-    private void onTableSelected() {
-        SwingUtilities.invokeLater(() -> {
-            if (workspace.getWorkspaceType() == WorkspaceType.TABLE_REPORT) {
-                return;
-            }
-
-            synchronized (statusBar) {
-                if (clientController.getApplicationProperties().getTableData().isLoading()) {
-                    statusBar.setIndicatorVisible("loading", true);
-                }
-            }
-            replaceWorkspace(new TableReportView(clientController));
-        });
-    }
-
     private void onTableLoaded() {
         SwingUtilities.invokeLater(() -> statusBar.setIndicatorVisible("loading", false));
     }
 
-    private void replaceWorkspace(WorkspaceBase workspace) {
+    public void replaceWorkspace(WorkspaceBase workspace) {
         workspacePanel.removeAll();
         this.workspace = workspace;
         workspacePanel.add(workspace, workspaceLayoutConstraints);

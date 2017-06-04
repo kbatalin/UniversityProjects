@@ -39,7 +39,6 @@ public class TableCreatorView extends WorkspaceBase {
 
         setLayout(new BorderLayout());
         add(contentPanel);
-        getRootPane().setDefaultButton(executeButton);
         columns.setLayout(new BoxLayout(columns, BoxLayout.Y_AXIS));
 
         columnViewList = new ArrayList<>();
