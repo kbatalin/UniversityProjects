@@ -35,12 +35,24 @@ public class TableColumnView extends JPanel {
         return columnNameField.getText();
     }
 
+    public void setColumnName(String value) {
+        columnNameField.setText(value);
+    }
+
     public String getType() {
         return typeField.getText();
     }
 
+    public void setType(String value) {
+        typeField.setText(value);
+    }
+
     public String getDefaultValue() {
         return defaultValueFiled.getText();
+    }
+
+    public void setDefaultValue(String value) {
+        defaultValueFiled.setText(value);
     }
 
     public Integer getTypeSize() {
@@ -56,15 +68,35 @@ public class TableColumnView extends JPanel {
         }
     }
 
+    public void setTypeSeize(Integer value) {
+        if (value == null) {
+            return;
+        }
+
+        sizeTextField.setText(String.valueOf(value));
+    }
+
     public boolean isNotNull() {
         return notNullCheckBox.isEnabled() && notNullCheckBox.isSelected();
+    }
+
+    public void setNotNull(boolean value) {
+        notNullCheckBox.setSelected(value);
     }
 
     public boolean isUnique() {
         return uniqueCheckBox.isEnabled() && uniqueCheckBox.isSelected();
     }
 
+    public void setUnique(boolean value) {
+        uniqueCheckBox.setSelected(value);
+    }
+
     public boolean isPrimaryKey() {
         return primaryKeyCheckBox.isSelected();
+    }
+
+    public void setPrimaryKey(boolean value) {
+        primaryKeyCheckBox.setSelected(value);
     }
 }

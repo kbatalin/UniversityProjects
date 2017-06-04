@@ -8,6 +8,9 @@ import pro.batalin.ddl4j.model.alters.Alter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintForeignKeyAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintPrimaryAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintUniqueAlter;
+import pro.batalin.ddl4j.model.constraints.ForeignKey;
+import pro.batalin.ddl4j.model.constraints.PrimaryKey;
+import pro.batalin.ddl4j.model.constraints.Unique;
 import pro.batalin.models.db.sql.InsertPattern;
 import pro.batalin.models.db.sql.UpdatePattern;
 import pro.batalin.models.db.sql.constraints.Constraint;
@@ -114,6 +117,10 @@ public class ClientController {
 
     public void onInsertData(List<InsertPattern> data) {
         applicationProperties.getTableData().insert(data);
+    }
+
+    public void onUpdateTableButtonClicked(ActionEvent actionEvent) {
+
     }
 
     public void onCreateTableButtonClicked(ActionEvent actionEvent) {
@@ -229,7 +236,52 @@ public class ClientController {
     }
 
     public void onEditTableMenuClicked(ActionEvent actionEvent) {
+        Schema schema = applicationProperties.getSchemas().getSelected();
+        String tableName = applicationProperties.getTables().getSelectedTable();
 
+        applicationProperties.getDBThread().addTask(platform -> {
+            Table table = platform.loadTable(schema, tableName);
+
+            List<String> pkNames = platform.loadPrimaryKeys(table);
+            PrimaryKey primaryKey = (pkNames != null && !pkNames.isEmpty())
+                    ? platform.loadPrimaryKey(schema, pkNames.get(0))
+                    : null;
+
+            List<String> fkNames = platform.loadForeignKeys(table);
+            List<ForeignKey> foreignKeys = new ArrayList<>();
+            for (String fkName : fkNames) {
+                ForeignKey foreignKey = platform.loadForeignKey(schema, fkName);
+                if (foreignKey == null) {
+                    continue;
+                }
+
+                foreignKeys.add(foreignKey);
+            }
+
+
+            List<String> unNames = platform.loadUniques(table);
+            List<Unique> uniques = new ArrayList<>();
+            for (String unName : unNames) {
+                if (primaryKey != null && primaryKey.getName().equals(unName)) {
+                    continue;
+                }
+
+                Unique unique = platform.loadUnique(schema, unName);
+                if (unName == null) {
+                    continue;
+                }
+
+                uniques.add(unique);
+            }
+
+            SwingUtilities.invokeLater(() -> {
+                clientGUI.replaceWorkspace(new TableCreatorView(this, table, primaryKey, uniques, foreignKeys));
+            });
+        }, e -> {
+            JOptionPane.showMessageDialog(clientGUI,
+                    "DB error: " + e.getLocalizedMessage(),
+                    "Table loading error", JOptionPane.ERROR_MESSAGE);
+        });
     }
 
     public void onDropTableMenuClicked(ActionEvent actionEvent) {

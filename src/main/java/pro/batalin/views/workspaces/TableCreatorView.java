@@ -1,6 +1,11 @@
 package pro.batalin.views.workspaces;
 
 import pro.batalin.controllers.ClientController;
+import pro.batalin.ddl4j.model.Column;
+import pro.batalin.ddl4j.model.Table;
+import pro.batalin.ddl4j.model.constraints.ForeignKey;
+import pro.batalin.ddl4j.model.constraints.PrimaryKey;
+import pro.batalin.ddl4j.model.constraints.Unique;
 import pro.batalin.views.workspaces.templates.TableColumnView;
 import pro.batalin.views.workspaces.templates.TableForeignKeyView;
 
@@ -10,7 +15,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Kirill Batalin (kir55rus)
@@ -44,6 +53,55 @@ public class TableCreatorView extends WorkspaceBase {
     public TableCreatorView(ClientController clientController) {
         super(WorkspaceType.TABLE_CREATOR);
 
+        init(clientController);
+
+        executeButton.addActionListener(clientController::onCreateTableButtonClicked);
+        cancelButton.addActionListener(clientController::onCancelCreateTableButtonClicked);
+    }
+
+    public TableCreatorView(ClientController clientController, Table table, PrimaryKey primaryKey, List<Unique> uniques, List<ForeignKey> foreignKeys) {
+        super(WorkspaceType.TABLE_CREATOR);
+
+        init(clientController);
+
+        tableNameField.setText(table.getName());
+        Set<String> pkNames = primaryKey != null
+                ? primaryKey.getColumns().stream()
+                .map(Column::getName)
+                .collect(Collectors.toSet())
+                : new HashSet<>();
+        Set<String> unNames = uniques.stream()
+                .map(e -> e.getColumn().getName())
+                .collect(Collectors.toSet());
+
+        for (Column column : table.getColumns()) {
+            TableColumnView columnView = new TableColumnView();
+            columnView.setColumnName(column.getName());
+            columnView.setType(column.getType().getType());
+            columnView.setDefaultValue(column.getDefaultValue());
+            columnView.setPrimaryKey(pkNames.contains(column.getName()));
+            columnView.setNotNull(column.isRequired());
+            columnView.setUnique(unNames.contains(column.getName()));
+
+            columnViewList.add(columnView);
+            columns.add(columnView);
+        }
+
+        for (ForeignKey foreignKey : foreignKeys) {
+            TableForeignKeyView foreignKeyView = new TableForeignKeyView();
+            foreignKeyView.setFromColumn(foreignKey.getFirstColumn().getName());
+            foreignKeyView.setToTable(foreignKey.getSecondTable().getName());
+            foreignKeyView.setToColumn(foreignKey.getSecondColumn().getName());
+
+            foreignKeyViewList.add(foreignKeyView);
+            this.foreignKeys.add(foreignKeyView);
+        }
+
+        executeButton.addActionListener(clientController::onUpdateTableButtonClicked);
+        cancelButton.addActionListener(clientController::onCancelCreateTableButtonClicked);
+    }
+
+    private void init(ClientController clientController) {
         this.clientController = clientController;
 
         setLayout(new BorderLayout());
@@ -53,9 +111,6 @@ public class TableCreatorView extends WorkspaceBase {
 
         columnViewList = new ArrayList<>();
         foreignKeyViewList = new ArrayList<>();
-
-        executeButton.addActionListener(clientController::onCreateTableButtonClicked);
-        cancelButton.addActionListener(clientController::onCancelCreateTableButtonClicked);
 
         initPopupMenus();
     }

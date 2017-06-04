@@ -23,11 +23,23 @@ public class TableForeignKeyView  extends JPanel {
         return fromColumnField.getText();
     }
 
+    public void setFromColumn(String value) {
+        fromColumnField.setText(value);
+    }
+
     public String getToColumn() {
         return toColumnField.getText();
     }
 
+    public void setToColumn(String value) {
+        toColumnField.setText(value);
+    }
+
     public String getToTable() {
         return toTableField.getText();
+    }
+
+    public void setToTable(String value) {
+        toTableField.setText(value);
     }
 }
