@@ -1,6 +1,8 @@
 package pro.batalin.views.workspaces.templates;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 
 /**
@@ -14,12 +16,19 @@ public class TableColumnView extends JPanel {
     private JCheckBox notNullCheckBox;
     private JCheckBox uniqueCheckBox;
     private JTextField sizeTextField;
+    private JCheckBox primaryKeyCheckBox;
 
     public TableColumnView() {
         setLayout(new BorderLayout());
         add(contentPanel);
 
         setMaximumSize(new Dimension(Integer.MAX_VALUE, getMinimumSize().height));
+
+        primaryKeyCheckBox.addChangeListener(changeEvent -> {
+            boolean selected = primaryKeyCheckBox.isSelected();
+            notNullCheckBox.setEnabled(!selected);
+            uniqueCheckBox.setEnabled(!selected);
+        });
     }
 
     public String getColumnName() {
@@ -48,10 +57,14 @@ public class TableColumnView extends JPanel {
     }
 
     public boolean isNotNull() {
-        return notNullCheckBox.isSelected();
+        return notNullCheckBox.isEnabled() && notNullCheckBox.isSelected();
     }
 
     public boolean isUnique() {
-        return uniqueCheckBox.isSelected();
+        return uniqueCheckBox.isEnabled() && uniqueCheckBox.isSelected();
+    }
+
+    public boolean isPrimaryKey() {
+        return primaryKeyCheckBox.isSelected();
     }
 }

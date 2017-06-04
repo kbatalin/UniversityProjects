@@ -18,7 +18,6 @@ import pro.batalin.views.ClientGUI;
 import pro.batalin.views.workspaces.*;
 import pro.batalin.views.workspaces.templates.TableColumnView;
 import pro.batalin.views.workspaces.templates.TableForeignKeyView;
-import pro.batalin.views.workspaces.templates.TablePrimaryKeyView;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
@@ -136,14 +135,6 @@ public class ClientController {
         table.setSchema(schema);
         table.setName(tableName);
 
-        Set<String> pkColumns = creatorView.getPrimaryKeyViewList().stream()
-                .map(TablePrimaryKeyView::getColumnName)
-                .filter(Objects::nonNull)
-                .map(String::trim)
-                .filter(e -> !e.isEmpty())
-                .map(String::toUpperCase)
-                .collect(Collectors.toSet());
-
         List<Column> primaryKey = new ArrayList<>();
 
         List<Alter> alters = new ArrayList<>();
@@ -162,7 +153,7 @@ public class ClientController {
                 alters.add(new AddConstraintUniqueAlter(table, alterName, Collections.singletonList(column)));
             }
 
-            if (pkColumns.contains(column.getName())) {
+            if (columnView.isPrimaryKey()) {
                 primaryKey.add(column);
             }
         }

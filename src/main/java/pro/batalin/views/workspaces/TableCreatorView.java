@@ -3,7 +3,6 @@ package pro.batalin.views.workspaces;
 import pro.batalin.controllers.ClientController;
 import pro.batalin.views.workspaces.templates.TableColumnView;
 import pro.batalin.views.workspaces.templates.TableForeignKeyView;
-import pro.batalin.views.workspaces.templates.TablePrimaryKeyView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,30 +23,22 @@ public class TableCreatorView extends WorkspaceBase {
     private JPanel columns;
     private JButton executeButton;
     private JButton cancelButton;
-    private JPanel primaryKeys;
-    private JScrollPane pkScrollPane;
     private JScrollPane fkScrollPane;
     private JPanel foreignKeys;
     private ClientController clientController;
 
     private TableColumnView selectedColumn = null;
-    private TablePrimaryKeyView selectedPk = null;
     private TableForeignKeyView selectedFk = null;
 
     private JPopupMenu columnsPopupMenu;
     private JMenuItem addColumnMenu;
     private JMenuItem delColumnMenu;
 
-    private JPopupMenu pkPopupMenu;
-    private JMenuItem addPkMenu;
-    private JMenuItem delPkMenu;
-
     private JPopupMenu fkPopupMenu;
     private JMenuItem addFkMenu;
     private JMenuItem delFkMenu;
 
     private List<TableColumnView> columnViewList;
-    private List<TablePrimaryKeyView> primaryKeyViewList;
     private List<TableForeignKeyView> foreignKeyViewList;
 
     public TableCreatorView(ClientController clientController) {
@@ -58,11 +49,9 @@ public class TableCreatorView extends WorkspaceBase {
         setLayout(new BorderLayout());
         add(contentPanel);
         columns.setLayout(new BoxLayout(columns, BoxLayout.Y_AXIS));
-        primaryKeys.setLayout(new BoxLayout(primaryKeys, BoxLayout.Y_AXIS));
         foreignKeys.setLayout(new BoxLayout(foreignKeys, BoxLayout.Y_AXIS));
 
         columnViewList = new ArrayList<>();
-        primaryKeyViewList = new ArrayList<>();
         foreignKeyViewList = new ArrayList<>();
 
         executeButton.addActionListener(clientController::onCreateTableButtonClicked);
@@ -73,10 +62,6 @@ public class TableCreatorView extends WorkspaceBase {
 
     public List<TableColumnView> getColumnViewList() {
         return columnViewList;
-    }
-
-    public List<TablePrimaryKeyView> getPrimaryKeyViewList() {
-        return primaryKeyViewList;
     }
 
     public List<TableForeignKeyView> getForeignKeyViewList() {
@@ -102,23 +87,6 @@ public class TableCreatorView extends WorkspaceBase {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
                 onColumnsMouseClicked(mouseEvent);
-            }
-        });
-
-        pkPopupMenu = new JPopupMenu();
-
-        addPkMenu = new JMenuItem("Add column");
-        addPkMenu.addActionListener(this::onAddPkMenuClicked);
-        pkPopupMenu.add(addPkMenu);
-
-        delPkMenu = new JMenuItem("Delete column");
-        delPkMenu.addActionListener(this::onDelPkMenuClicked);
-        pkPopupMenu.add(delPkMenu);
-
-        primaryKeys.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent mouseEvent) {
-                onPrimaryKeysMouseClicked(mouseEvent);
             }
         });
 
@@ -175,43 +143,6 @@ public class TableCreatorView extends WorkspaceBase {
         }
 
         columnsPopupMenu.show(columns, mouseEvent.getX(), mouseEvent.getY());
-    }
-
-    private void onAddPkMenuClicked(ActionEvent actionEvent) {
-        TablePrimaryKeyView primaryKeyView = new TablePrimaryKeyView();
-        primaryKeyViewList.add(primaryKeyView);
-        primaryKeys.add(primaryKeyView);
-
-        pkScrollPane.revalidate();
-        pkScrollPane.repaint();
-    }
-
-    private void onDelPkMenuClicked(ActionEvent actionEvent) {
-        if (selectedPk == null) {
-            return;
-        }
-
-        primaryKeyViewList.remove(selectedPk);
-        primaryKeys.remove(selectedPk);
-
-        pkScrollPane.revalidate();
-        pkScrollPane.repaint();
-    }
-
-    private void onPrimaryKeysMouseClicked(MouseEvent mouseEvent) {
-        if (!SwingUtilities.isRightMouseButton(mouseEvent)) {
-            return;
-        }
-
-        Component c = primaryKeys.getComponentAt(mouseEvent.getPoint());
-        if (c instanceof TablePrimaryKeyView) {
-            selectedPk = (TablePrimaryKeyView) c;
-            delPkMenu.setEnabled(true);
-        } else {
-            delPkMenu.setEnabled(false);
-        }
-
-        pkPopupMenu.show(primaryKeys, mouseEvent.getX(), mouseEvent.getY());
     }
 
     private void onAddFkMenuClicked(ActionEvent actionEvent) {
