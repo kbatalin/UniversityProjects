@@ -81,6 +81,10 @@ public class ClientGUI extends JFrame {
         initTableList();
     }
 
+    public WorkspaceBase getWorkspace() {
+        return workspace;
+    }
+
     private void initPopupMenu() {
         tableOptionsPopupMenu = new JPopupMenu("Actions");
         reportMenu = new JMenuItem("Show report");

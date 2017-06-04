@@ -13,6 +13,7 @@ public class TableColumnView extends JPanel {
     private JTextField defaultValueFiled;
     private JCheckBox notNullCheckBox;
     private JCheckBox uniqueCheckBox;
+    private JTextField sizeTextField;
 
     public TableColumnView() {
         setLayout(new BorderLayout());
@@ -31,6 +32,19 @@ public class TableColumnView extends JPanel {
 
     public String getDefaultValue() {
         return defaultValueFiled.getText();
+    }
+
+    public Integer getTypeSize() {
+        String sizeStr = sizeTextField.getText();
+        if (sizeStr == null || sizeStr.isEmpty()) {
+            return null;
+        }
+
+        try {
+            return Integer.valueOf(sizeStr);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public boolean isNotNull() {

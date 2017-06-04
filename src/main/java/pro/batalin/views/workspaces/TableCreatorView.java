@@ -49,6 +49,14 @@ public class TableCreatorView extends WorkspaceBase {
         initPopupMenus();
     }
 
+    public List<TableColumnView> getColumnViewList() {
+        return columnViewList;
+    }
+
+    public String getTableName() {
+        return tableNameField.getText();
+    }
+
     private void initPopupMenus() {
         columnsPopupMenu = new JPopupMenu();
 
