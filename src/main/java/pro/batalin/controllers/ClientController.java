@@ -5,6 +5,7 @@ import pro.batalin.ddl4j.model.DBType;
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.model.Table;
 import pro.batalin.ddl4j.model.alters.Alter;
+import pro.batalin.ddl4j.model.alters.constraint.AddConstraintPrimaryAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintUniqueAlter;
 import pro.batalin.models.db.sql.InsertPattern;
 import pro.batalin.models.db.sql.UpdatePattern;
@@ -15,14 +16,14 @@ import pro.batalin.models.properties.LoginPropertiesImpl;
 import pro.batalin.views.ClientGUI;
 import pro.batalin.views.workspaces.*;
 import pro.batalin.views.workspaces.templates.TableColumnView;
+import pro.batalin.views.workspaces.templates.TablePrimaryKeyView;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Kirill Batalin (kir55rus).
@@ -133,8 +134,17 @@ public class ClientController {
         table.setSchema(schema);
         table.setName(tableName);
 
-        List<Alter> uniques = new ArrayList<>();
+        Set<String> pkColumns = creatorView.getPrimaryKeyViewList().stream()
+                .map(TablePrimaryKeyView::getColumnName)
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(e -> !e.isEmpty())
+                .map(String::toUpperCase)
+                .collect(Collectors.toSet());
 
+        List<Column> primaryKey = new ArrayList<>();
+
+        List<Alter> alters = new ArrayList<>();
         for (TableColumnView columnView : creatorView.getColumnViewList()) {
             Column column = new Column();
             column.setName(columnView.getColumnName());
@@ -147,8 +157,17 @@ public class ClientController {
 
             if (columnView.isUnique()) {
                 String alterName = String.format("unique_%s_%s_%s", schema.getName(), tableName, column.getName());
-                uniques.add(new AddConstraintUniqueAlter(table, alterName, Collections.singletonList(column)));
+                alters.add(new AddConstraintUniqueAlter(table, alterName, Collections.singletonList(column)));
             }
+
+            if (pkColumns.contains(column.getName())) {
+                primaryKey.add(column);
+            }
+        }
+
+        if (!primaryKey.isEmpty()) {
+            String pkName = String.format("pk_%s_%s", schema.getName(), tableName);
+            alters.add(new AddConstraintPrimaryAlter(table, pkName, primaryKey));
         }
 
         applicationProperties.getDBThread().addTask(platform -> {
@@ -158,7 +177,7 @@ public class ClientController {
 
                 platform.createTable(table);
 
-                for (Alter alter : uniques) {
+                for (Alter alter : alters) {
                     platform.executeAlter(alter);
                 }
 
