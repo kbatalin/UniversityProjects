@@ -242,7 +242,26 @@ public class ClientController {
     }
 
     public void onDropTableMenuClicked(ActionEvent actionEvent) {
+        Schema selectedSchema = applicationProperties.getSchemas().getSelected();
+        String selectedTable = applicationProperties.getTables().getSelectedTable();
 
+        applicationProperties.getDBThread().addTask(platform -> {
+            Table table = platform.loadTable(selectedSchema, selectedTable);
+            if (table == null) {
+                return;
+            }
+
+            platform.dropTable(table);
+
+            applicationProperties.getTables().update();
+            SwingUtilities.invokeLater(() -> {
+                clientGUI.replaceWorkspace(new EmptyWorkspace());
+            });
+        }, e -> {
+            JOptionPane.showMessageDialog(clientGUI,
+                    "DB error: " + e.getLocalizedMessage(),
+                    "Table dropping error", JOptionPane.ERROR_MESSAGE);
+        });
     }
 
     public void onCreateTableMenuClicked(ActionEvent actionEvent) {
