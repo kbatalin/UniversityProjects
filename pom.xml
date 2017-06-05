@@ -14,14 +14,14 @@
     </properties>
 
     <dependencies>
-        <!-- ddl4j -->
-        <!--<dependency>-->
-            <!--<groupId>pro.batalin</groupId>-->
-            <!--<artifactId>ddl4j</artifactId>-->
-            <!--<version>1.0-SNAPSHOT</version>-->
-            <!--<scope>system</scope>-->
-            <!--<systemPath>${project.basedir}/src/main/resources/libs/ddl4j-1.0-SNAPSHOT.jar</systemPath>-->
-        <!--</dependency>-->
+         <!--ddl4j-->
+        <dependency>
+            <groupId>pro.batalin</groupId>
+            <artifactId>ddl4j</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/main/resources/libs/ddl4j.jar</systemPath>
+        </dependency>
 
         <!-- Oracle JDBC -->
         <dependency>
@@ -32,12 +32,6 @@
             <scope>system</scope>
         </dependency>
 
-        <!-- Reflections -->
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
-        </dependency>
     </dependencies>
 
 
