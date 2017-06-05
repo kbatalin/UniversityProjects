@@ -43,6 +43,7 @@ public class TableColumnView extends JPanel {
             oldColumn = column.clone();
             setColumnName(column.getName());
             setType(column.getType().getType());
+            setTypeSeize(column.getSize());
             setDefaultValue(column.getDefaultValue());
             setNotNull(column.isRequired());
             setUnique(column.isUnique());
@@ -73,7 +74,8 @@ public class TableColumnView extends JPanel {
     }
 
     public String getDefaultValue() {
-        return defaultValueFiled.getText();
+        String text = defaultValueFiled.getText();
+        return text == null || text.isEmpty() ? null : text;
     }
 
     public void setDefaultValue(String value) {
@@ -102,7 +104,7 @@ public class TableColumnView extends JPanel {
     }
 
     public boolean isNotNull() {
-        return notNullCheckBox.isEnabled() && notNullCheckBox.isSelected();
+        return notNullCheckBox.isSelected();
     }
 
     public void setNotNull(boolean value) {

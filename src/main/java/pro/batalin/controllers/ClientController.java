@@ -5,11 +5,14 @@ import pro.batalin.ddl4j.model.DBType;
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.model.Table;
 import pro.batalin.ddl4j.model.alters.Alter;
+import pro.batalin.ddl4j.model.alters.column.AddColumnAlter;
 import pro.batalin.ddl4j.model.alters.column.DropColumnAlter;
+import pro.batalin.ddl4j.model.alters.column.ModifyColumnAlter;
 import pro.batalin.ddl4j.model.alters.column.RenameColumnAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintForeignKeyAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintPrimaryAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintUniqueAlter;
+import pro.batalin.ddl4j.model.alters.constraint.DropConstraintAlter;
 import pro.batalin.ddl4j.model.constraints.ForeignKey;
 import pro.batalin.ddl4j.model.constraints.PrimaryKey;
 import pro.batalin.ddl4j.model.constraints.Unique;
@@ -149,7 +152,7 @@ public class ClientController {
 
                 List<Alter> alters = new ArrayList<>();
 
-                Map<String, Column> newColumns = creatorView.getColumnViewList().stream()
+                Map<String, Column> modifiedColumns = creatorView.getColumnViewList().stream()
                         .filter(e -> e.getOldColumn() != null && e.getOldColumn().getName() != null)
                         .collect(Collectors.toMap(
                                 e -> e.getOldColumn().getName(),
@@ -165,14 +168,40 @@ public class ClientController {
                                     return column;
                         }));
 
+                List<Column> newColumns = creatorView.getColumnViewList().stream()
+                        .filter(e -> e.getOldColumn() == null)
+                        .map(e -> {
+                            Column column = new Column();
+                            column.setName(e.getColumnName());
+                            column.setType(new DBType(e.getType()));
+                            column.setSize(e.getTypeSize());
+                            column.setDefaultValue(e.getDefaultValue());
+                            column.setPrimaryKey(e.isPrimaryKey());
+                            column.setUnique(e.isUnique());
+                            column.setRequired(e.isNotNull());
+                            return column;
+                        })
+                        .collect(Collectors.toList());
+
+                Map<String, Unique> uniques = tableStructure.getUniques()
+                        .stream()
+                        .collect(Collectors.toMap(e -> e.getColumn().getName(), e -> e));
+
+                List<Column> primaryKey = new ArrayList<>();
+
                 boolean primaryKeyChanged = false;
                 for (Column column : table.getColumns()) {
-                    if (!newColumns.containsKey(column.getName())) {
+                    if (!modifiedColumns.containsKey(column.getName())) {
                         alters.add(new DropColumnAlter(table, column));
                         continue;
                     }
 
-                    Column newColumn = newColumns.get(column.getName());
+                    Column newColumn = modifiedColumns.get(column.getName());
+
+                    if (newColumn.isPrimaryKey()) {
+                        primaryKey.add(newColumn);
+                    }
+
                     if (newColumn.equals(column)) {
                         continue;
                     }
@@ -184,6 +213,64 @@ public class ClientController {
                     if (column.isPrimaryKey() != newColumn.isPrimaryKey()) {
                         primaryKeyChanged = true;
                     }
+
+                    if (column.isUnique() && !newColumn.isUnique()) {
+                        Unique alter = uniques.get(column.getName());
+                        if (alter != null) {
+                            alters.add(new DropConstraintAlter(table, alter.getName()));
+                        }
+                    }
+
+                    if (!column.isUnique() && newColumn.isUnique()) {
+                        String alterName = String.format("unique_%s_%s_%s", schema.getName(), tableName, column.getName());
+                        alters.add(new AddConstraintUniqueAlter(table, alterName, Collections.singletonList(newColumn)));
+                    }
+
+                    boolean isModified = false;
+                    if (column.isRequired() != newColumn.isRequired()) {
+                        isModified = true;
+                    }
+
+                    if (column.getDefaultValue() == null && newColumn.getDefaultValue() != null ||
+                            column.getDefaultValue() != null && !column.getDefaultValue().equals(newColumn.getDefaultValue())) {
+                        isModified = true;
+                    }
+
+                    if (column.getType() == null && newColumn.getType() != null ||
+                            column.getType() != null && !column.getType().equals(newColumn.getType())) {
+                        isModified = true;
+                    }
+
+                    if (column.getSize() == null && newColumn.getSize() != null ||
+                            column.getSize() != null && !column.getSize().equals(newColumn.getSize())) {
+                        isModified = true;
+                    }
+
+                    if (isModified) {
+                        Column oldColumn = new Column();
+                        oldColumn.setName(newColumn.getName());
+                        oldColumn.setRequired(column.isRequired());
+                        alters.add(new ModifyColumnAlter(table, oldColumn, newColumn));
+                    }
+                }
+
+
+                for (Column column : newColumns) {
+                    alters.add(new AddColumnAlter(table, column));
+                    String alterName = String.format("unique_%s_%s_%s", schema.getName(), tableName, column.getName());
+                    alters.add(new AddConstraintUniqueAlter(table, alterName, Collections.singletonList(column)));
+
+                    if (column.isPrimaryKey()) {
+                        primaryKey.add(column);
+                    }
+                }
+
+                if (primaryKeyChanged) {
+                    if(tableStructure.getPrimaryKey() != null) {
+                        alters.add(0, new DropConstraintAlter(table, tableStructure.getPrimaryKey().getName()));
+                    }
+                    String pkName = String.format("pk_%s_%s", schema.getName(), tableName);
+                    alters.add(new AddConstraintPrimaryAlter(table, pkName, primaryKey));
                 }
 
                 for (Alter alter : alters) {
@@ -202,7 +289,7 @@ public class ClientController {
             SwingUtilities.invokeLater(() -> {
                 clientGUI.replaceWorkspace(new EmptyWorkspace());
             });
-        }, e -> {
+        },      e -> {
             JOptionPane.showMessageDialog(clientGUI,
                     "DB error: " + e.getLocalizedMessage(),
                     "Table modification error", JOptionPane.ERROR_MESSAGE);
@@ -367,12 +454,12 @@ public class ClientController {
         Set<String> unColumns = new HashSet<>();
         List<String> unNames = platform.loadUniques(table);
         for (String unName : unNames) {
-            if (tableStructure.getPrimaryKey() != null && tableStructure.getPrimaryKey().getName().equals(unName)) {
+            Unique unique = platform.loadUnique(schema, unName);
+            if (unName == null) {
                 continue;
             }
 
-            Unique unique = platform.loadUnique(schema, unName);
-            if (unName == null) {
+            if (tableStructure.getPrimaryKey() != null && pkColumns.contains(unique.getColumn().getName())) {
                 continue;
             }
 
