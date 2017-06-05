@@ -74,11 +74,7 @@ public class TableCreatorView extends WorkspaceBase {
         }
 
         for (ForeignKey foreignKey : tableStructure.getForeignKeys()) {
-            TableForeignKeyView foreignKeyView = new TableForeignKeyView();
-            foreignKeyView.setFromColumn(foreignKey.getFirstColumn().getName());
-            foreignKeyView.setToTable(foreignKey.getSecondTable().getName());
-            foreignKeyView.setToColumn(foreignKey.getSecondColumn().getName());
-
+            TableForeignKeyView foreignKeyView = new TableForeignKeyView(foreignKey);
             foreignKeyViewList.add(foreignKeyView);
             foreignKeys.add(foreignKeyView);
         }

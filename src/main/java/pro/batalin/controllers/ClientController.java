@@ -265,6 +265,71 @@ public class ClientController {
                     }
                 }
 
+
+                Map<String, TableForeignKeyView> modifiedFk = creatorView.getForeignKeyViewList().stream()
+                        .filter(e -> e.getOldForeignKey() != null && e.getOldForeignKey().getName() != null)
+                        .collect(Collectors.toMap(
+                                e -> e.getOldForeignKey().getName(),
+                                e -> e));
+
+                List<TableForeignKeyView> newFk = creatorView.getForeignKeyViewList().stream()
+                        .filter(e -> e.getOldForeignKey() == null)
+                        .collect(Collectors.toList());
+
+                for (ForeignKey foreignKey : tableStructure.getForeignKeys()) {
+                    if (!modifiedFk.containsKey(foreignKey.getName())) {
+                        alters.add(0, new DropConstraintAlter(table, foreignKey.getName()));
+                        continue;
+                    }
+
+                    TableForeignKeyView foreignKeyView = modifiedFk.get(foreignKey.getName());
+
+                    boolean isModified = false;
+                    if (foreignKey.getFirstColumn() == null && foreignKeyView.getFromColumn() != null ||
+                            foreignKey.getFirstColumn() != null && !foreignKey.getFirstColumn().getName().equals(foreignKeyView.getFromColumn())) {
+                        isModified = true;
+                    }
+
+                    if (foreignKey.getSecondColumn() == null && foreignKeyView.getToColumn() != null ||
+                            foreignKey.getSecondColumn() != null && !foreignKey.getSecondColumn().getName().equals(foreignKeyView.getToColumn())) {
+                        isModified = true;
+                    }
+
+                    if (foreignKey.getSecondTable() == null && foreignKeyView.getToTable() != null ||
+                            foreignKey.getSecondTable() != null && !foreignKey.getSecondTable().getName().equals(foreignKeyView.getToTable())) {
+                        isModified = true;
+                    }
+
+                    if (isModified) {
+                        alters.add(0, new DropConstraintAlter(table, foreignKey.getName()));
+
+                        Column column = new Column();
+                        column.setName(foreignKeyView.getFromColumn());
+                        Table refTable = new Table();
+                        refTable.setSchema(table.getSchema());
+                        refTable.setName(foreignKeyView.getToTable());
+                        Column refColumn = new Column();
+                        refColumn.setName(foreignKeyView.getToColumn());
+
+                        String alterName = String.format("fk_%s_%s_%s_%s", table.getName(), column.getName(), refTable.getName(), refColumn.getName());
+                        alters.add(new AddConstraintForeignKeyAlter(table, column, refTable, refColumn, alterName));
+                    }
+                }
+
+                for (TableForeignKeyView foreignKeyView : newFk) {
+                    Column column = new Column();
+                    column.setName(foreignKeyView.getFromColumn());
+                    Table refTable = new Table();
+                    refTable.setSchema(table.getSchema());
+                    refTable.setName(foreignKeyView.getToTable());
+                    Column refColumn = new Column();
+                    refColumn.setName(foreignKeyView.getToColumn());
+
+                    String alterName = String.format("fk_%s_%s_%s_%s", table.getName(), column.getName(), refTable.getName(), refColumn.getName());
+                    alters.add(new AddConstraintForeignKeyAlter(table, column, refTable, refColumn, alterName));
+
+                }
+
                 if (primaryKeyChanged) {
                     if(tableStructure.getPrimaryKey() != null) {
                         alters.add(0, new DropConstraintAlter(table, tableStructure.getPrimaryKey().getName()));
