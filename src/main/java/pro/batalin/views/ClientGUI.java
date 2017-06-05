@@ -12,7 +12,6 @@ import pro.batalin.views.workspaces.*;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -36,6 +35,11 @@ public class ClientGUI extends JFrame {
     private JMenuItem editTableMenu;
     private JMenuItem dropMenu;
     private JMenuItem createMenu;
+
+    private JMenuBar menuBar;
+    private JMenu clientMenu;
+    private JMenuItem plsqlMenu;
+    private JMenuItem exitMenu;
 
     public ClientGUI(ClientController clientController) {
         this.clientController = clientController;
@@ -64,7 +68,7 @@ public class ClientGUI extends JFrame {
         statusBarPanel.setLayout(new BorderLayout());
         statusBarPanel.add(statusBar);
 
-        initPopupMenu();
+        initMenus();
 
         ApplicationProperties applicationProperties = clientController.getApplicationProperties();
 
@@ -85,7 +89,21 @@ public class ClientGUI extends JFrame {
         return workspace;
     }
 
-    private void initPopupMenu() {
+    private void initMenus() {
+        menuBar = new JMenuBar();
+        clientMenu = new JMenu("Client");
+        menuBar.add(clientMenu);
+
+        plsqlMenu = new JMenuItem("PL/SQL");
+        plsqlMenu.addActionListener(clientController::onPlsqlMenuClicked);
+        clientMenu.add(plsqlMenu);
+
+        exitMenu = new JMenuItem("Exit");
+        exitMenu.addActionListener(clientController::onExitMenuClicked);
+        clientMenu.add(exitMenu);
+
+        setJMenuBar(menuBar);
+
         tableOptionsPopupMenu = new JPopupMenu("Actions");
         reportMenu = new JMenuItem("Show report");
         reportMenu.addActionListener(clientController::onReportMenuClicked);

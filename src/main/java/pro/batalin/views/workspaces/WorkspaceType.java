@@ -8,4 +8,5 @@ public enum WorkspaceType {
     TABLE_REPORT,
     TABLE_EDITOR,
     TABLE_CREATOR,
+    PLSQL,
 }

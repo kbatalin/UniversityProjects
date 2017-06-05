@@ -32,7 +32,9 @@ import pro.batalin.views.workspaces.templates.TableForeignKeyView;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.event.ActionEvent;
+import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -455,6 +457,73 @@ public class ClientController {
                     "DB error: " + e.getLocalizedMessage(),
                     "Table creation error", JOptionPane.ERROR_MESSAGE);
         });
+    }
+
+    public void onPlsqlMenuClicked(ActionEvent actionEvent) {
+        SwingUtilities.invokeLater(() -> {
+            clientGUI.replaceWorkspace(new PlsqlView(this));
+        });
+    }
+
+    public void onExecutePlsqlButtonClicked(ActionEvent actionEvent) {
+        WorkspaceBase workspaceBase = clientGUI.getWorkspace();
+        if (workspaceBase == null || workspaceBase.getWorkspaceType() != WorkspaceType.PLSQL) {
+            return;
+        }
+
+        if (!(workspaceBase instanceof PlsqlView)) {
+            return;
+        }
+
+        PlsqlView plsqlView = (PlsqlView) workspaceBase;
+        String plsql = plsqlView.getPlsql();
+
+        applicationProperties.getDBThread().addTask(platform -> {
+            Connection connection = platform.getConnection();
+
+            // turn on support for dbms_output
+            CallableStatement cstmt = connection.prepareCall("{call dbms_output.enable(32000) }");
+            cstmt.execute();
+
+            CallableStatement statement = connection.prepareCall(plsql);
+            statement.execute();
+
+            // retrieve the messages written with dbms_output
+            cstmt = connection.prepareCall("{call dbms_output.get_line(?,?)}");
+            cstmt.registerOutParameter(1,java.sql.Types.VARCHAR);
+            cstmt.registerOutParameter(2,java.sql.Types.NUMERIC);
+
+            StringBuilder log = new StringBuilder();
+            int status = 0;
+            while (status == 0) {
+                cstmt.execute();
+                String line = cstmt.getString(1);
+                status = cstmt.getInt(2);
+                if (line != null && status == 0) {
+                    log.append(line);
+                }
+            }
+            log.append(System.lineSeparator());
+
+            SwingUtilities.invokeLater(() -> {
+                plsqlView.addLog(log.toString());
+            });
+
+        }, e -> {
+            JOptionPane.showMessageDialog(clientGUI,
+                    "DB error: " + e.getLocalizedMessage(),
+                    "PL/SQL error", JOptionPane.ERROR_MESSAGE);
+        });
+    }
+
+    public void onCancelPlsqlButtonClicked(ActionEvent actionEvent) {
+        SwingUtilities.invokeLater(() -> {
+            clientGUI.replaceWorkspace(new EmptyWorkspace());
+        });
+    }
+
+    public void onExitMenuClicked(ActionEvent actionEvent) {
+        System.exit(0);
     }
 
     public void onCancelCreateTableButtonClicked(ActionEvent actionEvent) {
