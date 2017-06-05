@@ -5,12 +5,16 @@ import pro.batalin.ddl4j.model.DBType;
 import pro.batalin.ddl4j.model.Schema;
 import pro.batalin.ddl4j.model.Table;
 import pro.batalin.ddl4j.model.alters.Alter;
+import pro.batalin.ddl4j.model.alters.column.DropColumnAlter;
+import pro.batalin.ddl4j.model.alters.column.RenameColumnAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintForeignKeyAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintPrimaryAlter;
 import pro.batalin.ddl4j.model.alters.constraint.AddConstraintUniqueAlter;
 import pro.batalin.ddl4j.model.constraints.ForeignKey;
 import pro.batalin.ddl4j.model.constraints.PrimaryKey;
 import pro.batalin.ddl4j.model.constraints.Unique;
+import pro.batalin.ddl4j.platforms.Platform;
+import pro.batalin.models.db.TableStructure;
 import pro.batalin.models.db.sql.InsertPattern;
 import pro.batalin.models.db.sql.UpdatePattern;
 import pro.batalin.models.db.sql.constraints.Constraint;
@@ -26,6 +30,7 @@ import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.event.ActionEvent;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -120,7 +125,88 @@ public class ClientController {
     }
 
     public void onUpdateTableButtonClicked(ActionEvent actionEvent) {
+        WorkspaceBase workspaceBase = clientGUI.getWorkspace();
+        if (workspaceBase == null || workspaceBase.getWorkspaceType() != WorkspaceType.TABLE_CREATOR) {
+            return;
+        }
 
+        if (!(workspaceBase instanceof TableCreatorView)) {
+            return;
+        }
+
+        TableCreatorView creatorView = (TableCreatorView) workspaceBase;
+
+        Schema schema = applicationProperties.getSchemas().getSelected();
+        String tableName = creatorView.getTableName();
+
+        applicationProperties.getDBThread().addTask(platform -> {
+            Connection connection = platform.getConnection();
+            try {
+                connection.setAutoCommit(false);
+
+                TableStructure tableStructure = loadTableStructure(platform, schema, tableName);
+                Table table = tableStructure.getTable();
+
+                List<Alter> alters = new ArrayList<>();
+
+                Map<String, Column> newColumns = creatorView.getColumnViewList().stream()
+                        .filter(e -> e.getOldColumn() != null && e.getOldColumn().getName() != null)
+                        .collect(Collectors.toMap(
+                                e -> e.getOldColumn().getName(),
+                                e -> {
+                                    Column column = new Column();
+                                    column.setName(e.getColumnName());
+                                    column.setType(new DBType(e.getType()));
+                                    column.setSize(e.getTypeSize());
+                                    column.setDefaultValue(e.getDefaultValue());
+                                    column.setPrimaryKey(e.isPrimaryKey());
+                                    column.setUnique(e.isUnique());
+                                    column.setRequired(e.isNotNull());
+                                    return column;
+                        }));
+
+                boolean primaryKeyChanged = false;
+                for (Column column : table.getColumns()) {
+                    if (!newColumns.containsKey(column.getName())) {
+                        alters.add(new DropColumnAlter(table, column));
+                        continue;
+                    }
+
+                    Column newColumn = newColumns.get(column.getName());
+                    if (newColumn.equals(column)) {
+                        continue;
+                    }
+
+                    if (!column.getName().equals(newColumn.getName())) {
+                        alters.add(new RenameColumnAlter(table, column, newColumn));
+                    }
+
+                    if (column.isPrimaryKey() != newColumn.isPrimaryKey()) {
+                        primaryKeyChanged = true;
+                    }
+                }
+
+                for (Alter alter : alters) {
+                    platform.executeAlter(alter);
+                }
+
+                connection.commit();
+            } catch (Exception e) {
+                connection.rollback();
+                throw e;
+            } finally {
+                connection.setAutoCommit(true);
+            }
+
+            applicationProperties.getTables().update();
+            SwingUtilities.invokeLater(() -> {
+                clientGUI.replaceWorkspace(new EmptyWorkspace());
+            });
+        }, e -> {
+            JOptionPane.showMessageDialog(clientGUI,
+                    "DB error: " + e.getLocalizedMessage(),
+                    "Table modification error", JOptionPane.ERROR_MESSAGE);
+        });
     }
 
     public void onCreateTableButtonClicked(ActionEvent actionEvent) {
@@ -240,48 +326,66 @@ public class ClientController {
         String tableName = applicationProperties.getTables().getSelectedTable();
 
         applicationProperties.getDBThread().addTask(platform -> {
-            Table table = platform.loadTable(schema, tableName);
-
-            List<String> pkNames = platform.loadPrimaryKeys(table);
-            PrimaryKey primaryKey = (pkNames != null && !pkNames.isEmpty())
-                    ? platform.loadPrimaryKey(schema, pkNames.get(0))
-                    : null;
-
-            List<String> fkNames = platform.loadForeignKeys(table);
-            List<ForeignKey> foreignKeys = new ArrayList<>();
-            for (String fkName : fkNames) {
-                ForeignKey foreignKey = platform.loadForeignKey(schema, fkName);
-                if (foreignKey == null) {
-                    continue;
-                }
-
-                foreignKeys.add(foreignKey);
-            }
-
-
-            List<String> unNames = platform.loadUniques(table);
-            List<Unique> uniques = new ArrayList<>();
-            for (String unName : unNames) {
-                if (primaryKey != null && primaryKey.getName().equals(unName)) {
-                    continue;
-                }
-
-                Unique unique = platform.loadUnique(schema, unName);
-                if (unName == null) {
-                    continue;
-                }
-
-                uniques.add(unique);
-            }
+            TableStructure tableStructure = loadTableStructure(platform, schema, tableName);
 
             SwingUtilities.invokeLater(() -> {
-                clientGUI.replaceWorkspace(new TableCreatorView(this, table, primaryKey, uniques, foreignKeys));
+                clientGUI.replaceWorkspace(new TableCreatorView(this, tableStructure));
             });
         }, e -> {
             JOptionPane.showMessageDialog(clientGUI,
                     "DB error: " + e.getLocalizedMessage(),
                     "Table loading error", JOptionPane.ERROR_MESSAGE);
         });
+    }
+
+    private TableStructure loadTableStructure(Platform platform, Schema schema, String tableName) throws SQLException {
+        TableStructure tableStructure = new TableStructure();
+
+        Table table = platform.loadTable(schema, tableName);
+        tableStructure.setTable(table);
+
+        Set<String> pkColumns = new HashSet<>();
+        List<String> pkNames = platform.loadPrimaryKeys(table);
+        if (pkNames != null && !pkNames.isEmpty()) {
+            PrimaryKey primaryKey = platform.loadPrimaryKey(schema, pkNames.get(0));
+            tableStructure.setPrimaryKey(primaryKey);
+            pkColumns = primaryKey.getColumns().stream()
+                    .map(Column::getName)
+                    .collect(Collectors.toSet());
+        }
+
+        List<String> fkNames = platform.loadForeignKeys(table);
+        for (String fkName : fkNames) {
+            ForeignKey foreignKey = platform.loadForeignKey(schema, fkName);
+            if (foreignKey == null) {
+                continue;
+            }
+
+            tableStructure.getForeignKeys().add(foreignKey);
+        }
+
+        Set<String> unColumns = new HashSet<>();
+        List<String> unNames = platform.loadUniques(table);
+        for (String unName : unNames) {
+            if (tableStructure.getPrimaryKey() != null && tableStructure.getPrimaryKey().getName().equals(unName)) {
+                continue;
+            }
+
+            Unique unique = platform.loadUnique(schema, unName);
+            if (unName == null) {
+                continue;
+            }
+
+            tableStructure.getUniques().add(unique);
+            unColumns.add(unique.getColumn().getName());
+        }
+
+        for (Column column : table.getColumns()) {
+            column.setPrimaryKey(pkColumns.contains(column.getName()));
+            column.setUnique(unColumns.contains(column.getName()));
+        }
+
+        return tableStructure;
     }
 
     public void onDropTableMenuClicked(ActionEvent actionEvent) {

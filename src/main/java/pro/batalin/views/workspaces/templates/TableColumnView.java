@@ -1,5 +1,8 @@
 package pro.batalin.views.workspaces.templates;
 
+import pro.batalin.ddl4j.model.Column;
+import pro.batalin.views.workspaces.TableCreatorView;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -18,6 +21,8 @@ public class TableColumnView extends JPanel {
     private JTextField sizeTextField;
     private JCheckBox primaryKeyCheckBox;
 
+    private Column oldColumn;
+
     public TableColumnView() {
         setLayout(new BorderLayout());
         add(contentPanel);
@@ -29,6 +34,26 @@ public class TableColumnView extends JPanel {
             notNullCheckBox.setEnabled(!selected);
             uniqueCheckBox.setEnabled(!selected);
         });
+    }
+
+    public TableColumnView(Column column) {
+        this();
+
+        try {
+            oldColumn = column.clone();
+            setColumnName(column.getName());
+            setType(column.getType().getType());
+            setDefaultValue(column.getDefaultValue());
+            setNotNull(column.isRequired());
+            setUnique(column.isUnique());
+            setPrimaryKey(column.isPrimaryKey());
+        } catch (CloneNotSupportedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Column getOldColumn() {
+        return oldColumn;
     }
 
     public String getColumnName() {

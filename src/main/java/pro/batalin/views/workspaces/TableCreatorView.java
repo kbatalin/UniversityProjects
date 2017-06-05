@@ -6,6 +6,7 @@ import pro.batalin.ddl4j.model.Table;
 import pro.batalin.ddl4j.model.constraints.ForeignKey;
 import pro.batalin.ddl4j.model.constraints.PrimaryKey;
 import pro.batalin.ddl4j.model.constraints.Unique;
+import pro.batalin.models.db.TableStructure;
 import pro.batalin.views.workspaces.templates.TableColumnView;
 import pro.batalin.views.workspaces.templates.TableForeignKeyView;
 
@@ -59,42 +60,27 @@ public class TableCreatorView extends WorkspaceBase {
         cancelButton.addActionListener(clientController::onCancelCreateTableButtonClicked);
     }
 
-    public TableCreatorView(ClientController clientController, Table table, PrimaryKey primaryKey, List<Unique> uniques, List<ForeignKey> foreignKeys) {
+    public TableCreatorView(ClientController clientController, TableStructure tableStructure) {
         super(WorkspaceType.TABLE_CREATOR);
 
         init(clientController);
 
-        tableNameField.setText(table.getName());
-        Set<String> pkNames = primaryKey != null
-                ? primaryKey.getColumns().stream()
-                .map(Column::getName)
-                .collect(Collectors.toSet())
-                : new HashSet<>();
-        Set<String> unNames = uniques.stream()
-                .map(e -> e.getColumn().getName())
-                .collect(Collectors.toSet());
+        tableNameField.setText(tableStructure.getTable().getName());
 
-        for (Column column : table.getColumns()) {
-            TableColumnView columnView = new TableColumnView();
-            columnView.setColumnName(column.getName());
-            columnView.setType(column.getType().getType());
-            columnView.setDefaultValue(column.getDefaultValue());
-            columnView.setPrimaryKey(pkNames.contains(column.getName()));
-            columnView.setNotNull(column.isRequired());
-            columnView.setUnique(unNames.contains(column.getName()));
-
+        for (Column column : tableStructure.getTable().getColumns()) {
+            TableColumnView columnView = new TableColumnView(column);
             columnViewList.add(columnView);
             columns.add(columnView);
         }
 
-        for (ForeignKey foreignKey : foreignKeys) {
+        for (ForeignKey foreignKey : tableStructure.getForeignKeys()) {
             TableForeignKeyView foreignKeyView = new TableForeignKeyView();
             foreignKeyView.setFromColumn(foreignKey.getFirstColumn().getName());
             foreignKeyView.setToTable(foreignKey.getSecondTable().getName());
             foreignKeyView.setToColumn(foreignKey.getSecondColumn().getName());
 
             foreignKeyViewList.add(foreignKeyView);
-            this.foreignKeys.add(foreignKeyView);
+            foreignKeys.add(foreignKeyView);
         }
 
         executeButton.addActionListener(clientController::onUpdateTableButtonClicked);
