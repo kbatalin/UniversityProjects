@@ -8,15 +8,15 @@ class Config
     private function __construct()
     {
         //DB
-        $this->_settings['dbName'] = 'quest';
+        $this->_settings['dbName'] = 'quest17';
         $this->_settings['dbHost'] = 'localhost';
-        $this->_settings['dbUser'] = 'quest_user';
-        $this->_settings['dbPass'] = 'pass';
+        $this->_settings['dbUser'] = 'quest17_user';
+        $this->_settings['dbPass'] = 'quest17_pass';
 
         $this->_settings['blowfish'] = '$2a$10$';
         $this->_settings['loginHashLength'] = 40;
         $this->_settings['authTimeSec'] = 7 * 24 * 60 * 60;
-        $this->_settings['domain'] = 'quest2.local';
+        $this->_settings['domain'] = 'quest17.local';
         $this->_settings['minPassLength'] = 6;
         $this->_settings['maxPassLength'] = 30;
     }
