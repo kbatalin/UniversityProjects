@@ -1,5 +1,5 @@
 var imgDir = '/img/bg/';
-var imgCount = 35;
+var imgCount = 2;
 var nextBgImg = Math.floor(Math.random() * imgCount);
 var currentBg = 0;
 var changeSpeed = 'slow';
