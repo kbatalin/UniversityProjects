@@ -3,6 +3,10 @@
 class TeamTask
 {
     private $_teamId;
+
+    /**
+     * @var Task
+     */
     private $_task;
     private $_lastAnswer;
     private $_status;

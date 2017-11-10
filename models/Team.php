@@ -117,6 +117,9 @@ class Team
         return $this->_name;
     }
 
+    /**
+     * @return Inventory
+     */
     public function getInventory()
     {
         if (!$this->_inventory) {
@@ -130,6 +133,10 @@ class Team
         return $this->_inventory;
     }
 
+    /**
+     * @param $item Item
+     * @return bool
+     */
     public function canBuyItem($item)
     {
         if ($item->getCost() > $this->_points) {
@@ -147,6 +154,10 @@ class Team
         return true;
     }
 
+    /**
+     * @param $item Item
+     * @return bool
+     */
     public function buyItem($item)
     {
         if (!$this->canBuyItem($item)) {
@@ -174,6 +185,10 @@ class Team
         return true;
     }
 
+    /**
+     * @param $item Item
+     * @return bool
+     */
     public function sellItem($item)
     {
         if (!$this->getInventory()->hasItem($item->getId())) {

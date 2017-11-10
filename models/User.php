@@ -9,6 +9,10 @@ class User
     private $_firstname;
     private $_lastname;
     private $_team = null;
+
+    /**
+     * @var Department
+     */
     private $_department = null;
     private $_status;
     private $_restoreHash;

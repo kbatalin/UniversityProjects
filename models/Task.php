@@ -135,4 +135,9 @@ class Task
     {
         return $this->_visible;
     }
+
+    public function __toString()
+    {
+        return 'Task #' . $this->_id . ' (' . $this->_name . ')';
+    }
 }
