@@ -27,15 +27,18 @@ class TeamController extends Controller
 
         $data = array();
 
-        if (!empty($_POST['name']) && !empty($_POST['partner'])) {
+        if (!empty($_POST['name']) && !empty($_POST['partner']) && !empty($_POST['language'])) {
             $data['name'] = trim($_POST['name']);
             $data['partner'] = trim($_POST['partner']);
+            $data['language'] = trim($_POST['language']);
 
             if (!$user->isAvailablePartner($data['partner'])) {
                 $data['error'] = 'Необходимо выбрать партнера из списка';
+            } else if (!array_key_exists($data['language'], Language::$enum)) {
+                $data['error'] = 'Необходимо выбрать язык из списка';
             } else {
                 $team = new Team();
-                $teamId = $team->create($_POST['name']);
+                $teamId = $team->create($_POST['name'], $data['language']);
                 if (empty($teamId)) {
                     $data['error'] = $team->getLastError();
                 } else {
@@ -53,6 +56,7 @@ class TeamController extends Controller
         }
 
         $data['availablePartners'] = $user->getAvailablePartners();
+        $data['languages'] = Language::$enum;
 
         $pageInfo = new PageInfo();
         $pageInfo->init('new team');

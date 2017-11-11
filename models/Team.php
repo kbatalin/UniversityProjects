@@ -8,13 +8,20 @@ class Team
     private $_inventory = null;
     private $_step2_text;
     private $_lastError;
+    private $_language;
 
-    public function create($name)
+    public function create($name, $lang)
     {
         $name = trim($name);
+        $lang = mb_strtolower(trim($lang));
 
         if (mb_strlen($name) > 99) {
             $this->_lastError = 'Слишком длинное название';
+            return false;
+        }
+
+        if (!array_key_exists($lang, Language::$enum)) {
+            $this->_lastError = 'Неверный язык';
             return false;
         }
 
@@ -30,10 +37,11 @@ class Team
 
         App::getInstance()->getDataBase()->beginTransaction();
 
-        $STH = App::getInstance()->getDataBase()->prepare("INSERT INTO `teams` (`name`, `points`, `step2_text`) VALUES (?, ?, ?)");
+        $STH = App::getInstance()->getDataBase()->prepare("INSERT INTO `teams` (`name`, `points`, `step2_text`, `language`) VALUES (?, ?, ?, ?)");
         $STH->bindValue(1, $name, PDO::PARAM_STR);
         $STH->bindValue(2, 0);
         $STH->bindValue(3, "", PDO::PARAM_STR);
+        $STH->bindValue(4, $lang, PDO::PARAM_STR);
         if (!$STH->execute() || $STH->rowCount() == 0) {
             App::getInstance()->getDataBase()->rollBack();
             $this->_lastError = 'Не удалось создать команду с таким именем. Возможно, оно уже занято';
@@ -103,6 +111,7 @@ class Team
         $this->_name = trim($res['name']);
         $this->_points = $res['points'];
         $this->_step2_text = $res['step2_text'];
+        $this->_language = $res['language'];
 
         return true;
     }
@@ -346,4 +355,11 @@ class Team
 
         return $members;
     }
+
+    public function getLanguage()
+    {
+        return $this->_language;
+    }
+
+
 }

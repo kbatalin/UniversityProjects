@@ -38,6 +38,22 @@
                     </select>
                 </p>
                 <p>
+                    Язык:
+                    <select name="language" class="selectpicker" data-live-search="true" data-width="320px">
+                        <?php
+                        if (!empty($languages)) {
+                            $language = !empty($language) ? $language : 0;
+                            foreach ($languages as $lang_code => $lang_name) {
+                                echo '<option value="' . htmlspecialchars($lang_code) . '" '
+                                    . (strcmp($lang_code, $language) == 0 ? ' selected' : '') . '>'
+                                    . htmlspecialchars($lang_name)
+                                    . '</option>';
+                            }
+                        }
+                        ?>
+                    </select>
+                </p>
+                <p>
                     <input type="submit" value="Создать">
                 </p>
             </form>
