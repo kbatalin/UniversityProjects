@@ -1,4 +1,5 @@
-INSERT INTO quest17.tasks (name, text, points, answer, visible, deadline, task, active) VALUES ('hidden_4', '', 20, 'шва', 0, null, 'Привет! Мы тут нашли карту с какими-то точками. Что бы это значило? Какие-то геополитические игры? Планируемые ядерные удары?
+INSERT INTO quest17.tasks (id, name, text, points, answer, visible, deadline, task, active)
+VALUES (2, 'hidden_4', '', 20, 'шва', 0, NULL, 'Привет! Мы тут нашли карту с какими-то точками. Что бы это значило? Какие-то геополитические игры? Планируемые ядерные удары?
 
 <img src="/img/hidden_4.jpg">
 
