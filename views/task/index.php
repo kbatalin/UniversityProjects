@@ -15,7 +15,7 @@
                 <? if (!empty($taskText)) echo nl2br($taskText); ?>
             </p>
             <?php
-            if ((empty($isDeadline)) && ((empty($taskStatus) || $taskStatus != TeamTask::$TASK_STATUS['SUCCESS'][0]))) {
+            if ((empty($isDeadline)) && ((empty($taskStatus) || $taskStatus != TeamTask::$TASK_STATUS['SUCCESS'][0]) && (empty($taskId) || ($taskId != 9)))) {
                 echo <<<HTML
         <form action="" method="post">
         <p>
