@@ -1,3 +1,5 @@
+<?php View::render('common/timer');?>
+
 <div class="navigationBar">
     <?php
     $pages = array(

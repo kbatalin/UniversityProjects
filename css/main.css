@@ -136,3 +136,13 @@ hr {
     width: 100%;
     border-top: solid 1px #e5e5e5;
 }
+
+@font-face {
+    font-family: "Arame";
+    src: url('./Arame.ttf');
+}
+
+.display {
+    font-size: 40pt;
+    font-family: Arame;
+}
