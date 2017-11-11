@@ -39,7 +39,6 @@ class TaskController extends Controller
         // 5 задача. Несколько разных языков
         if ($teamTask->getTask()->getId() == 5) {
             $data['taskText'] .= '<hr>' . Task::getTask5($user->getTeam()->getLanguage());
-
             if (!empty($_POST['answer'])) {
                 if (Task::checkTask5($user->getTeam()->getLanguage(), $_POST['answer'])) {
                     Logger::logMessage('Good answer. Task #5. User\'s answer: ' . trim($_POST['answer']));
