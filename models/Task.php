@@ -178,6 +178,41 @@ Ich hasse mei Leben.
 ';
         }
 
+        if (strcmp('fr', $lang) == 0) {
+            return 'Vous avez ouvert le porte. Les gouttes de pluie vous accueillent amicalement, mais leur resignation n\'est pas accessible pour vous. Vous avez déjà fait le premier pas, mais le second es plus difficile. Qu\'attendez-vous ? "Unam in armis salutem". Quelqu\'un a choisit le suiside, mais ce n\'est pas le bon choix, parce que les autres commenceront à envier. À vrai dire, la connaissance est une chose très intéressante. Une travail quotidienne, au total, profitera à vous, et après, vous direz, que les devoirs ennuyeux étaient très importants. Bien-sûr, tout peut se passer autrement, personne ne sais qu\'on attend derrière la porte suivante.';
+        }
+
+        if (strcmp('zh', $lang) == 0) {
+            return '大卫：你好，我叫大卫。
+玛丽：你好，我是玛丽，认识你很高兴。大卫，你有什么事？
+大卫：听说你可以卖有名的旧书。
+玛丽：是啊。我是商堵。你要买那本书？
+大卫：我找一本书，叫《周易》。我去了图书馆借这本书，不过我没借了。图书馆没有这本搞典。
+玛丽：我也没有《周易》，因为这本书在中国的博物馆。我有别的旧书，你看看吧。现在我打算喝茶和吃饭，你想吗？
+大卫：谢谢你，你非常好客！我要喝一杯茶，可是我不想吃这个菜。我不喜欢吃路米条。
+玛丽：OK。我的朋友去了树贫捡特别草，所以茶很好喝！
+大卫：真不错！你喜欢看什么书？
+玛丽：现在我看《奥菜丽赫本传》。她真漂亮, 还真聪明！
+大卫：多有意思啊。我以为了你喜欢看旧书。
+玛丽：不是。我很喜欢看不同书。你想买一本书吗？
+大卫：我不想，可是我很饿。你有什么吃饭？
+玛丽：真不好意思，我才有路米条，不过你不喜欢吃这个菜。
+大卫：没关系。现在我要去饭馆吃米饭。你想一起去吗？
+玛丽：去吧，我也很饿！
+
+注意你不应该找语录，而是应该找别的资料。
+';
+        }
+
+        if (strcmp('it', $lang) == 0) {
+            return 'Attenzione! Non scrivete il titolo del libro, ma cercate il autore della farse.
+I DUI MATIMONI
+In Italia ciò contrarere matrimonio in conicipio, con rito civile, e in chiesa, con rito religioso. Per la Chiesa un uomo ed una donna uniti in matrimonio dal sindaco, invece che dal parroco, non sono marito e molie.
+Prima dell’11 febbraio 1929, lo Stato si comportava allo stesso modo nei confronti della Chiesa: il matrimonio religioso non amova alcun valore per la legre dello Stato. I due sposi “religiosi” conservavano lo stato civile precedente al matrimonio: lui rimaneva scapolo, lei nubile, e i figli erano dunque illegittimi.
+Con il Concordato fra Stato e Chiesa la situazione è cambiata. Lo Stato riconosce gli effetti civili di matrimonio religioso, sicchè i cittadini sono liberi di scegliere fra un matrimonio civile o quello religiose.
+';
+        }
+
         Logger::logMessage('Bad lang (task): ' . $lang);
         return '';
     }
@@ -193,6 +228,18 @@ Ich hasse mei Leben.
 
         if (strcmp('de', $lang) == 0) {
             return strcmp('румпельштильцхен', $answer) == 0;
+        }
+
+        if (strcmp('fr', $lang) == 0) {
+            return strcmp('Утраченные иллюзии', $answer) == 0;
+        }
+
+        if (strcmp('zh', $lang) == 0) {
+            return strcmp('Сон в красном тереме', $answer) == 0;
+        }
+
+        if (strcmp('it', $lang) == 0) {
+            return strcmp('Галилео Галилей', $answer) == 0;
         }
 
         Logger::logMessage('Bad lang (answer): ' . $lang);
