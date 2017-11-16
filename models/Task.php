@@ -94,10 +94,9 @@ class Task
         $answer = trim($answer);
         $answer = mb_ereg_replace(' ', '', $answer);
 
-        if ($this->_id == 952) {
-            $answer = mb_ereg_replace('!', '', $answer);
-        }
-
+//        if ($this->_id == 952) {
+//            $answer = mb_ereg_replace('!', '', $answer);
+//        }
         return strcmp(mb_strtolower($answer), mb_strtolower($this->_answer)) == 0;
     }
 

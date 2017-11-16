@@ -100,7 +100,7 @@ class TeamTask
             Logger::logMessage('Good answer. Task #' . $this->_task->getId() . '. User\'s answer: "' . $answer . '"');
         } else {
             Logger::logMessage('Bad answer. Task #' . $this->_task->getId() . '. User\'s answer: "'
-                . $answer . '". Good answer: "' . $this->_task->getId() . '"');
+                . $answer . '". Good answer: "' . $this->_task->getAnswer() . '"');
         }
 
         $STH = App::getInstance()->getDataBase()->prepare("UPDATE `team_tasks` SET `last_answer`=?, `status`=? WHERE `team_id`=? AND `task_id`=?");
