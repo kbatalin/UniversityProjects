@@ -142,7 +142,12 @@ hr {
     src: url('./Arame.ttf');
 }
 
+@font-face {
+    font-family: "Arame-Mono";
+    src: url('./ArameMono-Regular.otf');
+}
+
 .display {
     font-size: 40pt;
-    font-family: Arame;
+    font-family: Arame-Mono;
 }
