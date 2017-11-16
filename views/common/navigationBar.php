@@ -4,10 +4,11 @@
     <?php
     $pages = array(
         'Главная' => '/index/index/',
-        'Магазин' => '/shop/index/',
-        'Инвентарь' => '/team/inventory/',
-        'Письмо от знахарки' => '/hard-way/customer-office/',
-        'Моя история' => '/hard-way/index/'
+//        'Магазин' => '/shop/index/',
+//        'Инвентарь' => '/team/inventory/',
+//        'Письмо от знахарки' => '/hard-way/customer-office/',
+//        'Моя история' => '/hard-way/index/',
+        'АДМИНКА' => 'http://ccfit.nsu.ru/~lihachev/posv/roketi.html'
     );
 
     $pagesCount = count($pages);
