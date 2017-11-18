@@ -13,16 +13,18 @@ class Team
     public function create($name, $lang)
     {
         $name = trim($name);
-        $lang = mb_strtolower(trim($lang));
 
         if (mb_strlen($name) > 99) {
             $this->_lastError = 'Слишком длинное название';
             return false;
         }
 
-        if (!array_key_exists($lang, Language::$enum)) {
-            $this->_lastError = 'Неверный язык';
-            return false;
+        if ($lang != null) {
+            $lang = mb_strtolower(trim($lang));
+            if (!array_key_exists($lang, Language::$enum)) {
+                $this->_lastError = 'Неверный язык';
+                return false;
+            }
         }
 
 //        $STH = App::getInstance()->getDataBase()->prepare("SELECT `id` FROM `teams` WHERE `name`=? LIMIT 1");
