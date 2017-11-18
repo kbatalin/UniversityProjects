@@ -27,6 +27,11 @@ class IndexController extends Controller
             $data['tasks'] = $user->getTeam()->getTasks();
             $data['teamScores'] = $user->getTeam()->getPoints();
 
+            $data['language'] = $user->getTeam()->getLanguage();
+            if (!empty($data['language'])) {
+                $data['language'] = Language::$enum[$data['language']];
+            }
+
             $members = $user->getTeam()->getMembers();
             foreach ($members as $member) {
                 if ($member->getId() != $user->getId()) {

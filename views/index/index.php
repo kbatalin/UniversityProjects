@@ -27,15 +27,17 @@
                     ?>
                     <p>
                         Команда: <?php echo htmlspecialchars($userTeam); ?>
-                        (<a href="/team/leave/">Покинуть</a>)
+                        (<a href="/team/update/">Изменить название и язык</a>)
                     </p>
 
                     <?php if (!empty($teamPartner)) {
                         $name = htmlspecialchars($teamPartner->getFirstname() . ' ' . $teamPartner->getLastname());
+                        $language = !empty($language) ? $language : 'Не выбран. <a href="/team/update/">Выбрать</a>';
                         $teamScores = !empty($teamScores) ? htmlspecialchars($teamScores) : '0';
                         echo <<<HTML
                 <p>
                     Напарник: {$name} <br>
+                    Язык: {$language} <br>
                     Очки: {$teamScores} <br>
                 </p>
 
