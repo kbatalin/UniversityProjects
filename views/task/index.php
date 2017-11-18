@@ -10,13 +10,20 @@
         <?php View::render('common/navigationBar', array('currentPage' => 'task')); ?>
         <div class="substrate">
             <h3><? if (!empty($taskName)) echo htmlspecialchars($taskName); ?></h3>
-            <p>
-                <? /*if(!empty($taskText)) echo nl2br(htmlspecialchars($taskText));*/ ?>
-                <? if (!empty($taskText)) echo nl2br($taskText); ?>
-            </p>
+
             <?php
-            if ((empty($isDeadline)) && ((empty($taskStatus) || $taskStatus != TeamTask::$TASK_STATUS['SUCCESS'][0]) && (empty($taskId) || ($taskId != 9)))) {
-                echo <<<HTML
+            if (!empty($taskId) && ($taskId == 5) && empty($language)) {
+                echo 'Необходимо выбрать язык! <a href="/team/update/">Перейти к выбору</a>';
+            } else {
+                ?>
+
+                <p>
+                    <? /*if(!empty($taskText)) echo nl2br(htmlspecialchars($taskText));*/ ?>
+                    <? if (!empty($taskText)) echo nl2br($taskText); ?>
+                </p>
+                <?php
+                if ((empty($isDeadline)) && ((empty($taskStatus) || $taskStatus != TeamTask::$TASK_STATUS['SUCCESS'][0]) && (empty($taskId) || ($taskId != 9)))) {
+                    echo <<<HTML
         <form action="" method="post">
         <p>
             <label><input type="text" placeholder="Ответ" name="answer"></label>
@@ -27,6 +34,7 @@
         </form>
 
 HTML;
+                }
             }
             ?>
         </div>
