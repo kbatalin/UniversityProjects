@@ -3,12 +3,13 @@
     (function (d, w, c) {
         (w[c] = w[c] || []).push(function () {
             try {
-                w.yaCounter40924889 = new Ya.Metrika({
-                    id: 40924889,
+                w.yaCounter46696464 = new Ya.Metrika({
+                    id: 46696464,
                     clickmap: true,
                     trackLinks: true,
                     accurateTrackBounce: true,
                     webvisor: true,
+                    trackHash: true,
                     ut: "noindex"
                 });
             } catch (e) {
@@ -32,7 +33,7 @@
     })(document, window, "yandex_metrika_callbacks");
 </script>
 <noscript>
-    <div><img src="https://mc.yandex.ru/watch/40924889?ut=noindex" style="position:absolute; left:-9999px;" alt=""/>
+    <div><img src="https://mc.yandex.ru/watch/46696464?ut=noindex" style="position:absolute; left:-9999px;" alt=""/>
     </div>
 </noscript>
 <!-- /Yandex.Metrika counter -->
