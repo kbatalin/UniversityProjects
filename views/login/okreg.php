@@ -10,7 +10,7 @@
         <div class="substrate">
             <form action="/login/restore/" method="get">
                     <p>
-                        Ваш пароль выслан на почту.
+                        Ваш пароль выслан на почту. Проверь папку Спам ;)
                     </p>
                 <p>
                     <a href="/login/">На страницу авторизаии</a>
