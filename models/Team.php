@@ -268,6 +268,7 @@ class Team
         while ($res = $STH->fetch()) {
             $task = new TeamTask();
             $task->init($this->_id, $res['task_id']);
+            $task->getTask()->_url = '/task/?id=' . $task->getTask()->getId();
             $tasks[] = $task;
         }
 

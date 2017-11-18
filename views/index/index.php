@@ -76,10 +76,11 @@ HTML;
                             $taskName = htmlspecialchars($task->getTask()->getName());
                             $taskPoints = htmlspecialchars($task->getTask()->getPoints());
                             $taskStatus = htmlspecialchars($task->getStatusText());
+                            $taskUrl = $task->getTask()->_url;
                             echo <<<HTML
                     <tr {$style}>
                         <td><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></td>
-                        <td><a href="/task/?id={$taskId}">{$taskName}</a></td>
+                        <td><a href="{$taskUrl}">{$taskName}</a></td>
                         <td>{$taskPoints}</td>
                         <td>{$taskStatus}</td>
                     </tr>

@@ -9,6 +9,73 @@ class Task
     private $_answer;
     private $_visible;
     private $_deadline;
+    public $_url;
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->_id = $id;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->_name = $name;
+    }
+
+    /**
+     * @param mixed $text
+     */
+    public function setText($text)
+    {
+        $this->_text = $text;
+    }
+
+    /**
+     * @param mixed $points
+     */
+    public function setPoints($points)
+    {
+        $this->_points = $points;
+    }
+
+    /**
+     * @param mixed $answer
+     */
+    public function setAnswer($answer)
+    {
+        $this->_answer = $answer;
+    }
+
+    /**
+     * @param mixed $visible
+     */
+    public function setVisible($visible)
+    {
+        $this->_visible = $visible;
+    }
+
+    /**
+     * @param mixed $deadline
+     */
+    public function setDeadline($deadline)
+    {
+        $this->_deadline = $deadline;
+    }
+
+    /**
+     * @param mixed $url
+     */
+    public function setUrl($url)
+    {
+        $this->_url = $url;
+    }
+
+
 
     public static function create($id, $name, $text, $points, $answer, $active, $visible)
     {

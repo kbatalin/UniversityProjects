@@ -27,6 +27,15 @@ class IndexController extends Controller
             $data['tasks'] = $user->getTeam()->getTasks();
             $data['teamScores'] = $user->getTeam()->getPoints();
 
+            $tmp = new TeamTask();
+            $tmp->setTask(new Task());
+            $tmp->getTask()->setVisible(true);
+            $tmp->getTask()->setUrl('http://google.com');
+            $tmp->getTask()->setName('Им');
+            $data['tasks'][] = $tmp;
+
+            shuffle($data['tasks']);
+
             $data['language'] = $user->getTeam()->getLanguage();
             if (!empty($data['language'])) {
                 $data['language'] = Language::$enum[$data['language']];

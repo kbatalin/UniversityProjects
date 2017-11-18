@@ -11,6 +11,16 @@ class TeamTask
     private $_lastAnswer;
     private $_status;
 
+    /**
+     * @param Task $task
+     */
+    public function setTask($task)
+    {
+        $this->_task = $task;
+    }
+
+
+
     public static $TASK_STATUS = array(
         'EMPTY' => array(0, 'Нет решения'),
         'FAIL' => array(1, 'Неверный ответ'),
