@@ -32,11 +32,26 @@ body {
     left: 0;
     bottom: 0;
     right: 0;
+    color: rgba(255,255,255,.87);
+}
+
+A {
+    color: rgba(255,255,255,.60); /* Цвет ссылок */
+}
+A:visited {
+    color: rgba(255,255,255,.60); /* Цвет посещенных ссылок */
+}
+A:active {
+    color: rgba(255,255,255,.60); /* Цвет активных ссылок */
+}
+A:hover {
+    color: rgba(255,255,255,.40); /* Цвет активных ссылок */
 }
 
 .box {
     /*background-color: #eeffff;*/
-    background-color: #f5f5f5;
+    /*background-color: #f5f5f5;*/
+    background-color: #757575;
     min-width: 1000px;
     width: 70%;
     padding: 10px;
@@ -45,6 +60,10 @@ body {
 
 .substrate {
     padding: 20px;
+}
+
+input, select, option, textarea {
+    color: black;
 }
 
 input[type="text"], input[type="password"], input[type="email"], input[type="submit"] {
@@ -86,12 +105,14 @@ input[type="submit"]:hover {
 }
 
 hr {
-    border-top: solid 1px #e5e5e5;
+    border-top: solid 1px rgba(255,255,255,.87);
+    /*border-top: solid 1px #e5e5e5;*/
 }
 
 .tasksTable {
     width: 100%;
-    border: solid 1px #e5e5e5;
+    border: solid 1px rgba(255,255,255,.87);
+    /*border: solid 1px #e5e5e5;*/
     /*border: solid #212121 1px;*/
     /*border-collapse: collapse;*/
 }
@@ -103,16 +124,18 @@ hr {
 }
 
 .tasksTable th {
-    background-color: #e9e9e9;
+    background-color: #424242;
+    /*background-color: #e9e9e9;*/
 }
 
 .tasksTable tr.gray {
     /*background-color: #f5f5f5;*/
-    background-color: #f0f0f0;
+    background-color: #616161;
 }
 
 .tasksTable tr:hover {
-    background-color: #eaeaea;
+    background-color: #616161;
+    /*background-color: #eaeaea;*/
 }
 
 .navigationBar {
