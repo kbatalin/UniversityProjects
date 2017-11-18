@@ -139,15 +139,20 @@ class TeamController extends Controller
         if (!empty($_POST['submit'])) {
             $data = $_POST;
 
-            if (!array_key_exists($data['language'], Language::$enum)) {
+            if (!empty($data['language']) && !array_key_exists($data['language'], Language::$enum)) {
                 $data['error'] = 'Необходимо выбрать язык из списка';
             } else if (empty($data['name']) || mb_strlen($data['name']) > 50){
                 $data['error'] = 'Название команды обязательно и должно быть меньше 50 символов';
             } else {
-                $STH = App::getInstance()->getDataBase()->prepare("UPDATE teams SET name=?, language=? WHERE id=?");
+                $cmd = "UPDATE teams SET name=? " . (!empty($data['language']) ? ", language=?" : "") . " WHERE id=?";
+                $STH = App::getInstance()->getDataBase()->prepare($cmd);
                 $STH->bindValue(1, $data['name'], PDO::PARAM_STR);
-                $STH->bindValue(2, $data['language'], PDO::PARAM_STR);
-                $STH->bindValue(3,$team->getId());
+                if (!empty($data['language'])) {
+                    $STH->bindValue(2, $data['language'], PDO::PARAM_STR);
+                    $STH->bindValue(3, $team->getId());
+                } else {
+                    $STH->bindValue(2, $team->getId());
+                }
 
                 if (!$STH->execute()) {
                     App::getInstance()->getDataBase()->rollBack();
