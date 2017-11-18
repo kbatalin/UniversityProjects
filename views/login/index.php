@@ -28,6 +28,9 @@
             <p>
                 <a href="/login/pass/">Восстановить пароль</a>
             </p>
+            <p>
+                <a href="/login/register/">Регистрация</a>
+            </p>
         </div>
         <?php View::render('common/footer', null); ?>
     </div>
