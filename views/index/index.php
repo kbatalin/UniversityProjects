@@ -57,8 +57,9 @@ HTML;
                 <table class="tasksTable">
                     <thead>
                     <tr>
-                        <th>Задача</th>
-                        <th>Макс. очки</th>
+                        <th></th>
+                        <th>Письмо</th>
+                        <th>Стоимость</th>
                         <th>Статус</th>
                     </tr>
                     </thead>
@@ -77,6 +78,7 @@ HTML;
                             $taskStatus = htmlspecialchars($task->getStatusText());
                             echo <<<HTML
                     <tr {$style}>
+                        <td><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></td>
                         <td><a href="/task/?id={$taskId}">{$taskName}</a></td>
                         <td>{$taskPoints}</td>
                         <td>{$taskStatus}</td>
@@ -84,6 +86,7 @@ HTML;
 
 HTML;
                         }
+
                     } else {
                         echo '<td colspan="3">Для того, чтобы начать решать задачи, вступите в команду</td>';
                     }
