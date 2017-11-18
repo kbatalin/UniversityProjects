@@ -79,7 +79,7 @@ HTML;
                             $taskUrl = $task->getTask()->_url;
                             echo <<<HTML
                     <tr {$style}>
-                        <td><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span></td>
+                        <td><span style="font-size: 30px;" class="glyphicon glyphicon-envelope" aria-hidden="true"></span></td>
                         <td><a href="{$taskUrl}">{$taskName}</a></td>
                         <td>{$taskPoints}</td>
                         <td>{$taskStatus}</td>

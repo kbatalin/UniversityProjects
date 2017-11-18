@@ -27,14 +27,66 @@ class IndexController extends Controller
             $data['tasks'] = $user->getTeam()->getTasks();
             $data['teamScores'] = $user->getTeam()->getPoints();
 
-            $tmp = new TeamTask();
-            $tmp->setTask(new Task());
-            $tmp->getTask()->setVisible(true);
-            $tmp->getTask()->setUrl('http://google.com');
-            $tmp->getTask()->setName('Им');
-            $data['tasks'][] = $tmp;
+            /*
+             * Жилье недорого” https://goo.gl/37CV9f
+“Вкусная, свежая шаурма, прекрасная как первая любовь” https://goo.gl/DsPdMn
+“Курсы по английскому" https://goo.gl/u57G4F
+"Живи красиво" https://goo.gl/NwJgUi
+"Жиза" https://goo.gl/u4X4PT
+             */
 
-            shuffle($data['tasks']);
+            $urls = array(
+                'Жилье недорого' => 'https://goo.gl/37CV9f',
+                'Вкусная, свежая шаурма, прекрасная как первая любовь' => 'https://goo.gl/DsPdMn',
+                'Курсы по английскому' => 'https://goo.gl/u57G4F',
+                'Живи красиво' => 'https://goo.gl/NwJgUi',
+                'Жиза' => 'https://goo.gl/u4X4PT',
+            );
+
+            $ttt = array();
+            foreach ($urls as $k => $v) {
+                $tmp = new TeamTask();
+                $tmp->setStatus(' ');
+                $tmp->setTask(new Task());
+                $tmp->getTask()->setVisible(true);
+                $tmp->getTask()->setUrl($v);
+                $tmp->getTask()->setName($k);
+                $ttt[] = $tmp;
+            }
+
+            if (count($ttt) > count($data['tasks'])) {
+                $a = $ttt;
+                $b = $data['tasks'];
+            } else {
+                $a = $data['tasks'];
+                $b = $ttt;
+            }
+
+            $ia = 0;
+            $ib = 0;
+            $res = array();
+            for (; $ia < count($a) || $ib < count($b);) {
+                if ($ia < count($a)) {
+                    if ($ib == 0 || $b[$ib - 1]->getTask()->isVisible()) {
+                        $res[] = $a[$ia];
+                        ++$ia;
+                    }
+                }
+
+                if ($ib < count($b)) {
+                    if ($ia == 0 || $a[$ia]->getTask()->isVisible()) {
+                        $res[] = $b[$ib];
+                        ++$ib;
+                    }
+                }
+//                $res[] = $b[$i];
+            }
+
+//            for ($i = count($b); $i < count($a); ++$i) {
+//                $res[] = $a[$i];
+//            }
+
+            $data['tasks'] = $res;
 
             $data['language'] = $user->getTeam()->getLanguage();
             if (!empty($data['language'])) {

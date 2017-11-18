@@ -19,6 +19,14 @@ class TeamTask
         $this->_task = $task;
     }
 
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status)
+    {
+        $this->_status = $status;
+    }
+
 
 
     public static $TASK_STATUS = array(
