@@ -22,6 +22,10 @@ class IndexController extends Controller
             'userLastname' => $user->getLastname(),
         );
 
+        if (strcmp($user->getLogin(), 'KIMCHENblH') == 0) {
+            $data['trueAdmin'] = true;
+        }
+
         if (!empty($user->getTeam())) {
             $data['userTeam'] = $user->getTeam()->getName();
             $data['tasks'] = $user->getTeam()->getTasks();

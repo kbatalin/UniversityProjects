@@ -8,7 +8,7 @@
 <?php View::render('common/background'); ?>
 <div id="content">
     <div class="box">
-        <?php View::render('common/navigationBar', array('currentPage' => '/index/index/')); ?>
+        <?php View::render('common/navigationBar', array('currentPage' => '/index/index/', 'trueAdmin' => !empty($trueAdmin) ? true : false)); ?>
         <div class="row">
             <div class="col2">
                 <p>

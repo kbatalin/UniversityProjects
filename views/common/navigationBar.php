@@ -2,13 +2,16 @@
 
 <div class="navigationBar">
     <?php
+
+    $gonna = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+
     $pages = array(
         'Главная' => '/index/index/',
 //        'Магазин' => '/shop/index/',
 //        'Инвентарь' => '/team/inventory/',
 //        'Письмо от знахарки' => '/hard-way/customer-office/',
 //        'Моя история' => '/hard-way/index/',
-        'АДМИНКА' => 'http://ccfit.nsu.ru/~lihachev/posv/roketi.html'
+        'АДМИНКА' => !empty($trueAdmin) ? 'http://ccfit.nsu.ru/~lihachev/posv/roketi.html' : $gonna,
     );
 
     $pagesCount = count($pages);
