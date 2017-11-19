@@ -29,7 +29,6 @@
             if (!switched && distance < (firstCountDownDate - switchingTime)) {
                 ratio = (firstCountDownDate - switchingTime) / (secondCountDownDate - switchingTime);
                 switched = true;
-                console.log('New delay: ' + delay);
             }
 
             distance -= delta * ratio;
