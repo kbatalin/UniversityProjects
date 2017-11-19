@@ -1,0 +1,1 @@
+UPDATE quest17.tasks SET name = 'Спизженный DUMP', text = '', points = 110, answer = 'New Mexico', visible = 1, deadline = null, task = 'Привет! Я с ФИТа с 148 курса видел тебя в универе 435 числа, ты мне очень понравилась. Лови <a href="/files/dump.bin">фотку</a>….', active = 1 WHERE id = 8;
