@@ -51,15 +51,17 @@ class Team
             return false;
         }
 
-        $STH = App::getInstance()->getDataBase()->prepare("SELECT `id` FROM `teams` WHERE `name`=? LIMIT 1");
-        $STH->bindValue(1, $name, PDO::PARAM_STR);
-        if (!$STH->execute() || !($res = $STH->fetch(PDO::FETCH_ASSOC))) {
-            App::getInstance()->getDataBase()->rollBack();
-            $this->_lastError = 'Неизвестная ошибка во время создания команды. Попробуйте еще раз';
-            Logger::logMessage('Can\'t select team after insert. Name: ' . $name);
-            return false;
-        }
-        $teamId = $res['id'];
+//        $STH = App::getInstance()->getDataBase()->prepare("SELECT `id` FROM `teams` WHERE `name`=? LIMIT 1");
+//        $STH->bindValue(1, $name, PDO::PARAM_STR);
+//        if (!$STH->execute() || !($res = $STH->fetch(PDO::FETCH_ASSOC))) {
+//            App::getInstance()->getDataBase()->rollBack();
+//            $this->_lastError = 'Неизвестная ошибка во время создания команды. Попробуйте еще раз';
+//            Logger::logMessage('Can\'t select team after insert. Name: ' . $name);
+//            return false;
+//        }
+//        $teamId = $res['id'];
+        $teamId = App::getInstance()->getDataBase()->lastInsertId();
+//        echo $teamId . '<-----';
 
         $STH = App::getInstance()->getDataBase()->prepare("SELECT `id` FROM `tasks` WHERE `active`=1");
         if (!$STH->execute()) {

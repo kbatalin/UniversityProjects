@@ -100,34 +100,39 @@ class LoginController extends Controller
                     $data['error'] = 'Неверный email';
                 } else {
                     Logger::logMessage('Start creation: ' . implode(', ', $_POST));
-                    User::create($_POST['fitEmail'], md5('hw4' . $_POST['fitEmail'])
+                    $au = User::create($_POST['fitEmail'], md5('hw4' . $_POST['fitEmail'])
                         , $_POST['fitFirstname'], $_POST['fitLastname'], 1, $_POST['fitEmail'], 1, 0);
-                    User::create($_POST['fitEmail'] . 'fija', md5('hw4' . $_POST['fitEmail'])
+                    $bu = User::create($_POST['fitEmail'] . 'fija', md5('hw4' . $_POST['fitEmail'])
                         , $_POST['fijaFirstname'], $_POST['fijaLastname'], 2, $_POST['fitEmail'] . 'fija', 0, 0);
 
-                    $team = new Team();
-                    $teamId = $team->create('Моя команда', null);
-                    if (empty($teamId)) {
-                        $data['error'] = $team->getLastError();
+                    if (!$au || !$bu) {
+                        $data['error'] = 'Не удалось создать юзера';
                     } else {
-                        $fit = new User();
-                        $fit->initByEmail($_POST['fitEmail']);
 
-                        $fija = new User();
-                        $fija->initByEmail($_POST['fitEmail'] . 'fija');
-
-                        if (!$fit->joinInTeam($teamId) || !$fija->joinInTeam($teamId)) {
-                            $data['error'] = 'Невозможно вступить в команду';
+                        $team = new Team();
+                        $teamId = $team->create('Моя команда', null);
+                        if (empty($teamId)) {
+                            $data['error'] = $team->getLastError();
                         } else {
-                            Logger::logMessage('New team #' . $teamId . ' created');
+                            $fit = new User();
+                            $fit->initByEmail($_POST['fitEmail']);
 
-                            $msg = 'Ваш логин: ' . $_POST['fitEmail'] . ', пароль: ' . md5('hw4' . $_POST['fitEmail']) . '. Измените его в целях безопасности.';
-                            if (!Sender::sendEmail($_POST['fitEmail'], 'Регистрация в квесте', $msg)) {
-                                $this->_lastError = 'Не удалось отправить письмо с паролем. Обратитесь к админу';
-                                Logger::logMessage('Can\'t send mail with new pass for user ' . $_POST['fitEmail']);
+                            $fija = new User();
+                            $fija->initByEmail($_POST['fitEmail'] . 'fija');
+
+                            if (!$fit->joinInTeam($teamId) || !$fija->joinInTeam($teamId)) {
+                                $data['error'] = 'Невозможно вступить в команду';
                             } else {
-                                $this->redirect('/login/okreg');
-                                $availableEmail->useIt();
+                                Logger::logMessage('New team #' . $teamId . ' created');
+
+                                $msg = 'Ваш логин: ' . $_POST['fitEmail'] . ', пароль: ' . md5('hw4' . $_POST['fitEmail']) . '. Измените его в целях безопасности.';
+                                if (!Sender::sendEmail($_POST['fitEmail'], 'Регистрация в квесте', $msg)) {
+                                    $this->_lastError = 'Не удалось отправить письмо с паролем. Обратитесь к админу';
+                                    Logger::logMessage('Can\'t send mail with new pass for user ' . $_POST['fitEmail']);
+                                } else {
+                                    $this->redirect('/login/okreg');
+                                    $availableEmail->useIt();
+                                }
                             }
                         }
                     }
