@@ -23,7 +23,8 @@
                 </p>
                 <p>
                     Язык:
-                    <select <?=(empty($language)?'':'disabled')?> name="language" class="selectpicker" data-live-search="true" data-width="320px" title="Выберите язык">
+                    <select name="language" class="selectpicker" data-live-search="true" data-width="320px"
+                            title="Выберите язык">
                         <?php
                         if (!empty($languages)) {
                             $language = !empty($language) ? $language : -1;
