@@ -45,6 +45,7 @@ class IndexController extends Controller
                 'Курсы по английскому' => 'https://goo.gl/u57G4F',
                 'Живи красиво' => 'https://goo.gl/NwJgUi',
                 'Жиза' => 'https://goo.gl/u4X4PT',
+                'Внимание! Черная пятница!' => '/index/shop',
             );
 
             $ttt = array();
@@ -115,5 +116,10 @@ class IndexController extends Controller
         $data['pageInfo'] = $pageInfo->getInfo();
 
         $this->render('index', $data);
+    }
+
+    public function actionShop()
+    {
+        $this->render('shop', array('pageInfo' => array('title' => 'ЛАРЁК')));
     }
 }

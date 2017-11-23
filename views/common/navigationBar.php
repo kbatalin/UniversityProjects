@@ -12,6 +12,7 @@
 //        'Письмо от знахарки' => '/hard-way/customer-office/',
 //        'Моя история' => '/hard-way/index/',
         'АДМИНКА' => !empty($trueAdmin) ? 'http://ccfit.nsu.ru/~lihachev/posv/roketi.html' : $gonna,
+        'ЛАРЁК' => '/index/shop',
     );
 
     $pagesCount = count($pages);
