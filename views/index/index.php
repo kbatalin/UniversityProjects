@@ -12,6 +12,7 @@
         <div class="row">
             <div class="col2">
                 <p>
+                    КЛЮЧ: <?php if (!empty($privateKey)) echo htmlspecialchars($privateKey); ?><br><br>
                     Логин: <?php if (!empty($userLogin)) echo htmlspecialchars($userLogin); ?> <br>
                     Имя: <?php if (!empty($userFirstname)) echo htmlspecialchars($userFirstname); ?> <br>
                     Фамилия: <?php if (!empty($userLastname)) echo htmlspecialchars($userLastname); ?> <br>

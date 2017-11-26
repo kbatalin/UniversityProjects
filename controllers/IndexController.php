@@ -22,6 +22,8 @@ class IndexController extends Controller
             'userLastname' => $user->getLastname(),
         );
 
+        $data['privateKey'] = md5($user->getId() . 'pizda' . $user->getLogin() . '228');
+
         if (strcmp($user->getLogin(), 'KIMCHENblH') == 0) {
             $data['trueAdmin'] = true;
         }
