@@ -6,7 +6,9 @@
         var display = document.getElementById("display");
         var firstCountDownDate = new Date("Dec 3, 2017 22:00:00").getTime();
         var secondCountDownDate = new Date("Dec 1, 2017 20:00:00").getTime();
+//        var secondCountDownDate = new Date("Nov 30, 2017 03:02:00").getTime();
 
+//        var switchingTime = new Date("Nov 30, 2017 03:01:30");
         var switchingTime = new Date("Nov 27, 2017 00:00:01");
         var switched = false;
 
@@ -23,17 +25,26 @@
             var seconds = Math.floor((distance % (1000 * 60)) / 1000);
             var millis = Math.floor(distance % 1000);
 
-            display .innerHTML = isZero(hours) + ":"
+            if (new Date().getTime() > secondCountDownDate) {
+                display.innerHTML = "00:00:00.000";
+                return;
+            }
+
+            display.innerHTML = isZero(hours) + ":"
                 + isZero(minutes) + ":" + isZero(seconds) + "." + is2Zero(millis);
 
             if (!switched && distance < (firstCountDownDate - switchingTime)) {
                 ratio = (firstCountDownDate - switchingTime) / (secondCountDownDate - switchingTime);
+                distance = (firstCountDownDate - switchingTime) - (lastTickTime - switchingTime) * ratio;
                 switched = true;
             }
 
             distance -= delta * ratio;
-            setTimeout(tick, delay);
-
+            if (distance > 0) {
+                setTimeout(tick, delay);
+            } else {
+                display.innerHTML = "00:00:00.000"
+            }
         }, delay);
 
         function isZero(n) {
