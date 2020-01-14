@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+}
+
+group 'pro.batalin'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.10'
+    annotationProcessor 'org.projectlombok:lombok:1.18.10'
+
+    implementation("com.google.guava:guava:28.2-jre")
+
+    compile 'com.fasterxml.jackson.core:jackson-core:2.9.4'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.9.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.9.4'
+
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
+
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.3.1'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.3.1'
+}
+
+test {
+    useJUnitPlatform()
+}
