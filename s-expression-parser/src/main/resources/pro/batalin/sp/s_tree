@@ -1,0 +1,20 @@
+['map' [
+    ['id' ['str' '5e0b591e-c37b-46b1-ab10-76a19936d32d']]
+    ['name' ['str' 'abilities']]
+    ['auto' ['bool' 'true']]
+    ['responses' ['map' [
+        ['resetContexts' ['bool' 'false']]
+        ['messages' ['map' [
+            ['type' ['int' '0']]
+            ['lang' ['str' 'ru']]
+            ['speech' ['str' 'Hello']]
+            ]]
+        ]
+        ]]
+    ]
+    ['priority' ['int' '500000']]
+    ['webhookUsed' ['bool' 'false']]
+    ['webhookForSlotFilling' ['bool' 'false']]
+    ['lastUpdate' ['int' '1510046724080']]
+    ['fallbackIntent' ['bool' 'false']]
+]]

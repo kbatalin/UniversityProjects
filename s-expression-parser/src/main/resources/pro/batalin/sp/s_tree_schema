@@ -1,0 +1,20 @@
+['map' [
+    ['id' ['str']]
+    ['name' ['str']]
+    ['auto' ['bool']]
+    ['responses' ['map' [
+        ['resetContexts' ['bool']]
+        ['messages' ['map' [
+            ['type' ['int']]
+            ['lang' ['str']]
+            ['speech' ['str']]
+            ]]
+        ]
+        ]]
+    ]
+    ['priority' ['int']]
+    ['webhookUsed' ['bool']]
+    ['webhookForSlotFilling' ['bool']]
+    ['lastUpdate' ['int']]
+    ['fallbackIntent' ['bool']]
+]]
