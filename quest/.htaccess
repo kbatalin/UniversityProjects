@@ -1,0 +1,17 @@
+AddDefaultCharset utf-8
+php_flag magic_quotes_gpc off
+php_flag register_globals off
+
+<Files "config.php">
+order allow,deny
+deny from all
+</Files>
+
+RewriteEngine On
+RewriteBase /
+
+# Not styles, images and js
+RewriteCond %{REQUEST_URI} !^/(css|js|img|files)/.*$
+RewriteRule ^([^/]+)/([^/]+)/?$ index.php?c=$1&a=$2 [L,QSA,NE]
+RewriteRule ^([^/]+)/?$ index.php?c=$1&a=index [L,QSA,NE]
+RewriteRule ^/?$ index.php?c=index&a=index [L,QSA,NE]
