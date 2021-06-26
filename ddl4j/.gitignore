@@ -1,0 +1,7 @@
+**.idea
+**.directory
+**.iml
+**/target/
+
+## Tests
+/src/test/resources/*
